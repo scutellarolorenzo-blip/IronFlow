@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IronFlow - Universal Workout Tracker</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --bg: #0d0d0d;
+            --card-bg: #171717;
+            --card-border: #262626;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --text: #f3f4f6;
+            --subtext: #9ca3af;
+            --danger: #dc2626;
+            --success: #10b981;
+            --input-bg: #262626;
+            --superset-border: #8b5cf6;
+            --superset-bg: rgba(139, 92, 246, 0.04);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .header {
+            margin-bottom: 16px;
+        }
+
+        .header h1 { font-size: 24px; font-weight: 700; }
+
+        .nav-tabs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--subtext);
+            padding: 10px 4px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        /* TIMER FISSO IN ALTO */
+        .timer-sticky {
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+        }
+
+        .timer-box {
+            text-align: center;
+            padding: 12px 0;
+        }
+
+        .timer-status {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--subtext);
+            text-transform: uppercase;
+        }
+
+        .timer-display {
+            font-size: 48px;
+            font-weight: 800;
+            margin: 8px 0 16px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button.btn {
+            background: var(--card-border);
+            color: var(--text);
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button.btn-primary { background: var(--accent); color: white; }
+        button.btn-danger { background: #3b1212; color: #ef4444; border: 1px solid #7f1d1d; }
+        button.btn-success { background: var(--success); color: white; }
+        button.btn-warning { background: #78350f; color: #fbbf24; border: 1px solid #b45309; }
+        button.btn-sm { padding: 6px 10px; font-size: 12px; }
+
+        .btn-large {
+            padding: 18px;
+            font-size: 18px;
+            width: 100%;
+            border-radius: 14px;
+        }
+
+        /* BLOCCO SUPERSET VISIVO */
+        .block-card {
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            background: var(--card-bg);
+        }
+
+        .block-card.is-superset-group {
+            border: 2px dashed var(--superset-border);
+            background: var(--superset-bg);
+        }
+
+        .block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .block-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .set-group-card {
+            background: #111;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .sub-exercise-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #191919;
+            padding: 8px 10px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+        }
+
+        .set-input-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        input[type="number"], input[type="text"], select {
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        .sub-exercise-row input[type="number"] {
+            width: 55px;
+            text-align: center;
+        }
+
+        /* MODIFICA SCHEDA */
+        .form-group-3 {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .form-group-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .edit-block-item {
+            background: #111;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .edit-block-item.superset-item {
+            border-left: 4px solid var(--superset-border);
+        }
+
+        .superset-builder-box {
+            background: rgba(139, 92, 246, 0.05);
+            border: 1px solid var(--superset-border);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 16px;
+        }
+
+        /* STORICO E GRAFICI */
+        .history-item {
+            background: #111;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .history-date {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .history-details {
+            font-size: 12px;
+            color: var(--subtext);
+            line-height: 1.4;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 220px !important;
+            margin-top: 10px;
+            display: block;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        <h1>IronFlow</h1>
+    </div>
+
+    <!-- TAB NAVIGATION -->
+    <div class="nav-tabs" id="main-nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('tab-workout', this)">Allenamento</button>
+        <button class="tab-btn" onclick="switchTab('tab-edit', this)">Scheda</button>
+        <button class="tab-btn" onclick="switchTab('tab-chart', this)">Analisi</button>
+        <button class="tab-btn" onclick="switchTab('tab-history', this)">Storico</button>
+    </div>
+
+    <!-- 1. TAB ALLENAMENTO -->
+    <div id="tab-workout" class="tab-content active">
+        <div id="start-session-view" class="card" style="text-align: center; padding: 25px 20px;">
+            <h2 style="font-size:20px; margin-bottom:10px;">Pronto per l'Allenamento?</h2>
+            <p style="color:var(--subtext); font-size:13px; margin-bottom:16px;">Seleziona la scheda da eseguire:</p>
+            <div style="margin-bottom: 16px;">
+                <select id="active-routine-select" style="font-size:15px; padding:10px; text-align:center;"></select>
+            </div>
+            <button class="btn btn-primary btn-large" onclick="startWorkoutSession()">🚀 Avvia Sessione</button>
+        </div>
+
+        <div id="active-workout-view" class="hidden">
+            <div class="card timer-box timer-sticky">
+                <div id="timer-status" class="timer-status">ESERCIZIO IN CORSO</div>
+                <div id="timer-display" class="timer-display">00:00</div>
+                <div class="btn-group" id="timer-controls">
+                    <button class="btn" onclick="togglePause()" id="btn-pause">Pausa</button>
+                    <button class="btn btn-warning" onclick="promptSkipCurrentSet()">Salta set</button>
+                    <button class="btn btn-danger" onclick="cancelWorkout()">Annulla</button>
+                    <button class="btn btn-danger" onclick="terminateWorkout()">Termina</button>
+                </div>
+            </div>
+
+            <div id="workout-list"></div>
+        </div>
+
+        <!-- SCHERMATA RIEPILOGO FINE ALLENAMENTO -->
+        <div id="workout-summary-view" class="hidden">
+            <div class="card" style="text-align: center; padding: 24px 16px; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(37,99,235,0.05)); border: 1px solid var(--success);">
+                <div style="font-size: 40px; margin-bottom: 8px;">🔥</div>
+                <h2 style="font-size: 22px; font-weight: 800; color: var(--success); margin-bottom: 6px;">Allenamento Completato con Successo!</h2>
+                <p style="color: var(--subtext); font-size: 13px;">Ottimo lavoro! Ecco il resoconto della sessione odierna.</p>
+            </div>
+
+            <div class="card" style="background: #111;">
+                <div style="display: flex; justify-content: space-around; text-align: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--card-border);">
+                    <div>
+                        <div style="font-size: 11px; color: var(--subtext); text-transform: uppercase; letter-spacing: 0.5px;">Tempo Totale</div>
+                        <div id="summary-stat-time" style="font-size: 20px; font-weight: 700; color: var(--text); margin-top: 4px;">0 min</div>
+                    </div>
+                    <div style="border-left: 1px solid var(--card-border);"></div>
+                    <div>
+                        <div style="font-size: 11px; color: var(--subtext); text-transform: uppercase; letter-spacing: 0.5px;">Esercizi Registrati</div>
+                        <div id="summary-stat-count" style="font-size: 20px; font-weight: 700; color: var(--accent); margin-top: 4px;">0</div>
+                    </div>
+                </div>
+
+                <div id="summary-view-mode">
+                    <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--text);">📋 Dettaglio Serie e Repetizioni</h3>
+                    <div id="summary-exercises-list" style="font-size: 13px; color: var(--subtext); line-height: 1.5; margin-bottom: 15px;"></div>
+                    <button class="btn btn-warning btn-sm" onclick="enableSummaryEditMode()" style="width: 100%;">✏️ Modifica Riepilogo</button>
+                </div>
+
+                <div id="summary-edit-mode" class="hidden">
+                    <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--accent);">✏️ Modifica Dati Allenamento</h3>
+                    <div id="summary-edit-exercises-list" style="margin-bottom: 15px;"></div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-success btn-sm" onclick="saveSummaryEdits()" style="flex: 1;">💾 Salva Modifiche</button>
+                        <button class="btn btn-danger btn-sm" onclick="cancelSummaryEdits()" style="flex: 1;">Annulla</button>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-large" onclick="closeSummaryAndReturnHome()" style="margin-top: 4px; margin-bottom: 25px;">🏠 Torna alla Home</button>
+        </div>
+    </div>
+
+    <!-- 2. TAB MODIFICA SCHEDA -->
+    <div id="tab-edit" class="tab-content">
+        <div class="card" style="background:#111;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h3 style="font-size:15px;">Seleziona Scheda:</h3>
+                <button class="btn btn-sm btn-primary" onclick="createNewRoutinePrompt()">+ Nuova Scheda</button>
+            </div>
+            <div style="display:flex; gap:8px; margin-bottom: 10px;">
+                <select id="routine-selector" onchange="switchActiveRoutine(this.value)" style="flex:1;"></select>
+                <button class="btn btn-sm btn-danger" onclick="deleteCurrentRoutine()">Elimina</button>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <input type="text" id="rename-routine-input" placeholder="Nome Scheda" style="flex:1;">
+                <button class="btn btn-sm btn-primary" onclick="renameCurrentRoutine()">Rinomina</button>
+            </div>
+        </div>
+
+        <div id="edit-mode-view">
+            <!-- AGGIUNGI ESERCIZIO SINGOLO -->
+            <div class="card">
+                <h3 style="font-size:16px; margin-bottom:10px;">➕ Aggiungi Esercizio Singolo</h3>
+                <div class="form-group-3" style="margin-bottom:8px;">
+                    <input type="text" id="single-name" placeholder="Nome Esercizio">
+                    <input type="number" id="single-sets" placeholder="Serie" value="4">
+                    <input type="number" id="single-reps" placeholder="Rep" value="8">
+                </div>
+                <div class="form-group-2" style="margin-bottom:12px;">
+                    <input type="number" id="single-rest-set" placeholder="Rec. tra Serie (s)" value="90">
+                    <input type="number" id="single-rest-block" placeholder="Rec. Fine Blocco (s)" value="120">
+                </div>
+                <button class="btn btn-primary" style="width:100%" onclick="addSingleExercise()">+ Aggiungi alla Scheda</button>
+            </div>
+
+            <!-- AGGIUNGI SUPERSET -->
+            <div class="superset-builder-box">
+                <h3 style="font-size:16px; margin-bottom:10px; color:#c084fc;">⚡ Aggiungi Superset</h3>
+                <div id="superset-dynamic-rows" style="margin-bottom:10px;"></div>
+                <button class="btn btn-sm" onclick="addSupersetRow()" style="background:#3b2d54; color:#d8b4fe; margin-bottom:12px; width:100%;">+ Aggiungi esercizio al Superset</button>
+                
+                <div class="form-group-2" style="margin-bottom:12px;">
+                    <div>
+                        <label style="font-size:11px; color:var(--subtext); display:block; margin-bottom:4px;">Rec. tra esercizi (s):</label>
+                        <input type="number" id="super-rest-set" value="30">
+                    </div>
+                    <div>
+                        <label style="font-size:11px; color:var(--subtext); display:block; margin-bottom:4px;">Rec. Fine Superset (s):</label>
+                        <input type="number" id="super-rest-block" value="180">
+                    </div>
+                </div>
+                <button class="btn btn-success" style="width:100%; background:var(--superset-border);" onclick="saveNewSupersetBlock()">💾 Salva Superset nella Scheda</button>
+            </div>
+
+            <div id="edit-routine-list"></div>
+
+            <div style="margin-top: 15px; margin-bottom: 25px;">
+                <button class="btn btn-success btn-large" onclick="saveAndShowSummary()">💾 Salva Scheda</button>
+            </div>
+        </div>
+
+        <div id="summary-mode-view" class="hidden">
+            <div class="card" style="margin-bottom: 12px; background: #111; text-align:center;">
+                <h3 style="font-size:18px; color:var(--text);" id="summary-routine-title">📋 Scheda Salvata</h3>
+                <p style="font-size:12px; color:var(--subtext); margin-top:4px;">Riepilogo blocchi di allenamento</p>
+            </div>
+
+            <div id="summary-routine-list"></div>
+
+            <div style="margin-top: 20px; margin-bottom: 25px;">
+                <button class="btn btn-primary btn-large" onclick="enableEditMode()">✏️ Modifica Scheda</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. TAB ANALISI -->
+    <div id="tab-chart" class="tab-content">
+        <div class="card">
+            <label style="font-size:13px; color:var(--subtext); display:block; margin-bottom:6px;">Seleziona Esercizio:</label>
+            <select id="chart-ex-select" onchange="renderChart()" style="margin-bottom:15px;"></select>
+            <canvas id="analyticsChart"></canvas>
+        </div>
+    </div>
+
+    <!-- 4. TAB STORICO -->
+    <div id="tab-history" class="tab-content">
+        <div id="history-container"></div>
+    </div>
+</div>
+
+<script>
+    const defaultRoutines = {
+        "Scheda A (Forza)": [
+            {
+                isSuperset: false,
+                restAfterBlock: 120,
+                exercises: [{ name: "Panca Piana", sets: 4, reps: 8, restSet: 90 }]
+            },
+            {
+                isSuperset: true,
+                restAfterBlock: 180,
+                exercises: [
+                    { name: "Trazioni", sets: 4, reps: 8, restSet: 30 },
+                    { name: "Spinte Manubri", sets: 4, reps: 10, restSet: 30 },
+                    { name: "Rematore", sets: 4, reps: 8, restSet: 90 }
+                ]
+            }
+        ]
+    };
+
+    let routines = JSON.parse(localStorage.getItem('ironflow_routines')) || defaultRoutines;
+    let currentRoutineKey = localStorage.getItem('ironflow_current_key') || Object.keys(routines)[0];
+    if (!routines[currentRoutineKey]) currentRoutineKey = Object.keys(routines)[0];
+
+    let historyData = JSON.parse(localStorage.getItem('ironflow_history')) || [];
+    let savedStatusMap = JSON.parse(localStorage.getItem('ironflow_saved_status')) || {};
+    let isRoutineSaved = savedStatusMap[currentRoutineKey] || false;
+
+    let activeBlockIdx = 0;
+    let activeSetNum = 1;
+    let activeSubExIdx = 0;
+
+    let workoutState = {
+        active: false,
+        isRest: false,
+        isPaused: false,
+        seconds: 0,
+        interval: null,
+        startTime: null,
+        completedSets: {},
+        lockedSets: {},
+        savedRestSeconds: null
+    };
+
+    let currentSessionLogsTemp = [];
+    let currentDurationMinutesTemp = 1;
+
+    let audioCtx = null;
+
+    function playBeep(freq = 880, type = 'sine', duration = 0.15) {
+        try {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        } catch (e) {
+            console.log("Audio non supportato", e);
+        }
+    }
+
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+
+        if (tabId === 'tab-workout') initActiveRoutineSelect();
+        if (tabId === 'tab-edit') {
+            initRoutineSelectors();
+            if (isRoutineSaved) saveAndShowSummary();
+            else {
+                renderEditRoutine();
+                initSupersetBuilderRows();
+            }
+        }
+        if (tabId === 'tab-chart') initChartSelect();
+        if (tabId === 'tab-history') renderHistory();
+    }
+
+    function initActiveRoutineSelect() {
+        const select = document.getElementById('active-routine-select');
+        select.innerHTML = '';
+        Object.keys(routines).forEach(key => {
+            select.innerHTML += `<option value="${key}" ${key === currentRoutineKey ? 'selected' : ''}>${key}</option>`;
+        });
+    }
+
+    function initRoutineSelectors() {
+        const select = document.getElementById('routine-selector');
+        select.innerHTML = '';
+        Object.keys(routines).forEach(key => {
+            select.innerHTML += `<option value="${key}" ${key === currentRoutineKey ? 'selected' : ''}>${key}</option>`;
+        });
+        document.getElementById('rename-routine-input').value = currentRoutineKey;
+    }
+
+    function switchActiveRoutine(key) {
+        currentRoutineKey = key;
+        localStorage.setItem('ironflow_current_key', currentRoutineKey);
+        isRoutineSaved = savedStatusMap[currentRoutineKey] || false;
+        document.getElementById('rename-routine-input').value = currentRoutineKey;
+        
+        if (isRoutineSaved) saveAndShowSummary();
+        else {
+            renderEditRoutine();
+            initSupersetBuilderRows();
+        }
+    }
+
+    function renameCurrentRoutine() {
+        const inputVal = document.getElementById('rename-routine-input').value.trim();
+        if (!inputVal) {
+            alert("Il nome della scheda non può essere vuoto.");
+            return;
+        }
+        if (inputVal === currentRoutineKey) return;
+        if (routines[inputVal]) {
+            alert("Esiste già una scheda con questo nome.");
+            return;
+        }
+
+        routines[inputVal] = routines[currentRoutineKey];
+        delete routines[currentRoutineKey];
+
+        savedStatusMap[inputVal] = savedStatusMap[currentRoutineKey] || false;
+        delete savedStatusMap[currentRoutineKey];
+
+        currentRoutineKey = inputVal;
+        saveRoutinesStorage();
+        initRoutineSelectors();
+        if (isRoutineSaved) saveAndShowSummary();
+        else renderEditRoutine();
+        alert("Scheda rinominata con successo!");
+    }
+
+    function createNewRoutinePrompt() {
+        const name = prompt("Inserisci il nome della nuova scheda:");
+        if (name && name.trim() !== "") {
+            const trimmedName = name.trim();
+            if (routines[trimmedName]) {
+                alert("Esiste già una scheda con questo nome.");
+                return;
+            }
+            routines[trimmedName] = [
+                {
+                    isSuperset: false,
+                    restAfterBlock: 120,
+                    exercises: [{ name: "Esercizio 1", sets: 3, reps: 10, restSet: 90 }]
+                }
+            ];
+            currentRoutineKey = trimmedName;
+            savedStatusMap[currentRoutineKey] = false;
+            isRoutineSaved = false;
+            saveRoutinesStorage();
+            initRoutineSelectors();
+            renderEditRoutine();
+            initSupersetBuilderRows();
+        }
+    }
+
+    function deleteCurrentRoutine() {
+        const keys = Object.keys(routines);
+        if (keys.length <= 1) {
+            alert("Non puoi eliminare l'unica scheda rimasta.");
+            return;
+        }
+        if (confirm(`Sei sicuro di voler eliminare la scheda "${currentRoutineKey}"?`)) {
+            delete routines[currentRoutineKey];
+            delete savedStatusMap[currentRoutineKey];
+            currentRoutineKey = Object.keys(routines)[0];
+            isRoutineSaved = savedStatusMap[currentRoutineKey] || false;
+            saveRoutinesStorage();
+            initRoutineSelectors();
+            if (isRoutineSaved) saveAndShowSummary();
+            else {
+                renderEditRoutine();
+                initSupersetBuilderRows();
+            }
+        }
+    }
+
+    function saveRoutinesStorage() {
+        localStorage.setItem('ironflow_routines', JSON.stringify(routines));
+        localStorage.setItem('ironflow_current_key', currentRoutineKey);
+        localStorage.setItem('ironflow_saved_status', JSON.stringify(savedStatusMap));
+    }
+
+    function initSupersetBuilderRows() {
+        const container = document.getElementById('superset-dynamic-rows');
+        container.innerHTML = '';
+        addSupersetRow();
+        addSupersetRow();
+    }
+
+    function addSupersetRow() {
+        const container = document.getElementById('superset-dynamic-rows');
+        const rowId = 'sup-row-' + Date.now() + Math.random();
+        const div = document.createElement('div');
+        div.className = 'form-group-3';
+        div.id = rowId;
+        div.style.marginBottom = '6px';
+        div.innerHTML = `
+            <input type="text" placeholder="Nome Esercizio" class="sup-ex-name">
+            <input type="number" placeholder="Serie" value="4" class="sup-ex-sets">
+            <div style="display:flex; gap:4px;">
+                <input type="number" placeholder="Rep" value="10" class="sup-ex-reps">
+                <button class="btn btn-danger btn-sm" onclick="document.getElementById('${rowId}').remove()">✕</button>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
+    function saveNewSupersetBlock() {
+        const rows = document.querySelectorAll('#superset-dynamic-rows > div');
+        const exercises = [];
+
+        rows.forEach(r => {
+            const name = r.querySelector('.sup-ex-name').value.trim();
+            const sets = parseInt(r.querySelector('.sup-ex-sets').value) || 4;
+            const reps = parseInt(r.querySelector('.sup-ex-reps').value) || 10;
+            if (name) {
+                exercises.push({ name, sets, reps });
+            }
+        });
+
+        if (exercises.length < 2) {
+            alert("Un superset deve contenere almeno 2 esercizi.");
+            return;
+        }
+
+        const restSet = parseInt(document.getElementById('super-rest-set').value) || 30;
+        const restBlock = parseInt(document.getElementById('super-rest-block').value) || 180;
+
+        exercises.forEach((ex) => {
+            ex.restSet = restSet;
+        });
+
+        routines[currentRoutineKey].push({
+            isSuperset: true,
+            restAfterBlock: restBlock,
+            exercises: exercises
+        });
+
+        saveRoutinesStorage();
+        renderEditRoutine();
+        initSupersetBuilderRows();
+    }
+
+    function addSingleExercise() {
+        const name = document.getElementById('single-name').value.trim();
+        const sets = parseInt(document.getElementById('single-sets').value) || 4;
+        const reps = parseInt(document.getElementById('single-reps').value) || 8;
+        const restSet = parseInt(document.getElementById('single-rest-set').value) || 90;
+        const restBlock = parseInt(document.getElementById('single-rest-block').value) || 120;
+
+        if (name) {
+            routines[currentRoutineKey].push({
+                isSuperset: false,
+                restAfterBlock: restBlock,
+                exercises: [{ name, sets, reps, restSet }]
+            });
+            saveRoutinesStorage();
+            document.getElementById('single-name').value = '';
+            renderEditRoutine();
+        }
+    }
+
+    function moveBlockUp(bIdx) {
+        if (bIdx <= 0) return;
+        const blocks = routines[currentRoutineKey];
+        const temp = blocks[bIdx];
+        blocks[bIdx] = blocks[bIdx - 1];
+        blocks[bIdx - 1] = temp;
+        saveRoutinesStorage();
+        renderEditRoutine();
+    }
+
+    function moveBlockDown(bIdx) {
+        const blocks = routines[currentRoutineKey];
+        if (bIdx >= blocks.length - 1) return;
+        const temp = blocks[bIdx];
+        blocks[bIdx] = blocks[bIdx + 1];
+        blocks[bIdx + 1] = temp;
+        saveRoutinesStorage();
+        renderEditRoutine();
+    }
+
+    function saveActiveWorkoutSession() {
+        if (!workoutState.active) {
+            localStorage.removeItem('ironflow_active_session');
+            return;
+        }
+        const sessionData = {
+            active: workoutState.active,
+            isRest: workoutState.isRest,
+            isPaused: workoutState.isPaused,
+            seconds: workoutState.seconds,
+            savedRestSeconds: workoutState.savedRestSeconds,
+            startTime: workoutState.startTime ? workoutState.startTime.toISOString() : null,
+            completedSets: workoutState.completedSets,
+            lockedSets: workoutState.lockedSets,
+            activeBlockIdx: activeBlockIdx,
+            activeSetNum: activeSetNum,
+            activeSubExIdx: activeSubExIdx,
+            routineKey: currentRoutineKey
+        };
+        localStorage.setItem('ironflow_active_session', JSON.stringify(sessionData));
+    }
+
+    function loadActiveWorkoutSession() {
+        const saved = localStorage.getItem('ironflow_active_session');
+        if (!saved) return false;
+        try {
+            const data = JSON.parse(saved);
+            if (data && data.active) {
+                workoutState.active = data.active;
+                workoutState.isRest = data.isRest;
+                workoutState.isPaused = data.isPaused;
+                workoutState.seconds = data.seconds;
+                workoutState.savedRestSeconds = data.savedRestSeconds !== undefined ? data.savedRestSeconds : null;
+                workoutState.startTime = data.startTime ? new Date(data.startTime) : new Date();
+                workoutState.completedSets = data.completedSets || {};
+                workoutState.lockedSets = data.lockedSets || {};
+                activeBlockIdx = data.activeBlockIdx || 0;
+                activeSetNum = data.activeSetNum || 1;
+                activeSubExIdx = data.activeSubExIdx || 0;
+                if (data.routineKey && routines[data.routineKey]) {
+                    currentRoutineKey = data.routineKey;
+                }
+                return true;
+            }
+        } catch (e) {
+            console.error("Errore caricamento sessione", e);
+        }
+        return false;
+    }
+
+    function startWorkoutSession() {
+        const select = document.getElementById('active-routine-select');
+        currentRoutineKey = select.value;
+        localStorage.setItem('ironflow_current_key', currentRoutineKey);
+
+        document.getElementById('start-session-view').classList.add('hidden');
+        document.getElementById('active-workout-view').classList.remove('hidden');
+        
+        workoutState.active = true;
+        workoutState.startTime = new Date();
+        workoutState.completedSets = {};
+        workoutState.lockedSets = {};
+        workoutState.savedRestSeconds = null;
+        workoutState.isRest = false;
+        workoutState.isPaused = false;
+
+        activeBlockIdx = 0;
+        activeSetNum = 1;
+        activeSubExIdx = 0;
+
+        saveActiveWorkoutSession();
+        renderWorkout();
+        startWorkTimer();
+    }
+
+    function renderWorkout() {
+        const container = document.getElementById('workout-list');
+        container.innerHTML = '';
+        const blocks = routines[currentRoutineKey];
+
+        blocks.forEach((block, bIdx) => {
+            const isSupersetGroup = block.isSuperset && block.exercises.length > 1;
+
+            if (!isSupersetGroup) {
+                let exercisesHTML = '';
+                block.exercises.forEach((ex, exIdx) => {
+                    let setsRows = '';
+                    for (let s = 1; s <= ex.sets; s++) {
+                        const setKey = `${bIdx}-${exIdx}-${s}`;
+                        const setObj = workoutState.completedSets[setKey] || {};
+                        const isDone = setObj.done;
+                        const isSkipped = setObj.skipped;
+                        const isLocked = workoutState.lockedSets[setKey];
+                        const currentReps = setObj.reps ?? ex.reps;
+                        const isInteractive = (bIdx === activeBlockIdx && s === activeSetNum && !workoutState.isRest);
+
+                        let actionHTML = '';
+                        if (isSkipped) {
+                            actionHTML = `<span style="color:var(--danger); font-size:12px; font-weight:bold;">Saltato</span>`;
+                        } else if (isDone && isLocked) {
+                            actionHTML = `<button class="btn btn-sm btn-success" disabled style="opacity:0.5;">✓ Fatto</button>`;
+                        } else if (isDone) {
+                            actionHTML = `
+                                <div style="display:flex; gap:4px;">
+                                    <button class="btn btn-sm btn-success" disabled style="padding:6px 8px; opacity:0.6; cursor:default;">✓</button>
+                                    <button class="btn btn-sm btn-danger" onclick="undoSingleSet(${bIdx}, ${exIdx}, ${s})" style="padding:6px 6px;">✕</button>
+                                </div>
+                            `;
+                        } else if (isInteractive) {
+                            actionHTML = `<button class="btn btn-sm btn-primary" onclick="completeSingleSet(${bIdx}, ${exIdx}, ${s})">Fatto</button>`;
+                        } else {
+                            actionHTML = `<button class="btn btn-sm" disabled style="opacity:0.3;">Fatto</button>`;
+                        }
+
+                        setsRows += `
+                            <div class="sub-exercise-row" style="${isInteractive ? 'border: 1px solid var(--accent);' : ''}">
+                                <div style="font-size:13px; font-weight:600;">
+                                    ${ex.name} <span style="color:var(--subtext); font-size:11px; margin-left:4px;">(Set ${s}/${ex.sets})</span>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <div class="set-input-group">
+                                        <input type="number" value="${currentReps}" ${isLocked ? 'disabled' : ''} onchange="updateWorkoutReps(${bIdx}, ${exIdx}, ${s}, this.value)">
+                                        <span style="color:var(--subtext); font-size:12px;">rep</span>
+                                    </div>
+                                    ${actionHTML}
+                                </div>
+                            </div>
+                        `;
+                    }
+                    exercisesHTML += setsRows;
+                });
+
+                container.innerHTML += `
+                    <div class="block-card">
+                        <div class="block-header">
+                            <div class="block-title">Blocco ${bIdx + 1}</div>
+                            <span style="color:var(--subtext); font-size:12px;">Blocco Singolo</span>
+                        </div>
+                        ${exercisesHTML}
+                    </div>
+                `;
+
+            } else {
+                let maxSets = Math.max(...block.exercises.map(e => e.sets));
+                let setsGroupHTML = '';
+
+                for (let s = 1; s <= maxSets; s++) {
+                    let subRowsHTML = '';
+                    let isCurrentSetGroup = (bIdx === activeBlockIdx && s === activeSetNum);
+
+                    block.exercises.forEach((ex, exIdx) => {
+                        if (s <= ex.sets) {
+                            const setKey = `${bIdx}-${exIdx}-${s}`;
+                            const setObj = workoutState.completedSets[setKey] || {};
+                            const isDone = setObj.done;
+                            const isSkipped = setObj.skipped;
+                            const isLocked = workoutState.lockedSets[setKey];
+                            const currentReps = setObj.reps ?? ex.reps;
+                            const isCurrentSubInteractive = isCurrentSetGroup && (exIdx === activeSubExIdx) && !workoutState.isRest;
+
+                            let actionHTML = '';
+                            if (isSkipped) {
+                                actionHTML = `<span style="color:var(--danger); font-size:12px; font-weight:bold;">Saltato</span>`;
+                            } else if (isDone && isLocked) {
+                                actionHTML = `<button class="btn btn-sm btn-success" disabled style="opacity:0.5;">✓ Fatto</button>`;
+                            } else if (isDone) {
+                                actionHTML = `
+                                    <div style="display:flex; gap:4px;">
+                                        <button class="btn btn-sm btn-success" disabled style="padding:6px 8px; opacity:0.6; cursor:default;">✓</button>
+                                        <button class="btn btn-sm btn-danger" onclick="undoSupersetItem(${bIdx}, ${exIdx}, ${s})" style="padding:6px 6px;">✕</button>
+                                    </div>
+                                `;
+                            } else if (isCurrentSubInteractive) {
+                                actionHTML = `<button class="btn btn-sm btn-primary" onclick="completeSupersetItem(${bIdx}, ${exIdx}, ${s})">Fatto</button>`;
+                            } else {
+                                actionHTML = `<button class="btn btn-sm" disabled style="opacity:0.3;">Fatto</button>`;
+                            }
+
+                            subRowsHTML += `
+                                <div class="sub-exercise-row" style="${isCurrentSubInteractive ? 'border: 1px solid var(--superset-border); background:#1d1829;' : ''}">
+                                    <div style="font-size:13px; font-weight:600;">
+                                        ${ex.name}
+                                    </div>
+                                    <div style="display:flex; align-items:center; gap:10px;">
+                                        <div class="set-input-group">
+                                            <input type="number" value="${currentReps}" ${isLocked ? 'disabled' : ''} onchange="updateWorkoutReps(${bIdx}, ${exIdx}, ${s}, this.value)">
+                                            <span style="color:var(--subtext); font-size:12px;">rep</span>
+                                        </div>
+                                        ${actionHTML}
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    });
+
+                    setsGroupHTML += `
+                        <div class="set-group-card" style="${isCurrentSetGroup ? 'border: 1px solid var(--superset-border);' : ''}">
+                            <div style="font-size:12px; font-weight:700; color:#c084fc; margin-bottom:8px;">Serie ${s} del Superset</div>
+                            ${subRowsHTML}
+                        </div>
+                    `;
+                }
+
+                container.innerHTML += `
+                    <div class="block-card is-superset-group">
+                        <div class="block-header">
+                            <div class="block-title">Blocco ${bIdx + 1}</div>
+                            <span style="background:var(--superset-border); color:white; font-size:10px; padding:2px 8px; border-radius:6px; text-transform:uppercase;">⚡ Superset</span>
+                        </div>
+                        ${setsGroupHTML}
+                    </div>
+                `;
+            }
+        });
+    }
+
+    function updateWorkoutReps(bIdx, exIdx, setNum, val) {
+        const key = `${bIdx}-${exIdx}-${setNum}`;
+        if (!workoutState.completedSets[key]) workoutState.completedSets[key] = {};
+        workoutState.completedSets[key].reps = parseInt(val) || 0;
+        saveActiveWorkoutSession();
+    }
+
+    function lockPreviousSet(bIdx, exIdx, setNum, isSuperset) {
+        if (!isSuperset) {
+            if (setNum > 1) {
+                const prevKey = `${bIdx}-${exIdx}-${setNum - 1}`;
+                workoutState.lockedSets[prevKey] = true;
+            }
+        } else {
+            if (setNum > 1) {
+                const prevKey = `${bIdx}-${exIdx}-${setNum - 1}`;
+                workoutState.lockedSets[prevKey] = true;
+            }
+        }
+    }
+
+    function completeSingleSet(bIdx, exIdx, setNum) {
+        const key = `${bIdx}-${exIdx}-${setNum}`;
+        if (!workoutState.completedSets[key]) {
+            workoutState.completedSets[key] = { reps: routines[currentRoutineKey][bIdx].exercises[exIdx].reps, done: true, skipped: false };
+        } else {
+            workoutState.completedSets[key].done = true;
+            workoutState.completedSets[key].skipped = false;
+        }
+
+        lockPreviousSet(bIdx, exIdx, setNum, false);
+
+        const block = routines[currentRoutineKey][bIdx];
+        
+        let restDuration = block.exercises[exIdx].restSet || 90;
+        if (workoutState.savedRestSeconds !== null) {
+            restDuration = workoutState.savedRestSeconds;
+            workoutState.savedRestSeconds = null;
+        }
+
+        if (setNum >= block.exercises[exIdx].sets) {
+            if (bIdx >= routines[currentRoutineKey].length - 1) {
+                terminateWorkout();
+                return;
+            }
+            activeBlockIdx = bIdx + 1;
+            activeSetNum = 1;
+            renderWorkout();
+            startRestTimer(workoutState.savedRestSeconds !== null ? workoutState.savedRestSeconds : (block.restAfterBlock || 120));
+            workoutState.savedRestSeconds = null;
+        } else {
+            activeSetNum++;
+            renderWorkout();
+            startRestTimer(restDuration);
+        }
+        saveActiveWorkoutSession();
+    }
+
+    function undoSingleSet(bIdx, exIdx, setNum) {
+        const key = `${bIdx}-${exIdx}-${setNum}`;
+        if (workoutState.lockedSets[key]) return;
+
+        if (workoutState.isRest) {
+            workoutState.savedRestSeconds = workoutState.seconds;
+            clearInterval(workoutState.interval);
+            workoutState.isRest = false;
+        }
+
+        if (workoutState.completedSets[key]) {
+            workoutState.completedSets[key].done = false;
+            workoutState.completedSets[key].skipped = false;
+        }
+        activeBlockIdx = bIdx;
+        activeSetNum = setNum;
+
+        renderWorkout();
+        saveActiveWorkoutSession();
+    }
+
+    function completeSupersetItem(bIdx, exIdx, setNum) {
+        const key = `${bIdx}-${exIdx}-${setNum}`;
+        if (!workoutState.completedSets[key]) {
+            workoutState.completedSets[key] = { reps: routines[currentRoutineKey][bIdx].exercises[exIdx].reps, done: true, skipped: false };
+        } else {
+            workoutState.completedSets[key].done = true;
+            workoutState.completedSets[key].skipped = false;
+        }
+
+        lockPreviousSet(bIdx, exIdx, setNum, true);
+
+        const block = routines[currentRoutineKey][bIdx];
+        const numExercises = block.exercises.length;
+
+        let restDuration = block.exercises[exIdx].restSet || 30;
+        if (workoutState.savedRestSeconds !== null) {
+            restDuration = workoutState.savedRestSeconds;
+            workoutState.savedRestSeconds = null;
+        }
+
+        if (activeSubExIdx < numExercises - 1) {
+            activeSubExIdx++;
+            renderWorkout();
+            startRestTimer(restDuration);
+        } else {
+            activeSubExIdx = 0;
+            let maxSets = Math.max(...block.exercises.map(e => e.sets));
+
+            const finalRestTarget = workoutState.savedRestSeconds !== null ? workoutState.savedRestSeconds : (block.restAfterBlock || 180);
+            workoutState.savedRestSeconds = null;
+
+            if (setNum >= maxSets) {
+                if (bIdx >= routines[currentRoutineKey].length - 1) {
+                    terminateWorkout();
+                    return;
+                }
+                activeBlockIdx = bIdx + 1;
+                activeSetNum = 1;
+                renderWorkout();
+                startRestTimer(finalRestTarget);
+            } else {
+                activeSetNum++;
+                renderWorkout();
+                startRestTimer(finalRestTarget);
+            }
+        }
+        saveActiveWorkoutSession();
+    }
+
+    function undoSupersetItem(bIdx, exIdx, setNum) {
+        const key = `${bIdx}-${exIdx}-${setNum}`;
+        if (workoutState.lockedSets[key]) return;
+
+        if (workoutState.isRest) {
+            workoutState.savedRestSeconds = workoutState.seconds;
+            clearInterval(workoutState.interval);
+            workoutState.isRest = false;
+        }
+
+        if (workoutState.completedSets[key]) {
+            workoutState.completedSets[key].done = false;
+            workoutState.completedSets[key].skipped = false;
+        }
+        activeBlockIdx = bIdx;
+        activeSetNum = setNum;
+        activeSubExIdx = exIdx;
+
+        renderWorkout();
+        saveActiveWorkoutSession();
+    }
+
+    function promptSkipCurrentSet() {
+        if (confirm("Vuoi saltare questo set corrente?")) {
+            const block = routines[currentRoutineKey][activeBlockIdx];
+            let restDuration = 90;
+            let targetSet = activeSetNum;
+            let targetExIdx = 0;
+
+            if (!block.isSuperset) {
+                targetExIdx = 0;
+                restDuration = block.exercises[0].restSet || 90;
+                const key = `${activeBlockIdx}-${targetExIdx}-${targetSet}`;
+                workoutState.completedSets[key] = { done: false, skipped: true, reps: block.exercises[0].reps };
+                workoutState.lockedSets[key] = true;
+
+                lockPreviousSet(activeBlockIdx, targetExIdx, targetSet, false);
+
+                if (targetSet >= block.exercises[0].sets) {
+                    if (activeBlockIdx >= routines[currentRoutineKey].length - 1) {
+                        terminateWorkout();
+                        return;
+                    }
+                    activeBlockIdx++;
+                    activeSetNum = 1;
+                    renderWorkout();
+                    startRestTimer(block.restAfterBlock || 120);
+                    return;
+                } else {
+                    activeSetNum++;
+                }
+            } else {
+                targetExIdx = activeSubExIdx;
+                restDuration = block.exercises[targetExIdx].restSet || 30;
+                const key = `${activeBlockIdx}-${targetExIdx}-${targetSet}`;
+                workoutState.completedSets[key] = { done: false, skipped: true, reps: block.exercises[targetExIdx].reps };
+                workoutState.lockedSets[key] = true;
+
+                lockPreviousSet(activeBlockIdx, targetExIdx, targetSet, true);
+
+                const numExercises = block.exercises.length;
+                if (activeSubExIdx < numExercises - 1) {
+                    activeSubExIdx++;
+                } else {
+                    activeSubExIdx = 0;
+                    let maxSets = Math.max(...block.exercises.map(e => e.sets));
+                    if (targetSet >= maxSets) {
+                        if (activeBlockIdx >= routines[currentRoutineKey].length - 1) {
+                            terminateWorkout();
+                            return;
+                        }
+                        activeBlockIdx++;
+                        activeSetNum = 1;
+                        renderWorkout();
+                        startRestTimer(block.restAfterBlock || 180);
+                        return;
+                    } else {
+                        activeSetNum++;
+                        restDuration = block.restAfterBlock || 180;
+                    }
+                }
+            }
+
+            renderWorkout();
+            startRestTimer(restDuration);
+            saveActiveWorkoutSession();
+        }
+    }
+
+    function finishRest() {
+        clearInterval(workoutState.interval);
+        workoutState.savedRestSeconds = null;
+        
+        const block = routines[currentRoutineKey][activeBlockIdx];
+        if (!block || !block.isSuperset) {
+            const targetSet = activeSetNum > 1 ? activeSetNum - 1 : 1;
+            block?.exercises.forEach((ex, exIdx) => {
+                const key = `${activeBlockIdx}-${exIdx}-${targetSet}`;
+                if (workoutState.completedSets[key]?.done) {
+                    workoutState.lockedSets[key] = true;
+                }
+            });
+        } else {
+            block.exercises.forEach((ex, exIdx) => {
+                const key = `${activeBlockIdx}-${exIdx}-${activeSetNum - 1}`;
+                if (workoutState.completedSets[key]?.done) {
+                    workoutState.lockedSets[key] = true;
+                }
+            });
+        }
+
+        startWorkTimer();
+        renderWorkout();
+        saveActiveWorkoutSession();
+    }
+
+    function startRestTimer(duration) {
+        clearInterval(workoutState.interval);
+        workoutState.isRest = true;
+        workoutState.seconds = duration;
+        updateTimerDisplay();
+        renderWorkout();
+        saveActiveWorkoutSession();
+
+        workoutState.interval = setInterval(() => {
+            if (!workoutState.isPaused) {
+                if (workoutState.seconds === 5 || workoutState.seconds === 3 || workoutState.seconds === 2) {
+                    playBeep(880, 'sine', 0.15);
+                } else if (workoutState.seconds === 1) {
+                    playBeep(1200, 'sine', 1.0);
+                }
+
+                workoutState.seconds--;
+                updateTimerDisplay();
+
+                if (workoutState.seconds <= 0) {
+                    finishRest();
+                } else {
+                    saveActiveWorkoutSession();
+                }
+            }
+        }, 1000);
+    }
+
+    function startWorkTimer() {
+        workoutState.isRest = false;
+        workoutState.seconds = 0;
+        updateTimerDisplay();
+        saveActiveWorkoutSession();
+
+        workoutState.interval = setInterval(() => {
+            if (!workoutState.isPaused) {
+                workoutState.seconds++;
+                updateTimerDisplay();
+                saveActiveWorkoutSession();
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        const statusDiv = document.getElementById('timer-status');
+        const displayDiv = document.getElementById('timer-display');
+        const controlsDiv = document.getElementById('timer-controls');
+
+        statusDiv.innerText = workoutState.isRest ? "☕ RECUPERO IN CORSO" : "ESERCIZIO IN CORSO";
+
+        const m = Math.floor(Math.abs(workoutState.seconds) / 60).toString().padStart(2, '0');
+        const s = (Math.abs(workoutState.seconds) % 60).toString().padStart(2, '0');
+        displayDiv.innerText = `${m}:${s}`;
+
+        controlsDiv.innerHTML = `
+            <button class="btn" onclick="togglePause()">${workoutState.isPaused ? 'Riprendi' : 'Pausa'}</button>
+            <button class="btn ${workoutState.isRest ? 'btn-primary' : 'btn-warning'}" onclick="${workoutState.isRest ? 'finishRest()' : 'promptSkipCurrentSet()'}">${workoutState.isRest ? 'Salta' : 'Salta set'}</button>
+            <button class="btn btn-danger" onclick="cancelWorkout()">Annulla</button>
+            <button class="btn btn-danger" onclick="terminateWorkout()">Termina</button>
+        `;
+    }
+
+    function togglePause() {
+        workoutState.isPaused = !workoutState.isPaused;
+        updateTimerDisplay();
+        saveActiveWorkoutSession();
+    }
+
+    function cancelWorkout() {
+        clearInterval(workoutState.interval);
+        workoutState = { active: false, isRest: false, isPaused: false, seconds: 0, interval: null, startTime: null, completedSets: {}, lockedSets: {}, savedRestSeconds: null };
+        activeBlockIdx = 0;
+        activeSetNum = 1;
+        activeSubExIdx = 0;
+        localStorage.removeItem('ironflow_active_session');
+
+        document.getElementById('start-session-view').classList.remove('hidden');
+        document.getElementById('active-workout-view').classList.add('hidden');
+        document.getElementById('workout-summary-view').classList.add('hidden');
+        document.getElementById('main-nav-tabs').style.display = 'grid';
+        initActiveRoutineSelect();
+    }
+
+    function terminateWorkout() {
+        clearInterval(workoutState.interval);
+        
+        currentDurationMinutesTemp = 1;
+        const now = new Date();
+        if (workoutState.active) {
+            currentDurationMinutesTemp = workoutState.startTime ? Math.max(1, Math.round((now - workoutState.startTime) / 60000)) : 1;
+        }
+
+        const routine = routines[currentRoutineKey];
+        currentSessionLogsTemp = [];
+
+        routine.forEach((block, bIdx) => {
+            const isSuperset = block.isSuperset && block.exercises.length > 1;
+            block.exercises.forEach((ex, exIdx) => {
+                const repsArr = [];
+                for (let s = 1; s <= ex.sets; s++) {
+                    const key = `${bIdx}-${exIdx}-${s}`;
+                    if (workoutState.completedSets[key]?.done) {
+                        repsArr.push(workoutState.completedSets[key].reps ?? ex.reps);
+                    }
+                }
+                if (repsArr.length > 0) {
+                    currentSessionLogsTemp.push({ name: ex.name, reps: repsArr, isSuperset: isSuperset });
+                }
+            });
+        });
+
+        // Mostra la schermata di riepilogo
+        refreshSummaryDisplay();
+
+        document.getElementById('active-workout-view').classList.add('hidden');
+        document.getElementById('workout-summary-view').classList.remove('hidden');
+        document.getElementById('main-nav-tabs').style.display = 'none';
+
+        workoutState.active = false;
+        localStorage.removeItem('ironflow_active_session');
+    }
+
+    function refreshSummaryDisplay() {
+        document.getElementById('summary-stat-time').innerText = `${currentDurationMinutesTemp} min`;
+        document.getElementById('summary-stat-count').innerText = currentSessionLogsTemp.length;
+        
+        const summaryLogsContainer = document.getElementById('summary-exercises-list');
+        summaryLogsContainer.innerHTML = '';
+        
+        let summaryHtml = '';
+        currentSessionLogsTemp.forEach(l => {
+            const badge = l.isSuperset ? '<span style="color:#c084fc; font-size:11px;">[Superset]</span> ' : '';
+            summaryHtml += `<div style="margin-bottom: 6px;">${badge}<b>${l.name}:</b> ${l.reps.join(', ')} rep</div>`;
+        });
+
+        summaryLogsContainer.innerHTML = summaryHtml || '<p style="color:var(--subtext);">Nessun esercizio completato in questa sessione.</p>';
+        document.getElementById('summary-view-mode').classList.remove('hidden');
+        document.getElementById('summary-edit-mode').classList.add('hidden');
+    }
+
+    function enableSummaryEditMode() {
+        const editContainer = document.getElementById('summary-edit-exercises-list');
+        editContainer.innerHTML = '';
+
+        currentSessionLogsTemp.forEach((l, lIdx) => {
+            const repsString = l.reps.join(', ');
+            editContainer.innerHTML += `
+                <div style="background: #111; border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; margin-bottom: 8px;">
+                    <div style="margin-bottom: 6px;">
+                        <label style="font-size: 11px; color: var(--subtext); display: block; margin-bottom: 2px;">Nome Esercizio:</label>
+                        <input type="text" id="sum-edit-name-${lIdx}" value="${l.name}" style="font-size: 13px; padding: 6px;">
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; color: var(--subtext); display: block; margin-bottom: 2px;">Ripetizioni per serie (separate da virgola):</label>
+                        <input type="text" id="sum-edit-reps-${lIdx}" value="${repsString}" style="font-size: 13px; padding: 6px;">
+                    </div>
+                </div>
+            `;
+        });
+
+        document.getElementById('summary-view-mode').classList.add('hidden');
+        document.getElementById('summary-edit-mode').classList.remove('hidden');
+    }
+
+    function saveSummaryEdits() {
+        currentSessionLogsTemp.forEach((l, lIdx) => {
+            const nameInput = document.getElementById(`sum-edit-name-${lIdx}`).value.trim();
+            const repsInput = document.getElementById(`sum-edit-reps-${lIdx}`).value;
+
+            if (nameInput) l.name = nameInput;
+            const parsedReps = repsInput.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r));
+            if (parsedReps.length > 0) l.reps = parsedReps;
+        });
+
+        refreshSummaryDisplay();
+    }
+
+    function cancelSummaryEdits() {
+        refreshSummaryDisplay();
+    }
+
+    function closeSummaryAndReturnHome() {
+        if (currentSessionLogsTemp.length > 0) {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
+            historyData.unshift({ date: dateStr, duration: `${currentDurationMinutesTemp} min`, logs: currentSessionLogsTemp });
+            localStorage.setItem('ironflow_history', JSON.stringify(historyData));
+        }
+
+        document.getElementById('workout-summary-view').classList.add('hidden');
+        document.getElementById('start-session-view').classList.remove('hidden');
+        document.getElementById('main-nav-tabs').style.display = 'grid';
+
+        workoutState = { active: false, isRest: false, isPaused: false, seconds: 0, interval: null, startTime: null, completedSets: {}, lockedSets: {}, savedRestSeconds: null };
+        activeBlockIdx = 0;
+        activeSetNum = 1;
+        activeSubExIdx = 0;
+        initActiveRoutineSelect();
+    }
+
+    function renderEditRoutine() {
+        if (!routines[currentRoutineKey]) currentRoutineKey = Object.keys(routines)[0];
+        const blocks = routines[currentRoutineKey];
+        const container = document.getElementById('edit-routine-list');
+        container.innerHTML = '';
+
+        blocks.forEach((block, bIdx) => {
+            let exercisesHTML = '';
+            block.exercises.forEach((ex, exIdx) => {
+                exercisesHTML += `
+                    <div style="background:#191919; padding:8px; border-radius:8px; margin-bottom:6px;">
+                        <div class="form-group-3" style="margin-bottom:4px;">
+                            <input type="text" value="${ex.name}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'name', this.value)" placeholder="Nome Esercizio">
+                            <input type="number" value="${ex.sets}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'sets', this.value)" placeholder="Serie">
+                            <input type="number" value="${ex.reps}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'reps', this.value)" placeholder="Rep">
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:11px; color:var(--subtext);">Recupero Serie (s):</span>
+                            <input type="number" value="${ex.restSet || (block.isSuperset ? 30 : 90)}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'restSet', this.value)" style="width:60px; text-align:center;">
+                        </div>
+                    </div>
+                `;
+            });
+
+            const supersetBadge = block.isSuperset ? `<span style="background:var(--superset-border); color:white; font-size:9px; padding:2px 6px; border-radius:4px; margin-left:6px;">Superset</span>` : `<span style="color:var(--subtext); font-size:11px; margin-left:6px;">Singolo</span>`;
+
+            container.innerHTML += `
+                <div class="edit-block-item ${block.isSuperset ? 'superset-item' : ''}">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <span style="font-size:12px; font-weight:700; color:var(--text);">Blocco ${bIdx + 1} ${supersetBadge}</span>
+                        <div style="display:flex; gap:4px; align-items:center;">
+                            <button class="btn btn-sm" onclick="moveBlockUp(${bIdx})" ${bIdx === 0 ? 'disabled style="opacity:0.3"' : ''}>▲</button>
+                            <button class="btn btn-sm" onclick="moveBlockDown(${bIdx})" ${bIdx === blocks.length - 1 ? 'disabled style="opacity:0.3"' : ''}>▼</button>
+                            <button class="btn btn-danger btn-sm" onclick="removeBlock(${bIdx})">Elimina Blocco</button>
+                        </div>
+                    </div>
+                    ${exercisesHTML}
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; border-top:1px solid #222; padding-top:6px;">
+                        <span style="font-size:11px; color:var(--subtext);">Recupero Fine Blocco (s):</span>
+                        <input type="number" value="${block.restAfterBlock || 120}" onchange="updateBlockRest(${bIdx}, this.value)" style="width:60px; text-align:center;">
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function updateEditableExercise(bIdx, exIdx, field, val) {
+        const ex = routines[currentRoutineKey][bIdx].exercises[exIdx];
+        if (field === 'name') {
+            ex.name = val.trim();
+        } else if (field === 'sets') {
+            ex.sets = parseInt(val) || 1;
+        } else if (field === 'reps') {
+            ex.reps = parseInt(val) || 1;
+        } else if (field === 'restSet') {
+            ex.restSet = parseInt(val) || 0;
+        }
+        saveRoutinesStorage();
+    }
+
+    function updateBlockRest(bIdx, val) {
+        routines[currentRoutineKey][bIdx].restAfterBlock = parseInt(val) || 0;
+        saveRoutinesStorage();
+    }
+
+    function removeBlock(bIdx) {
+        routines[currentRoutineKey].splice(bIdx, 1);
+        saveRoutinesStorage();
+        renderEditRoutine();
+    }
+
+    function saveAndShowSummary() {
+        isRoutineSaved = true;
+        savedStatusMap[currentRoutineKey] = true;
+        saveRoutinesStorage();
+
+        document.getElementById('edit-mode-view').classList.add('hidden');
+        document.getElementById('summary-mode-view').classList.remove('hidden');
+        document.getElementById('summary-routine-title').innerText = `📋 ${currentRoutineKey}`;
+
+        const container = document.getElementById('summary-routine-list');
+        container.innerHTML = '';
+
+        const blocks = routines[currentRoutineKey];
+        blocks.forEach((block, bIdx) => {
+            let listText = block.exercises.map(e => `• ${e.name} (${e.sets} × ${e.reps})`).join('<br>');
+            const tag = block.isSuperset ? `<span style="color:var(--superset-border); font-weight:bold; font-size:11px;">[Superset]</span> ` : '';
+            container.innerHTML += `
+                <div class="card" style="margin-bottom:10px; background:#111;">
+                    <h4 style="font-size:15px; margin-bottom:6px; color:var(--text);">${tag}Blocco ${bIdx + 1}</h4>
+                    <div style="font-size:13px; color:var(--subtext); line-height:1.4;">${listText}</div>
+                    <div style="font-size:11px; color:var(--subtext); margin-top:8px;">Recupero fine blocco: ${block.restAfterBlock || 120}s</div>
+                </div>
+            `;
+        });
+    }
+
+    function enableEditMode() {
+        isRoutineSaved = false;
+        savedStatusMap[currentRoutineKey] = false;
+        saveRoutinesStorage();
+
+        document.getElementById('summary-mode-view').classList.add('hidden');
+        document.getElementById('edit-mode-view').classList.remove('hidden');
+        renderEditRoutine();
+        initSupersetBuilderRows();
+    }
+
+    function renderHistory() {
+        const container = document.getElementById('history-container');
+        container.innerHTML = '';
+
+        if (historyData.length === 0) {
+            container.innerHTML = '<p style="color:var(--subtext); text-align:center; padding:20px;">Nessun allenamento salvato nello storico.</p>';
+            return;
+        }
+
+        historyData.forEach((item, index) => {
+            const singleExercises = item.logs.filter(l => !l.isSuperset);
+            const supersetExercises = item.logs.filter(l => l.isSuperset);
+
+            let singleHtml = '';
+            if (singleExercises.length > 0) {
+                singleHtml = `<div style="margin-bottom:8px;"><strong style="font-size:13px; color:var(--text);">💪 Esercizi Singoli:</strong><br>` +
+                    singleExercises.map(l => `• <b>${l.name}:</b> ${l.reps.join(', ')} rep`).join('<br>') + `</div>`;
+            }
+
+            let supersetHtml = '';
+            if (supersetExercises.length > 0) {
+                supersetHtml = `<div><strong style="font-size:13px; color:#c084fc;">⚡ Esercizi in Superset:</strong><br>` +
+                    supersetExercises.map(l => `• <b>${l.name}:</b> ${l.reps.join(', ')} rep`).join('<br>') + `</div>`;
+            }
+
+            container.innerHTML += `
+                <div class="history-item">
+                    <div class="history-date" style="align-items: center;">
+                        <div>
+                            <span>${item.date}</span>
+                            <span style="color:var(--subtext); font-weight:normal; margin-left: 6px;">${item.duration}</span>
+                        </div>
+                        <button class="btn btn-danger btn-sm" style="padding: 2px 8px; font-size: 14px; border-radius: 6px;" onclick="deleteHistoryItem(${index})">✕</button>
+                    </div>
+                    <div class="history-details">
+                        ${singleHtml}
+                        ${supersetHtml}
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function deleteHistoryItem(index) {
+        if (confirm("Vuoi eliminare questo allenamento dallo storico?")) {
+            historyData.splice(index, 1);
+            localStorage.setItem('ironflow_history', JSON.stringify(historyData));
+            renderHistory();
+            initChartSelect();
+        }
+    }
+
+    function initChartSelect() {
+        const select = document.getElementById('chart-ex-select');
+        const exNames = new Set();
+        historyData.forEach(h => h.logs.forEach(l => exNames.add(l.name)));
+        Object.values(routines).forEach(blocks => blocks.forEach(b => b.exercises.forEach(e => exNames.add(e.name))));
+
+        select.innerHTML = '';
+        exNames.forEach(name => {
+            select.innerHTML += `<option value="${name}">${name}</option>`;
+        });
+
+        renderChart();
+    }
+
+    function renderChart() {
+        const canvas = document.getElementById('analyticsChart');
+        const selectedEx = document.getElementById('chart-ex-select').value;
+        if (!selectedEx) return;
+
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const cssWidth = canvas.parentElement.clientWidth;
+        const cssHeight = 220;
+
+        canvas.width = cssWidth * dpr;
+        canvas.height = cssHeight * dpr;
+        ctx.scale(dpr, dpr);
+
+        const points = [];
+        historyData.slice().reverse().forEach(h => {
+            const found = h.logs.find(l => l.name === selectedEx);
+            if (found) {
+                const totalVol = found.reps.reduce((a, b) => a + b, 0);
+                const maxRep = Math.max(...found.reps);
+                points.push({ date: h.date.replace(/ \d{4}/, ''), totalVol, maxRep });
+            }
+        });
+
+        ctx.clearRect(0, 0, cssWidth, cssHeight);
+
+        if (points.length === 0) {
+            ctx.fillStyle = '#9ca3af';
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Nessun dato registrato per questo esercizio', cssWidth / 2, cssHeight / 2);
+            return;
+        }
+
+        const padding = 35;
+        const W = cssWidth - padding * 2;
+        const H = cssHeight - padding * 2;
+        const maxVol = Math.max(...points.map(p => p.totalVol), 10);
+
+        ctx.strokeStyle = '#262626';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(padding, padding);
+        ctx.lineTo(padding, cssHeight - padding);
+        ctx.lineTo(cssWidth - padding, cssHeight - padding);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#2563eb';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        points.forEach((p, i) => {
+            const x = padding + (points.length === 1 ? W/2 : (i / (points.length - 1)) * W);
+            const y = cssHeight - padding - (p.totalVol / maxVol) * H;
+            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        points.forEach((p, i) => {
+            const x = padding + (points.length === 1 ? W/2 : (i / (points.length - 1)) * W);
+            const y = cssHeight - padding - (p.maxRep / maxVol) * H;
+            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        points.forEach((p, i) => {
+            const x = padding + (points.length === 1 ? W/2 : (i / (points.length - 1)) * W);
+            const yVol = cssHeight - padding - (p.totalVol / maxVol) * H;
+            const yMax = cssHeight - padding - (p.maxRep / maxVol) * H;
+
+            ctx.fillStyle = '#2563eb';
+            ctx.beginPath();
+            ctx.arc(x, yVol, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#9ca3af';
+            ctx.font = '10px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(p.date, x, cssHeight - padding + 15);
+            ctx.fillText(p.totalVol, x, yVol - 8);
+
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath();
+            ctx.arc(x, yMax, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillText(p.maxRep, x, yMax < yVol ? yMax - 8 : yMax + 16);
+        });
+
+        ctx.fillStyle = '#2563eb';
+        ctx.fillRect(padding, 10, 10, 10);
+        ctx.fillStyle = '#9ca3af';
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('Volume Totale', padding + 15, 18);
+
+        ctx.fillStyle = '#10b981';
+        ctx.fillRect(padding + 120, 10, 10, 10);
+        ctx.fillStyle = '#9ca3af';
+        ctx.fillText('Max Rep', padding + 135, 18);
+    }
+
+    window.addEventListener('resize', () => {
+        if (document.getElementById('tab-chart').classList.contains('active')) renderChart();
+    });
+
+    initActiveRoutineSelect();
+    if (isRoutineSaved) saveAndShowSummary();
+    else {
+        renderEditRoutine();
+        initSupersetBuilderRows();
+    }
+
+    if (loadActiveWorkoutSession()) {
+        document.getElementById('start-session-view').classList.add('hidden');
+        document.getElementById('active-workout-view').classList.remove('hidden');
+        renderWorkout();
+        updateTimerDisplay();
+
+        if (workoutState.isRest) {
+            startRestTimer(workoutState.seconds);
+        } else {
+            workoutState.interval = setInterval(() => {
+                if (!workoutState.isPaused) {
+                    workoutState.seconds++;
+                    updateTimerDisplay();
+                    saveActiveWorkoutSession();
+                }
+            }, 1000);
+        }
+    }
+</script>
+
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then((reg) => console.log('Service Worker registrato:', reg.scope))
+                .catch((err) => console.log('Registrazione fallita:', err));
+        });
+    }
+</script>
+</body>
+</html>
