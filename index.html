@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IronFlow - Universal Workout Tracker</title>
-    <link rel="manifest" href="manifest.json">
+    <title>IronFlow - Workout Tracker</title>
+    <!-- Supabase JS Client CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --bg: #0d0d0d;
-            --card-bg: #171717;
+            --bg: #0a0a0a;
+            --card-bg: #141414;
             --card-border: #262626;
-            --accent: #2563eb;
-            --accent-hover: #1d4ed8;
-            --text: #f3f4f6;
+            --text: #f5f5f5;
             --subtext: #9ca3af;
-            --danger: #dc2626;
+            --accent: #2563eb;
             --success: #10b981;
-            --input-bg: #262626;
+            --danger: #ef4444;
+            --superset-bg: rgba(139, 92, 246, 0.08);
             --superset-border: #8b5cf6;
-            --superset-bg: rgba(139, 92, 246, 0.04);
+            --input-bg: #1f1f1f;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -39,9 +39,25 @@
 
         .header {
             margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .header h1 { font-size: 24px; font-weight: 700; }
+
+        /* INDICATORE DI CONNESSIONE */
+        .sync-indicator {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .sync-online { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); }
+        .sync-offline { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
 
         .nav-tabs {
             display: grid;
@@ -281,6 +297,7 @@
 <div class="app-container">
     <div class="header">
         <h1>IronFlow</h1>
+        <div id="sync-status" class="sync-indicator sync-online">🟢 Online</div>
     </div>
 
     <!-- TAB NAVIGATION -->
@@ -447,6 +464,16 @@
 </div>
 
 <script>
+    /* ==========================================
+       CONFIGURAZIONE SUPABASE
+       ========================================== */
+    const SUPABASE_URL = 'https://cecxydkxovabamyhxjfn.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNlY3h5ZGt4b3ZhYmFteWh4amZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0MDY3NDYsImV4cCI6MjEwNjk4Mjc0Nn0.71PDE1YlLtNAwSieUIkzkp-2X5Vq83bUTcCe7qQryh4';
+    
+    // Inizializzazione client supabase (compatibile anche se offline grazie a localStorage)
+    const { createClient } = supabase;
+    const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
     const defaultRoutines = {
         "Scheda A (Forza)": [
             {
@@ -492,8 +519,79 @@
 
     let currentSessionLogsTemp = [];
     let currentDurationMinutesTemp = 1;
-
     let audioCtx = null;
+
+    /* ==========================================
+       GESTIONE SINCRONIZZAZIONE SUPABASE & OFFLINE
+       ========================================== */
+    window.addEventListener('online', () => {
+        updateOnlineStatus();
+        syncDataToSupabase();
+    });
+
+    window.addEventListener('offline', () => {
+        updateOnlineStatus();
+    });
+
+    function updateOnlineStatus() {
+        const indicator = document.getElementById('sync-status');
+        if (navigator.onLine) {
+            indicator.className = 'sync-indicator sync-online';
+            indicator.innerHTML = '🟢 Online';
+        } else {
+            indicator.className = 'sync-indicator sync-offline';
+            indicator.innerHTML = '🔴 Offline (Locale)';
+        }
+    }
+
+    async function syncDataToSupabase() {
+        if (!navigator.onLine) return;
+        try {
+            // Esempio di salvataggio/sincronizzazione dello storico allenamenti su Supabase (Tabella 'workouts_history')
+            // Assicurati di avere una tabella su Supabase con campi corrispondenti o gestisci il salvataggio generico.
+            const localHistory = JSON.parse(localStorage.getItem('ironflow_history')) || [];
+            if (localHistory.length > 0) {
+                // Tentativo di invio dei dati su Supabase
+                const { error } = await db.from('ironflow_data').upsert({
+                    id: 'user_data',
+                    routines: routines,
+                    history: localHistory,
+                    saved_status: savedStatusMap,
+                    updated_at: new Date()
+                });
+                if (error) {
+                    console.log("Sincronizzazione Supabase in background rimandata:", error.message);
+                } else {
+                    console.log("Dati sincronizzati con successo su Supabase!");
+                }
+            }
+        } catch (e) {
+            console.error("Errore di connessione a Supabase:", e);
+        }
+    }
+
+    async function fetchRemoteData() {
+        if (!navigator.onLine) return;
+        try {
+            const { data, error } = await db.from('ironflow_data').select('*').eq('id', 'user_data').single();
+            if (data && !error) {
+                if (data.routines) {
+                    routines = data.routines;
+                    localStorage.setItem('ironflow_routines', JSON.stringify(routines));
+                }
+                if (data.history && data.history.length > historyData.length) {
+                    historyData = data.history;
+                    localStorage.setItem('ironflow_history', JSON.stringify(historyData));
+                }
+                if (data.saved_status) {
+                    savedStatusMap = data.saved_status;
+                    localStorage.setItem('ironflow_saved_status', JSON.stringify(savedStatusMap));
+                }
+            }
+        } catch (e) {
+            console.log("Impossibile recuperare dati remoti, uso la versione locale.");
+        }
+    }
 
     function playBeep(freq = 880, type = 'sine', duration = 0.15) {
         try {
@@ -639,6 +737,7 @@
         localStorage.setItem('ironflow_routines', JSON.stringify(routines));
         localStorage.setItem('ironflow_current_key', currentRoutineKey);
         localStorage.setItem('ironflow_saved_status', JSON.stringify(savedStatusMap));
+        syncDataToSupabase();
     }
 
     function initSupersetBuilderRows() {
@@ -1312,7 +1411,6 @@
             });
         });
 
-        // Mostra la schermata di riepilogo
         refreshSummaryDisplay();
 
         document.getElementById('active-workout-view').classList.add('hidden');
@@ -1388,6 +1486,7 @@
             const dateStr = now.toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
             historyData.unshift({ date: dateStr, duration: `${currentDurationMinutesTemp} min`, logs: currentSessionLogsTemp });
             localStorage.setItem('ironflow_history', JSON.stringify(historyData));
+            syncDataToSupabase();
         }
 
         document.getElementById('workout-summary-view').classList.add('hidden');
@@ -1556,6 +1655,7 @@
         if (confirm("Vuoi eliminare questo allenamento dallo storico?")) {
             historyData.splice(index, 1);
             localStorage.setItem('ironflow_history', JSON.stringify(historyData));
+            syncDataToSupabase();
             renderHistory();
             initChartSelect();
         }
@@ -1683,12 +1783,16 @@
         if (document.getElementById('tab-chart').classList.contains('active')) renderChart();
     });
 
-    initActiveRoutineSelect();
-    if (isRoutineSaved) saveAndShowSummary();
-    else {
-        renderEditRoutine();
-        initSupersetBuilderRows();
-    }
+    // All'avvio, controlla lo stato online e prova a scaricare/sincronizzare i dati
+    updateOnlineStatus();
+    fetchRemoteData().then(() => {
+        initActiveRoutineSelect();
+        if (isRoutineSaved) saveAndShowSummary();
+        else {
+            renderEditRoutine();
+            initSupersetBuilderRows();
+        }
+    });
 
     if (loadActiveWorkoutSession()) {
         document.getElementById('start-session-view').classList.add('hidden');
@@ -1720,4 +1824,4 @@
     }
 </script>
 </body>
-</html> 
+</html>
