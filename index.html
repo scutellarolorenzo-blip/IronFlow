@@ -465,14 +465,15 @@
 
 <script>
     /* ==========================================
-       CONFIGURAZIONE SUPABASE
+       CONFIGURAZIONE SUPABASE & AUTENTICAZIONE
        ========================================== */
     const SUPABASE_URL = 'https://cecxydkxovabamyhxjfn.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNlY3h5ZGt4b3ZhYmFteWh4amZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0MDY3NDYsImV4cCI6MjEwNjk4Mjc0Nn0.71PDE1YlLtNAwSieUIkzkp-2X5Vq83bUTcCe7qQryh4';
     
-    // Inizializzazione client supabase (compatibile anche se offline grazie a localStorage)
     const { createClient } = supabase;
     const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let currentUser = null;
 
     const defaultRoutines = {
         "Scheda A (Forza)": [
@@ -522,8 +523,26 @@
     let audioCtx = null;
 
     /* ==========================================
-       GESTIONE SINCRONIZZAZIONE SUPABASE & OFFLINE
+       GESTIONE AUTENTICAZIONE E SINCRONIZZAZIONE
        ========================================== */
+    async function initAuth() {
+        try {
+            // Controlla se c'è una sessione attiva
+            const { data: { session } } = await db.auth.getSession();
+            if (session) {
+                currentUser = session.user;
+            } else {
+                // Se non c'è, effettua il login anonimo automatico per isolare i dati dell'utente
+                const { data, error } = await db.auth.signInAnonymously();
+                if (!error && data) {
+                    currentUser = data.user;
+                }
+            }
+        } catch (e) {
+            console.log("Errore inizializzazione autenticazione:", e);
+        }
+    }
+
     window.addEventListener('online', () => {
         updateOnlineStatus();
         syncDataToSupabase();
@@ -545,25 +564,20 @@
     }
 
     async function syncDataToSupabase() {
-        if (!navigator.onLine) return;
+        if (!navigator.onLine || !currentUser) return;
         try {
-            // Esempio di salvataggio/sincronizzazione dello storico allenamenti su Supabase (Tabella 'workouts_history')
-            // Assicurati di avere una tabella su Supabase con campi corrispondenti o gestisci il salvataggio generico.
             const localHistory = JSON.parse(localStorage.getItem('ironflow_history')) || [];
-            if (localHistory.length > 0) {
-                // Tentativo di invio dei dati su Supabase
-                const { error } = await db.from('ironflow_data').upsert({
-                    id: 'user_data',
-                    routines: routines,
-                    history: localHistory,
-                    saved_status: savedStatusMap,
-                    updated_at: new Date()
-                });
-                if (error) {
-                    console.log("Sincronizzazione Supabase in background rimandata:", error.message);
-                } else {
-                    console.log("Dati sincronizzati con successo su Supabase!");
-                }
+            const { error } = await db.from('ironflow_data').upsert({
+                id: currentUser.id, // ID univoco dell'utente corrente (protetto da RLS)
+                routines: routines,
+                history: localHistory,
+                saved_status: savedStatusMap,
+                updated_at: new Date()
+            });
+            if (error) {
+                console.log("Sincronizzazione Supabase rimandata:", error.message);
+            } else {
+                console.log("Dati sincronizzati con successo per l'utente:", currentUser.id);
             }
         } catch (e) {
             console.error("Errore di connessione a Supabase:", e);
@@ -571,9 +585,13 @@
     }
 
     async function fetchRemoteData() {
-        if (!navigator.onLine) return;
+        if (!navigator.onLine || !currentUser) return;
         try {
-            const { data, error } = await db.from('ironflow_data').select('*').eq('id', 'user_data').single();
+            const { data, error } = await db.from('ironflow_data')
+                .select('*')
+                .eq('id', currentUser.id)
+                .single();
+                
             if (data && !error) {
                 if (data.routines) {
                     routines = data.routines;
@@ -1783,15 +1801,17 @@
         if (document.getElementById('tab-chart').classList.contains('active')) renderChart();
     });
 
-    // All'avvio, controlla lo stato online e prova a scaricare/sincronizzare i dati
+    // Avvio e gestione sincronizzazione iniziale con autenticazione anonima
     updateOnlineStatus();
-    fetchRemoteData().then(() => {
-        initActiveRoutineSelect();
-        if (isRoutineSaved) saveAndShowSummary();
-        else {
-            renderEditRoutine();
-            initSupersetBuilderRows();
-        }
+    initAuth().then(() => {
+        fetchRemoteData().then(() => {
+            initActiveRoutineSelect();
+            if (isRoutineSaved) saveAndShowSummary();
+            else {
+                renderEditRoutine();
+                initSupersetBuilderRows();
+            }
+        });
     });
 
     if (loadActiveWorkoutSession()) {
