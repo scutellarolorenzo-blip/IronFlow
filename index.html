@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IronFlow - Workout Tracker</title>
+    <!-- Collegamento al Manifest della PWA -->
+    <link rel="manifest" href="./manifest.json">
     <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -678,15 +680,12 @@
         const diffX = touchEndX - touchStartX;
         const diffY = touchEndY - touchStartY;
 
-        // Assicuriamoci che sia uno swipe prevalentemente orizzontale e abbastanza ampio
         if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 60) {
             if (diffX < 0) {
-                // Swipe a sinistra -> Tab successivo
                 if (currentTabIndex < tabIds.length - 1) {
                     switchTab(currentTabIndex + 1, document.querySelectorAll('.tab-btn')[currentTabIndex + 1]);
                 }
             } else {
-                // Swipe a destra -> Tab precedente
                 if (currentTabIndex > 0) {
                     switchTab(currentTabIndex - 1, document.querySelectorAll('.tab-btn')[currentTabIndex - 1]);
                 }
@@ -2162,6 +2161,15 @@
             `;
         });
         detailsContainer.innerHTML = detailsHtml;
+    }
+
+    // REGISTRAZIONE DEL SERVICE WORKER (Necessaria per attivare l'installazione PWA)
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Service Worker registrato con successo:', reg.scope))
+                .catch(err => console.log('Registrazione Service Worker fallita:', err));
+        });
     }
 
     window.onload = () => {
