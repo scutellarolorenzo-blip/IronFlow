@@ -1,9 +1,9 @@
-const CACHE_NAME = 'ironflow-cache-v2.0.3';
+const CACHE_NAME = 'ironflow-cache-v2.0.4';
 const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon.png'
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/icon.png'
 ];
 
 self.addEventListener('install', (e) => {
@@ -37,7 +37,7 @@ self.addEventListener('fetch', (e) => {
       }
       return fetch(e.request).catch(() => {
         if (e.request.mode === 'navigate') {
-          return caches.match('./index.html');
+          return caches.match('/index.html');
         }
       });
     })
