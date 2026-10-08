@@ -8,28 +8,30 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --bg: #0a0a0a;
-            --card-bg: #141414;
-            --card-border: #262626;
-            --text: #f5f5f5;
-            --subtext: #9ca3af;
-            --accent: #2563eb;
+            --bg: #0d0e12;
+            --card-bg: #161820;
+            --card-border: #262936;
+            --text: #f8fafc;
+            --subtext: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
             --success: #10b981;
             --danger: #ef4444;
             --superset-bg: rgba(139, 92, 246, 0.08);
             --superset-border: #8b5cf6;
-            --input-bg: #1f1f1f;
+            --input-bg: #1e2230;
+            --input-border: #2e3446;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg);
             color: var(--text);
             padding: 16px;
             display: flex;
             justify-content: center;
+            min-height: 100vh;
         }
 
         .app-container {
@@ -38,37 +40,45 @@
         }
 
         .header {
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .header h1 { font-size: 24px; font-weight: 700; }
+        .header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         /* INDICATORE DI CONNESSIONE */
         .sync-indicator {
             font-size: 11px;
             font-weight: 600;
-            padding: 4px 8px;
+            padding: 5px 10px;
             border-radius: 20px;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
+            backdrop-filter: blur(8px);
         }
-        .sync-online { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); }
-        .sync-offline { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
+        .sync-online { background: rgba(16, 185, 129, 0.12); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .sync-offline { background: rgba(239, 68, 68, 0.12); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
 
         .nav-tabs {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
+            gap: 8px;
             margin-bottom: 20px;
         }
 
@@ -76,18 +86,20 @@
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             color: var(--subtext);
-            padding: 10px 4px;
-            border-radius: 12px;
+            padding: 12px 4px;
+            border-radius: 14px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             text-align: center;
+            transition: all 0.2s ease;
         }
 
         .tab-btn.active {
             background: var(--accent);
             color: #fff;
             border-color: var(--accent);
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
         }
 
         .tab-content { display: none; }
@@ -96,9 +108,10 @@
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 16px;
+            border-radius: 20px;
+            padding: 20px;
             margin-bottom: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
         }
 
         /* TIMER FISSO IN ALTO */
@@ -106,33 +119,35 @@
             position: sticky;
             top: 10px;
             z-index: 100;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            background: rgba(22, 24, 32, 0.9);
         }
 
         .timer-box {
             text-align: center;
-            padding: 12px 0;
+            padding: 14px 0;
         }
 
         .timer-status {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             color: var(--subtext);
             text-transform: uppercase;
         }
 
         .timer-display {
-            font-size: 48px;
+            font-size: 52px;
             font-weight: 800;
-            margin: 8px 0 16px;
+            margin: 6px 0 14px;
             font-variant-numeric: tabular-nums;
+            color: #fff;
         }
 
         .btn-group {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
             flex-wrap: wrap;
         }
@@ -141,31 +156,123 @@
             background: var(--card-border);
             color: var(--text);
             border: none;
-            padding: 10px 16px;
-            border-radius: 10px;
+            padding: 12px 18px;
+            border-radius: 12px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: opacity 0.2s;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
+        button.btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        button.btn:active { transform: translateY(0); }
+
         button.btn-primary { background: var(--accent); color: white; }
-        button.btn-danger { background: #3b1212; color: #ef4444; border: 1px solid #7f1d1d; }
+        button.btn-danger { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
         button.btn-success { background: var(--success); color: white; }
-        button.btn-warning { background: #78350f; color: #fbbf24; border: 1px solid #b45309; }
-        button.btn-sm { padding: 6px 10px; font-size: 12px; }
+        button.btn-warning { background: rgba(245, 158, 11, 0.15); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3); }
+        button.btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
 
         .btn-large {
-            padding: 18px;
-            font-size: 18px;
+            padding: 16px;
+            font-size: 16px;
             width: 100%;
             border-radius: 14px;
+            font-weight: 700;
+        }
+
+        button.btn-google {
+            background: #ffffff;
+            color: #1f2937;
+            border: 1px solid #e5e7eb;
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        button.btn-google:hover { background: #f9fafb; }
+
+        /* INPUTS STILIZZATI E CORRETTI */
+        input[type="number"], input[type="text"], input[type="email"], input[type="password"], select {
+            background: var(--input-bg) !important;
+            border: 1px solid var(--input-border) !important;
+            color: #ffffff !important;
+            padding: 12px 14px !important;
+            border-radius: 12px !important;
+            font-size: 14px !important;
+            width: 100% !important;
+            margin-bottom: 12px !important;
+            outline: none !important;
+            transition: border-color 0.2s ease !important;
+            box-shadow: none !important;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent) !important;
+        }
+
+        .sub-exercise-row input[type="number"] {
+            width: 60px !important;
+            text-align: center !important;
+            margin-bottom: 0 !important;
+            padding: 8px !important;
+        }
+
+        /* DIVIDER */
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: var(--subtext);
+            font-size: 12px;
+            margin: 16px 0;
+        }
+
+        .auth-divider::before, .auth-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .auth-divider::before { margin-right: .5em; }
+        .auth-divider::after { margin-left: .5em; }
+
+        /* SCHERMATA LOGIN */
+        #auth-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        .auth-box {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 28px 24px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .auth-toggle {
+            font-size: 13px;
+            color: var(--accent);
+            cursor: pointer;
+            margin-top: 14px;
+            display: inline-block;
+            font-weight: 500;
         }
 
         /* BLOCCO SUPERSET VISIVO */
         .block-card {
             border: 1px solid var(--card-border);
-            border-radius: 16px;
+            border-radius: 18px;
             padding: 16px;
             margin-bottom: 16px;
             background: var(--card-bg);
@@ -192,7 +299,7 @@
         }
 
         .set-group-card {
-            background: #111;
+            background: #11131a;
             border: 1px solid var(--card-border);
             border-radius: 12px;
             padding: 12px;
@@ -203,58 +310,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #191919;
-            padding: 8px 10px;
-            border-radius: 8px;
+            background: #191c26;
+            padding: 10px 12px;
+            border-radius: 10px;
             margin-bottom: 6px;
         }
 
         .set-input-group {
             display: flex;
             align-items: center;
-            gap: 4px;
-        }
-
-        input[type="number"], input[type="text"], input[type="password"], select {
-            background: var(--input-bg);
-            border: 1px solid var(--card-border);
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 14px;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .sub-exercise-row input[type="number"] {
-            width: 55px;
-            text-align: center;
-            margin-bottom: 0;
-            padding: 8px;
-        }
-
-        /* SCHERMATA LOGIN */
-        #auth-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 20px 10px;
-        }
-
-        .auth-box {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 24px;
-            text-align: center;
-        }
-
-        .auth-toggle {
-            font-size: 13px;
-            color: var(--accent);
-            cursor: pointer;
-            margin-top: 12px;
-            display: inline-block;
+            gap: 6px;
         }
 
         /* MODIFICA SCHEDA */
@@ -273,11 +338,11 @@
         }
 
         .edit-block-item {
-            background: #111;
+            background: #11131a;
             border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 10px;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 12px;
         }
 
         .edit-block-item.superset-item {
@@ -287,18 +352,18 @@
         .superset-builder-box {
             background: rgba(139, 92, 246, 0.05);
             border: 1px solid var(--superset-border);
-            border-radius: 14px;
-            padding: 14px;
+            border-radius: 16px;
+            padding: 16px;
             margin-bottom: 16px;
         }
 
         /* STORICO E GRAFICI */
         .history-item {
-            background: #111;
+            background: #11131a;
             border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 10px;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 12px;
         }
 
         .history-date {
@@ -312,7 +377,7 @@
         .history-details {
             font-size: 12px;
             color: var(--subtext);
-            line-height: 1.4;
+            line-height: 1.5;
         }
 
         canvas {
@@ -336,16 +401,23 @@
         </div>
     </div>
 
-    <!-- SCHERMATA DI AUTENTICAZIONE (LOGIN / REGISTRAZIONE) -->
+    <!-- SCHERMATA DI AUTENTICAZIONE -->
     <div id="auth-container" class="hidden">
         <div class="auth-box">
-            <h2 id="auth-title" style="font-size: 22px; margin-bottom: 6px;">Bentornato su IronFlow</h2>
-            <p id="auth-subtitle" style="color: var(--subtext); font-size: 13px; margin-bottom: 20px;">Accedi per mantenere i tuoi dati al sicuro</p>
+            <h2 id="auth-title" style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">Bentornato su IronFlow</h2>
+            <p id="auth-subtitle" style="color: var(--subtext); font-size: 13px; margin-bottom: 22px;">Accedi per salvare tutti i tuoi dati in cloud</p>
             
+            <button class="btn btn-google" onclick="handleGoogleAuth()">
+                <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+                Accedi con Google
+            </button>
+
+            <div class="auth-divider">oppure usa email</div>
+
             <input type="email" id="auth-email" placeholder="La tua email">
-            <input type="password" id="auth-password" placeholder="La tua password (min. 6 caratteri)">
+            <input type="password" id="auth-password" placeholder="La tua password">
             
-            <button id="auth-submit-btn" class="btn btn-primary btn-large" style="margin-top: 10px;" onclick="handleAuthSubmit()">Accedi</button>
+            <button id="auth-submit-btn" class="btn btn-primary btn-large" style="margin-top: 6px;" onclick="handleAuthSubmit()">Accedi</button>
             
             <span id="auth-switch-text" class="auth-toggle" onclick="toggleAuthMode()">Non hai un account? Registrati</span>
         </div>
@@ -363,11 +435,11 @@
 
         <!-- 1. TAB ALLENAMENTO -->
         <div id="tab-workout" class="tab-content active">
-            <div id="start-session-view" class="card" style="text-align: center; padding: 25px 20px;">
-                <h2 style="font-size:20px; margin-bottom:10px;">Pronto per l'Allenamento?</h2>
-                <p style="color:var(--subtext); font-size:13px; margin-bottom:16px;">Seleziona la scheda da eseguire:</p>
-                <div style="margin-bottom: 16px;">
-                    <select id="active-routine-select" style="font-size:15px; padding:10px; text-align:center;"></select>
+            <div id="start-session-view" class="card" style="text-align: center; padding: 28px 20px;">
+                <h2 style="font-size:20px; margin-bottom:8px;">Pronto per l'Allenamento?</h2>
+                <p style="color:var(--subtext); font-size:13px; margin-bottom:18px;">Seleziona la scheda da eseguire:</p>
+                <div style="margin-bottom: 18px;">
+                    <select id="active-routine-select" style="font-size:15px; text-align:center; margin-bottom: 0 !important;"></select>
                 </div>
                 <button class="btn btn-primary btn-large" onclick="startWorkoutSession()">🚀 Avvia Sessione</button>
             </div>
@@ -389,13 +461,13 @@
 
             <!-- SCHERMATA RIEPILOGO FINE ALLENAMENTO -->
             <div id="workout-summary-view" class="hidden">
-                <div class="card" style="text-align: center; padding: 24px 16px; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(37,99,235,0.05)); border: 1px solid var(--success);">
+                <div class="card" style="text-align: center; padding: 24px 16px; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(59,130,246,0.05)); border: 1px solid var(--success);">
                     <div style="font-size: 40px; margin-bottom: 8px;">🔥</div>
                     <h2 style="font-size: 22px; font-weight: 800; color: var(--success); margin-bottom: 6px;">Allenamento Completato con Successo!</h2>
                     <p style="color: var(--subtext); font-size: 13px;">Ottimo lavoro! Ecco il resoconto della sessione odierna.</p>
                 </div>
 
-                <div class="card" style="background: #111;">
+                <div class="card" style="background: #11131a;">
                     <div style="display: flex; justify-content: space-around; text-align: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--card-border);">
                         <div>
                             <div style="font-size: 11px; color: var(--subtext); text-transform: uppercase; letter-spacing: 0.5px;">Tempo Totale</div>
@@ -409,7 +481,7 @@
                     </div>
 
                     <div id="summary-view-mode">
-                        <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--text);">📋 Dettaglio Serie e Repetizioni</h3>
+                        <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--text);">📋 Dettaglio Serie e Ripetizioni</h3>
                         <div id="summary-exercises-list" style="font-size: 13px; color: var(--subtext); line-height: 1.5; margin-bottom: 15px;"></div>
                         <button class="btn btn-warning btn-sm" onclick="enableSummaryEditMode()" style="width: 100%;">✏️ Modifica Riepilogo</button>
                     </div>
@@ -430,17 +502,17 @@
 
         <!-- 2. TAB MODIFICA SCHEDA -->
         <div id="tab-edit" class="tab-content">
-            <div class="card" style="background:#111;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div class="card" style="background:#11131a;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                     <h3 style="font-size:15px;">Seleziona Scheda:</h3>
                     <button class="btn btn-sm btn-primary" onclick="createNewRoutinePrompt()">+ Nuova Scheda</button>
                 </div>
                 <div style="display:flex; gap:8px; margin-bottom: 10px;">
-                    <select id="routine-selector" onchange="switchActiveRoutine(this.value)" style="flex:1; margin-bottom:0;"></select>
+                    <select id="routine-selector" onchange="switchActiveRoutine(this.value)" style="flex:1; margin-bottom:0 !important;"></select>
                     <button class="btn btn-sm btn-danger" onclick="deleteCurrentRoutine()">Elimina</button>
                 </div>
                 <div style="display:flex; gap:8px; align-items:center;">
-                    <input type="text" id="rename-routine-input" placeholder="Nome Scheda" style="flex:1; margin-bottom:0;">
+                    <input type="text" id="rename-routine-input" placeholder="Nome Scheda" style="flex:1; margin-bottom:0 !important;">
                     <button class="btn btn-sm btn-primary" onclick="renameCurrentRoutine()">Rinomina</button>
                 </div>
             </div>
@@ -448,33 +520,33 @@
             <div id="edit-mode-view">
                 <!-- AGGIUNGI ESERCIZIO SINGOLO -->
                 <div class="card">
-                    <h3 style="font-size:16px; margin-bottom:10px;">➕ Aggiungi Esercizio Singolo</h3>
+                    <h3 style="font-size:16px; margin-bottom:12px;">➕ Aggiungi Esercizio Singolo</h3>
                     <div class="form-group-3" style="margin-bottom:8px;">
-                        <input type="text" id="single-name" placeholder="Nome Esercizio" style="margin-bottom:0;">
-                        <input type="number" id="single-sets" placeholder="Serie" value="4" style="margin-bottom:0;">
-                        <input type="number" id="single-reps" placeholder="Rep" value="8" style="margin-bottom:0;">
+                        <input type="text" id="single-name" placeholder="Nome Esercizio" style="margin-bottom:0 !important;">
+                        <input type="number" id="single-sets" placeholder="Serie" value="4" style="margin-bottom:0 !important;">
+                        <input type="number" id="single-reps" placeholder="Rep" value="8" style="margin-bottom:0 !important;">
                     </div>
-                    <div class="form-group-2" style="margin-bottom:12px;">
-                        <input type="number" id="single-rest-set" placeholder="Rec. tra Serie (s)" value="90" style="margin-bottom:0;">
-                        <input type="number" id="single-rest-block" placeholder="Rec. Fine Blocco (s)" value="120" style="margin-bottom:0;">
+                    <div class="form-group-2" style="margin-bottom:14px;">
+                        <input type="number" id="single-rest-set" placeholder="Rec. tra Serie (s)" value="90" style="margin-bottom:0 !important;">
+                        <input type="number" id="single-rest-block" placeholder="Rec. Fine Blocco (s)" value="120" style="margin-bottom:0 !important;">
                     </div>
                     <button class="btn btn-primary" style="width:100%" onclick="addSingleExercise()">+ Aggiungi alla Scheda</button>
                 </div>
 
                 <!-- AGGIUNGI SUPERSET -->
                 <div class="superset-builder-box">
-                    <h3 style="font-size:16px; margin-bottom:10px; color:#c084fc;">⚡ Aggiungi Superset</h3>
+                    <h3 style="font-size:16px; margin-bottom:12px; color:#c084fc;">⚡ Aggiungi Superset</h3>
                     <div id="superset-dynamic-rows" style="margin-bottom:10px;"></div>
-                    <button class="btn btn-sm" onclick="addSupersetRow()" style="background:#3b2d54; color:#d8b4fe; margin-bottom:12px; width:100%;">+ Aggiungi esercizio al Superset</button>
+                    <button class="btn btn-sm" onclick="addSupersetRow()" style="background:#3b2d54; color:#d8b4fe; margin-bottom:14px; width:100%;">+ Aggiungi esercizio al Superset</button>
                     
-                    <div class="form-group-2" style="margin-bottom:12px;">
+                    <div class="form-group-2" style="margin-bottom:14px;">
                         <div>
                             <label style="font-size:11px; color:var(--subtext); display:block; margin-bottom:4px;">Rec. tra esercizi (s):</label>
-                            <input type="number" id="super-rest-set" value="30" style="margin-bottom:0;">
+                            <input type="number" id="super-rest-set" value="30" style="margin-bottom:0 !important;">
                         </div>
                         <div>
                             <label style="font-size:11px; color:var(--subtext); display:block; margin-bottom:4px;">Rec. Fine Superset (s):</label>
-                            <input type="number" id="super-rest-block" value="180" style="margin-bottom:0;">
+                            <input type="number" id="super-rest-block" value="180" style="margin-bottom:0 !important;">
                         </div>
                     </div>
                     <button class="btn btn-success" style="width:100%; background:var(--superset-border);" onclick="saveNewSupersetBlock()">💾 Salva Superset nella Scheda</button>
@@ -488,7 +560,7 @@
             </div>
 
             <div id="summary-mode-view" class="hidden">
-                <div class="card" style="margin-bottom: 12px; background: #111; text-align:center;">
+                <div class="card" style="margin-bottom: 12px; background: #11131a; text-align:center;">
                     <h3 style="font-size:18px; color:var(--text);" id="summary-routine-title">📋 Scheda Salvata</h3>
                     <p style="font-size:12px; color:var(--subtext); margin-top:4px;">Riepilogo blocchi di allenamento</p>
                 </div>
@@ -505,7 +577,7 @@
         <div id="tab-chart" class="tab-content">
             <div class="card">
                 <label style="font-size:13px; color:var(--subtext); display:block; margin-bottom:6px;">Seleziona Esercizio:</label>
-                <select id="chart-ex-select" onchange="renderChart()" style="margin-bottom:15px;"></select>
+                <select id="chart-ex-select" onchange="renderChart()" style="margin-bottom:15px !important;"></select>
                 <canvas id="analyticsChart"></canvas>
             </div>
         </div>
@@ -578,7 +650,7 @@
     let audioCtx = null;
 
     /* ==========================================
-       GESTIONE AUTENTICAZIONE (LOGIN / REGISTRAZIONE)
+       GESTIONE AUTENTICAZIONE
        ========================================== */
     async function initAuth() {
         try {
@@ -682,6 +754,16 @@
                 showMainApp();
             }
         }
+    }
+
+    async function handleGoogleAuth() {
+        const { data, error } = await db.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: window.location.origin
+            }
+        });
+        if (error) alert("Errore di autenticazione con Google: " + error.message);
     }
 
     async function handleLogout() {
@@ -923,10 +1005,10 @@
         div.id = rowId;
         div.style.marginBottom = '6px';
         div.innerHTML = `
-            <input type="text" placeholder="Nome Esercizio" class="sup-ex-name" style="margin-bottom:0;">
-            <input type="number" placeholder="Serie" value="4" class="sup-ex-sets" style="margin-bottom:0;">
+            <input type="text" placeholder="Nome Esercizio" class="sup-ex-name" style="margin-bottom:0 !important;">
+            <input type="number" placeholder="Serie" value="4" class="sup-ex-sets" style="margin-bottom:0 !important;">
             <div style="display:flex; gap:4px;">
-                <input type="number" placeholder="Rep" value="10" class="sup-ex-reps" style="margin-bottom:0;">
+                <input type="number" placeholder="Rep" value="10" class="sup-ex-reps" style="margin-bottom:0 !important;">
                 <button class="btn btn-danger btn-sm" onclick="document.getElementById('${rowId}').remove()">✕</button>
             </div>
         `;
@@ -1614,14 +1696,14 @@
         currentSessionLogsTemp.forEach((l, lIdx) => {
             const repsString = l.reps.join(', ');
             editContainer.innerHTML += `
-                <div style="background: #111; border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; margin-bottom: 8px;">
+                <div style="background: #11131a; border: 1px solid var(--card-border); border-radius: 12px; padding: 12px; margin-bottom: 10px;">
                     <div style="margin-bottom: 6px;">
                         <label style="font-size: 11px; color: var(--subtext); display: block; margin-bottom: 2px;">Nome Esercizio:</label>
-                        <input type="text" id="sum-edit-name-${lIdx}" value="${l.name}" style="font-size: 13px; padding: 6px;">
+                        <input type="text" id="sum-edit-name-${lIdx}" value="${l.name}" style="font-size: 13px; padding: 8px;">
                     </div>
                     <div>
                         <label style="font-size: 11px; color: var(--subtext); display: block; margin-bottom: 2px;">Ripetizioni per serie (separate da virgola):</label>
-                        <input type="text" id="sum-edit-reps-${lIdx}" value="${repsString}" style="font-size: 13px; padding: 6px;">
+                        <input type="text" id="sum-edit-reps-${lIdx}" value="${repsString}" style="font-size: 13px; padding: 8px;">
                     </div>
                 </div>
             `;
@@ -1678,15 +1760,15 @@
             let exercisesHTML = '';
             block.exercises.forEach((ex, exIdx) => {
                 exercisesHTML += `
-                    <div style="background:#191919; padding:8px; border-radius:8px; margin-bottom:6px;">
+                    <div style="background:#191c26; padding:10px; border-radius:10px; margin-bottom:8px;">
                         <div class="form-group-3" style="margin-bottom:4px;">
-                            <input type="text" value="${ex.name}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'name', this.value)" placeholder="Nome Esercizio" style="margin-bottom:0;">
-                            <input type="number" value="${ex.sets}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'sets', this.value)" placeholder="Serie" style="margin-bottom:0;">
-                            <input type="number" value="${ex.reps}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'reps', this.value)" placeholder="Rep" style="margin-bottom:0;">
+                            <input type="text" value="${ex.name}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'name', this.value)" placeholder="Nome Esercizio" style="margin-bottom:0 !important;">
+                            <input type="number" value="${ex.sets}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'sets', this.value)" placeholder="Serie" style="margin-bottom:0 !important;">
+                            <input type="number" value="${ex.reps}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'reps', this.value)" placeholder="Rep" style="margin-bottom:0 !important;">
                         </div>
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <span style="font-size:11px; color:var(--subtext);">Recupero Serie (s):</span>
-                            <input type="number" value="${ex.restSet || (block.isSuperset ? 30 : 90)}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'restSet', this.value)" style="width:60px; text-align:center; margin-bottom:0;">
+                            <input type="number" value="${ex.restSet || (block.isSuperset ? 30 : 90)}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'restSet', this.value)" style="width:70px; text-align:center; margin-bottom:0 !important;">
                         </div>
                     </div>
                 `;
@@ -1696,7 +1778,7 @@
 
             container.innerHTML += `
                 <div class="edit-block-item ${block.isSuperset ? 'superset-item' : ''}">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                         <span style="font-size:12px; font-weight:700; color:var(--text);">Blocco ${bIdx + 1} ${supersetBadge}</span>
                         <div style="display:flex; gap:4px; align-items:center;">
                             <button class="btn btn-sm" onclick="moveBlockUp(${bIdx})" ${bIdx === 0 ? 'disabled style="opacity:0.3"' : ''}>▲</button>
@@ -1705,9 +1787,9 @@
                         </div>
                     </div>
                     ${exercisesHTML}
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; border-top:1px solid #222; padding-top:6px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; border-top:1px solid var(--card-border); padding-top:8px;">
                         <span style="font-size:11px; color:var(--subtext);">Recupero Fine Blocco (s):</span>
-                        <input type="number" value="${block.restAfterBlock || 120}" onchange="updateBlockRest(${bIdx}, this.value)" style="width:60px; text-align:center; margin-bottom:0;">
+                        <input type="number" value="${block.restAfterBlock || 120}" onchange="updateBlockRest(${bIdx}, this.value)" style="width:70px; text-align:center; margin-bottom:0 !important;">
                     </div>
                 </div>
             `;
@@ -1756,7 +1838,7 @@
             let listText = block.exercises.map(e => `• ${e.name} (${e.sets} × ${e.reps})`).join('<br>');
             const tag = block.isSuperset ? `<span style="color:var(--superset-border); font-weight:bold; font-size:11px;">[Superset]</span> ` : '';
             container.innerHTML += `
-                <div class="card" style="margin-bottom:10px; background:#111;">
+                <div class="card" style="margin-bottom:10px; background:#11131a;">
                     <h4 style="font-size:15px; margin-bottom:6px; color:var(--text);">${tag}Blocco ${bIdx + 1}</h4>
                     <div style="font-size:13px; color:var(--subtext); line-height:1.4;">${listText}</div>
                     <div style="font-size:11px; color:var(--subtext); margin-top:8px;">Recupero fine blocco: ${block.restAfterBlock || 120}s</div>
@@ -1882,7 +1964,7 @@
         const H = cssHeight - padding * 2;
         const maxVol = Math.max(...points.map(p => p.totalVol), 10);
 
-        ctx.strokeStyle = '#262626';
+        ctx.strokeStyle = '#262936';
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(padding, padding);
@@ -1890,7 +1972,7 @@
         ctx.lineTo(cssWidth - padding, cssHeight - padding);
         ctx.stroke();
 
-        ctx.strokeStyle = '#2563eb';
+        ctx.strokeStyle = '#3b82f6';
         ctx.lineWidth = 2.5;
         ctx.beginPath();
         points.forEach((p, i) => {
@@ -1915,12 +1997,12 @@
             const yVol = cssHeight - padding - (p.totalVol / maxVol) * H;
             const yMax = cssHeight - padding - (p.maxRep / maxVol) * H;
 
-            ctx.fillStyle = '#2563eb';
+            ctx.fillStyle = '#3b82f6';
             ctx.beginPath();
             ctx.arc(x, yVol, 4, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.fillStyle = '#9ca3af';
+            ctx.fillStyle = '#94a3b8';
             ctx.font = '10px sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText(p.date, x, cssHeight - padding + 15);
@@ -1934,16 +2016,16 @@
             ctx.fillText(p.maxRep, x, yMax < yVol ? yMax - 8 : yMax + 16);
         });
 
-        ctx.fillStyle = '#2563eb';
+        ctx.fillStyle = '#3b82f6';
         ctx.fillRect(padding, 10, 10, 10);
-        ctx.fillStyle = '#9ca3af';
+        ctx.fillStyle = '#94a3b8';
         ctx.font = '11px sans-serif';
         ctx.textAlign = 'left';
         ctx.fillText('Volume Totale', padding + 15, 18);
 
         ctx.fillStyle = '#10b981';
         ctx.fillRect(padding + 120, 10, 10, 10);
-        ctx.fillStyle = '#9ca3af';
+        ctx.fillStyle = '#94a3b8';
         ctx.fillText('Max Rep', padding + 135, 18);
     }
 
