@@ -1,12 +1,17 @@
+const CACHE_NAME = 'ironflow-cache-v2.0.3';
+const ASSETS_TO_CACHE = [
+  './',
+  './index.html',
+  './manifest.json',
+  './icon.png'
+];
+
 self.addEventListener('install', (e) => {
   self.skipWaiting();
   e.waitUntil(
-    caches.open('ironflow-cache-v2.0.2').then((cache) => cache.addAll([
-      './',
-      './index.html',
-      './manifest.json',
-      './icon.png'
-    ]))
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS_TO_CACHE);
+    })
   );
 });
 
@@ -15,7 +20,7 @@ self.addEventListener('activate', (e) => {
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
-          if (key !== 'ironflow-cache-v2.0.2') {
+          if (key !== CACHE_NAME) {
             return caches.delete(key);
           }
         })
@@ -26,6 +31,15 @@ self.addEventListener('activate', (e) => {
 
 self.addEventListener('fetch', (e) => {
   e.respondWith(
-    caches.match(e.request).then((response) => response || fetch(e.request))
+    caches.match(e.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      return fetch(e.request).catch(() => {
+        if (e.request.mode === 'navigate') {
+          return caches.match('./index.html');
+        }
+      });
+    })
   );
 });
