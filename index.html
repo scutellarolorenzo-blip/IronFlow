@@ -8,6 +8,8 @@
     <link rel="manifest" href="./manifest.json">
     <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Chart.js CDN per Grafici Moderni e Interattivi -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --bg: #0d0e12;
@@ -104,7 +106,6 @@
             box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
         }
 
-        /* Gestione Animazioni Dissolvenza e Transizione Tab */
         .tab-content {
             display: none;
             opacity: 0;
@@ -369,13 +370,6 @@
             line-height: 1.5;
         }
 
-        canvas {
-            width: 100% !important;
-            height: 200px !important;
-            margin-top: 10px;
-            display: block;
-        }
-
         .analytics-session-card {
             background: #11131a;
             border: 1px solid var(--card-border);
@@ -401,15 +395,32 @@
     <!-- SCHERMATA DI AUTENTICAZIONE -->
     <div id="auth-container" class="hidden">
         <div class="auth-box">
-            <h2 id="auth-title" style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">Bentornato su IronFlow</h2>
-            <p id="auth-subtitle" style="color: var(--subtext); font-size: 13px; margin-bottom: 22px;">Accedi per salvare tutti i tuoi dati in cloud</p>
+            <!-- Form Standard di Login / Registrazione -->
+            <div id="standard-auth-form">
+                <h2 id="auth-title" style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">Bentornato su IronFlow</h2>
+                <p id="auth-subtitle" style="color: var(--subtext); font-size: 13px; margin-bottom: 22px;">Accedi per salvare tutti i tuoi dati in cloud</p>
 
-            <input type="email" id="auth-email" placeholder="La tua email">
-            <input type="password" id="auth-password" placeholder="La tua password">
-            
-            <button id="auth-submit-btn" class="btn btn-primary btn-large" style="margin-top: 6px;" onclick="handleAuthSubmit()">Accedi</button>
-            
-            <span id="auth-switch-text" class="auth-toggle" onclick="toggleAuthMode()">Non hai un account? Registrati</span>
+                <input type="email" id="auth-email" placeholder="La tua email">
+                <input type="password" id="auth-password" placeholder="La tua password">
+                
+                <button id="auth-submit-btn" class="btn btn-primary btn-large" style="margin-top: 6px;" onclick="handleAuthSubmit()">Accedi</button>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
+                    <span id="auth-switch-text" class="auth-toggle" onclick="toggleAuthMode()">Non hai un account? Registrati</span>
+                    <span id="auth-forgot-text" class="auth-toggle" style="color: var(--subtext); font-size: 12px;" onclick="handleForgotPassword()">Password dimenticata?</span>
+                </div>
+            </div>
+
+            <!-- Form Dedicato per Aggiornamento Nuova Password (dopo il click sulla mail) -->
+            <div id="update-password-form" class="hidden">
+                <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 6px; color: var(--success);">Nuova Password</h2>
+                <p style="color: var(--subtext); font-size: 13px; margin-bottom: 22px;">Inserisci e conferma la tua nuova password sicura.</p>
+
+                <input type="password" id="new-password" placeholder="Nuova password">
+                <input type="password" id="confirm-new-password" placeholder="Conferma nuova password">
+                
+                <button class="btn btn-success btn-large" style="margin-top: 6px;" onclick="handleUpdateNewPassword()">Aggiorna Password</button>
+            </div>
         </div>
     </div>
 
@@ -591,9 +602,49 @@
         <!-- 3. TAB ANALISI -->
         <div id="tab-chart" class="tab-content">
             <div class="card">
-                <label style="font-size:13px; color:var(--subtext); display:block; margin-bottom:6px;">Seleziona Esercizio:</label>
-                <select id="chart-ex-select" onchange="renderChart()" style="margin-bottom:15px !important;"></select>
-                <canvas id="analyticsChart"></canvas>
+                <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                    <div style="flex: 1;">
+                        <label style="font-size:12px; color:var(--subtext); display:block; margin-bottom:4px;">Seleziona Esercizio:</label>
+                        <select id="chart-ex-select" onchange="renderChart()" style="margin-bottom:0 !important;"></select>
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size:12px; color:var(--subtext); display:block; margin-bottom:4px;">Tipo di Grafico:</label>
+                        <select id="chart-type-select" onchange="renderChart()" style="margin-bottom:0 !important;">
+                            <option value="score">1. Volume, Intensità e Densità</option>
+                            <option value="maxrep">2. Miglioramento complessivo</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Pulsanti Filtri Temporali -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 15px;" id="chart-time-filters">
+                    <button class="btn btn-sm tab-btn" style="padding: 8px 2px; font-size: 11px;" onclick="setChartFilter('week', this)">7 Giorni</button>
+                    <button class="btn btn-sm tab-btn" style="padding: 8px 2px; font-size: 11px;" onclick="setChartFilter('month', this)">1 Mese</button>
+                    <button class="btn btn-sm tab-btn" style="padding: 8px 2px; font-size: 11px;" onclick="setChartFilter('year', this)">1 Anno</button>
+                    <button class="btn btn-sm tab-btn active" style="padding: 8px 2px; font-size: 11px;" onclick="setChartFilter('all', this)">Sempre</button>
+                </div>
+
+                <div style="position: relative; height: 220px; width: 100%;">
+                    <canvas id="analyticsChart"></canvas>
+                </div>
+                
+                <!-- Box informativo dinamico per la percentuale del secondo grafico -->
+                <div id="maxrep-percentage-banner" class="hidden" style="margin-top: 14px; background: rgba(59, 130, 246, 0.1); border: 1px solid var(--accent); padding: 12px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 12px; color: var(--subtext);">Miglioramento Complessivo (Baseline vs Media Recente):</div>
+                    <div id="maxrep-percentage-text" style="font-size: 16px; font-weight: 800; color: var(--success); margin-top: 4px;">-</div>
+                </div>
+
+                <!-- Legenda personalizzata scritta per esteso -->
+                <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 14px; font-size: 11px; color: var(--subtext); background: #11131a; padding: 10px; border-radius: 10px; border: 1px solid var(--card-border);">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="width: 10px; height: 10px; background: #3b82f6; border-radius: 50%; display: inline-block; flex-shrink: 0;"></span>
+                        <span><b>Progresso dal primo allenamento:</b> Mostra la differenza numerica assoluta rispetto al primissimo allenamento.</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="width: 10px; height: 10px; background: #8b5cf6; border-radius: 50%; display: inline-block; flex-shrink: 0;"></span>
+                        <span><b>Progresso volta per volta:</b> Mostra la variazione numerica assoluta rispetto all'allenamento precedente.</span>
+                    </div>
+                </div>
             </div>
             <div id="analytics-details-list"></div>
         </div>
@@ -615,6 +666,9 @@
     let currentUser = null;
     let isRegistering = false;
     let currentTabIndex = 0;
+    let isPasswordRecoveryFlow = false;
+    let myChartInstance = null;
+    let currentChartFilter = 'all';
     const tabIds = ['tab-workout', 'tab-edit', 'tab-chart', 'tab-history'];
 
     const defaultRoutines = {
@@ -636,13 +690,11 @@
         ]
     };
 
-    let routines = JSON.parse(localStorage.getItem('ironflow_routines')) || defaultRoutines;
-    let currentRoutineKey = localStorage.getItem('ironflow_current_key') || Object.keys(routines)[0];
-    if (!routines[currentRoutineKey]) currentRoutineKey = Object.keys(routines)[0];
-
-    let historyData = JSON.parse(localStorage.getItem('ironflow_history')) || [];
-    let savedStatusMap = JSON.parse(localStorage.getItem('ironflow_saved_status')) || {};
-    let isRoutineSaved = savedStatusMap[currentRoutineKey] || false;
+    let routines = JSON.parse(JSON.stringify(defaultRoutines));
+    let currentRoutineKey = Object.keys(routines)[0];
+    let historyData = [];
+    let savedStatusMap = {};
+    let isRoutineSaved = false;
 
     let activeBlockIdx = 0;
     let activeSetNum = 1;
@@ -664,7 +716,6 @@
     let currentDurationMinutesTemp = 1;
     let audioCtx = null;
 
-    // --- SWIPE GESTURE & TAB TRANSITION LOGIC ---
     let touchStartX = 0;
     let touchStartY = 0;
     const swipeContainer = document.getElementById('swipe-container');
@@ -724,18 +775,34 @@
         if (tabId === 'tab-history') renderHistory();
     }
 
+    db.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'PASSWORD_RECOVERY') {
+            isPasswordRecoveryFlow = true;
+            showUpdatePasswordScreen();
+        }
+    });
+
     async function initAuth() {
         try {
+            const hash = window.location.hash;
+            const search = window.location.search;
+
+            if ((hash && (hash.includes('type=recovery') || hash.includes('access_token='))) || (search && search.includes('code='))) {
+                isPasswordRecoveryFlow = true;
+                showUpdatePasswordScreen();
+                return;
+            }
+
             const { data: { session } } = await db.auth.getSession();
-            if (session) {
+            if (session && !isPasswordRecoveryFlow) {
                 currentUser = session.user;
                 showMainApp();
-            } else {
+            } else if (!isPasswordRecoveryFlow) {
                 showAuthScreen();
             }
         } catch (e) {
             console.log("Errore sessione:", e);
-            showAuthScreen();
+            if (!isPasswordRecoveryFlow) showAuthScreen();
         }
     }
 
@@ -743,6 +810,24 @@
         document.getElementById('auth-container').classList.remove('hidden');
         document.getElementById('main-app-container').classList.add('hidden');
         document.getElementById('logout-btn').classList.add('hidden');
+        
+        document.getElementById('standard-auth-form').classList.remove('hidden');
+        document.getElementById('update-password-form').classList.add('hidden');
+        document.getElementById('auth-email').value = '';
+        document.getElementById('auth-password').value = '';
+        document.getElementById('new-password').value = '';
+        document.getElementById('confirm-new-password').value = '';
+    }
+
+    function showUpdatePasswordScreen() {
+        document.getElementById('auth-container').classList.remove('hidden');
+        document.getElementById('main-app-container').classList.add('hidden');
+        document.getElementById('logout-btn').classList.add('hidden');
+        
+        document.getElementById('standard-auth-form').classList.add('hidden');
+        document.getElementById('update-password-form').classList.remove('hidden');
+        document.getElementById('new-password').value = '';
+        document.getElementById('confirm-new-password').value = '';
     }
 
     function showMainApp() {
@@ -750,6 +835,12 @@
         document.getElementById('main-app-container').classList.remove('hidden');
         document.getElementById('logout-btn').classList.remove('hidden');
         
+        routines = JSON.parse(JSON.stringify(defaultRoutines));
+        historyData = [];
+        savedStatusMap = {};
+        currentRoutineKey = Object.keys(routines)[0];
+        isRoutineSaved = false;
+
         fetchRemoteData().then(() => {
             initActiveRoutineSelect();
             if (isRoutineSaved) saveAndShowSummary();
@@ -785,17 +876,20 @@
         const subtitle = document.getElementById('auth-subtitle');
         const submitBtn = document.getElementById('auth-submit-btn');
         const switchText = document.getElementById('auth-switch-text');
+        const forgotText = document.getElementById('auth-forgot-text');
 
         if (isRegistering) {
             title.innerText = "Crea un Account";
             subtitle.innerText = "Salva i tuoi progressi nel cloud per sempre";
             submitBtn.innerText = "Registrati";
             switchText.innerText = "Hai già un account? Accedi";
+            forgotText.classList.add('hidden');
         } else {
             title.innerText = "Bentornato su IronFlow";
             subtitle.innerText = "Accedi per mantenere i tuoi dati al sicuro";
             submitBtn.innerText = "Accedi";
             switchText.innerText = "Non hai un account? Registrati";
+            forgotText.classList.remove('hidden');
         }
     }
 
@@ -828,11 +922,69 @@
         }
     }
 
+    async function handleForgotPassword() {
+        const email = document.getElementById('auth-email').value.trim();
+        if (!email) {
+            alert("Inserisci prima la tua email nell'apposito campo sopra per recuperare la password.");
+            return;
+        }
+
+        const redirectUrl = 'https://scutellarolorenzo-blip.github.io/IronFlow/';
+
+        if (confirm(`Vuoi inviare un'email di recupero password all'indirizzo: ${email}?`)) {
+            const { data, error } = await db.auth.resetPasswordForEmail(email, {
+                redirectTo: redirectUrl
+            });
+            if (error) {
+                alert("Errore durante l'invio dell'email di recupero: " + error.message);
+            } else {
+                alert("Email di recupero inviata con successo! Controlla la tua casella di posta.");
+            }
+        }
+    }
+
+    async function handleUpdateNewPassword() {
+        const newPassword = document.getElementById('new-password').value;
+        const confirmPassword = document.getElementById('confirm-new-password').value;
+
+        if (!newPassword || !confirmPassword) {
+            alert("Compila entrambi i campi.");
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            alert("Le password non coincidono.");
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            alert("La password deve contenere almeno 6 caratteri.");
+            return;
+        }
+
+        const { data, error } = await db.auth.updateUser({ password: newPassword });
+        if (error) {
+            alert("Errore durante l'aggiornamento della password: " + error.message);
+        } else {
+            alert("Password aggiornata con successo! Ora puoi accedere con la nuova password.");
+            isPasswordRecoveryFlow = false;
+            window.history.replaceState({}, document.title, window.location.pathname);
+            await db.auth.signOut();
+            showAuthScreen();
+        }
+    }
+
     async function handleLogout() {
         if (confirm("Vuoi uscire dal tuo account?")) {
             await db.auth.signOut();
             currentUser = null;
+            
+            localStorage.removeItem('ironflow_routines');
+            localStorage.removeItem('ironflow_current_key');
+            localStorage.removeItem('ironflow_history');
+            localStorage.removeItem('ironflow_saved_status');
             localStorage.removeItem('ironflow_active_session');
+            
             showAuthScreen();
         }
     }
@@ -860,11 +1012,10 @@
     async function syncDataToSupabase() {
         if (!navigator.onLine || !currentUser) return;
         try {
-            const localHistory = JSON.parse(localStorage.getItem('ironflow_history')) || [];
             const { error } = await db.from('ironflow_data').upsert({
                 id: currentUser.id,
                 routines: routines,
-                history: localHistory,
+                history: historyData,
                 saved_status: savedStatusMap,
                 updated_at: new Date()
             });
@@ -889,19 +1040,39 @@
             if (data && !error) {
                 if (data.routines) {
                     routines = data.routines;
-                    localStorage.setItem('ironflow_routines', JSON.stringify(routines));
                 }
-                if (data.history && data.history.length > historyData.length) {
+                if (data.history) {
                     historyData = data.history;
-                    localStorage.setItem('ironflow_history', JSON.stringify(historyData));
+                } else {
+                    historyData = [];
                 }
                 if (data.saved_status) {
                     savedStatusMap = data.saved_status;
-                    localStorage.setItem('ironflow_saved_status', JSON.stringify(savedStatusMap));
+                } else {
+                    savedStatusMap = {};
                 }
+            } else {
+                routines = JSON.parse(JSON.stringify(defaultRoutines));
+                historyData = [];
+                savedStatusMap = {};
             }
+            
+            currentRoutineKey = Object.keys(routines)[0];
+            if (!routines[currentRoutineKey]) currentRoutineKey = Object.keys(routines)[0];
+            isRoutineSaved = savedStatusMap[currentRoutineKey] || false;
+
+            localStorage.setItem('ironflow_routines', JSON.stringify(routines));
+            localStorage.setItem('ironflow_history', JSON.stringify(historyData));
+            localStorage.setItem('ironflow_saved_status', JSON.stringify(savedStatusMap));
+            localStorage.setItem('ironflow_current_key', currentRoutineKey);
+
         } catch (e) {
-            console.log("Nessun dato remoto trovato, uso la versione locale.");
+            console.log("Nessun dato remoto trovato o errore di recupero, uso la versione pulita.");
+            routines = JSON.parse(JSON.stringify(defaultRoutines));
+            historyData = [];
+            savedStatusMap = {};
+            currentRoutineKey = Object.keys(routines)[0];
+            isRoutineSaved = false;
         }
     }
 
@@ -1378,7 +1549,7 @@
         const key = `${bIdx}-${exIdx}-${setNum}`;
         const ex = routines[currentRoutineKey][bIdx].exercises[exIdx];
         if (!workoutState.completedSets[key]) {
-            workoutState.completedSets[key] = { reps: ex.reps, weight: ex.weight || 0, done: false, skipped: false };
+            workoutState.completedSets[key] = { reps: ex.reps, weight: ex.weight || 0, done: false, skipped: false, time: workoutState.seconds };
         }
         if (field === 'reps') {
             workoutState.completedSets[key].reps = parseInt(val) || 0;
@@ -1405,11 +1576,14 @@
     function completeSingleSet(bIdx, exIdx, setNum) {
         const key = `${bIdx}-${exIdx}-${setNum}`;
         const ex = routines[currentRoutineKey][bIdx].exercises[exIdx];
+        const setTimeElapsed = workoutState.seconds;
+
         if (!workoutState.completedSets[key]) {
-            workoutState.completedSets[key] = { reps: ex.reps, weight: ex.weight || 0, done: true, skipped: false };
+            workoutState.completedSets[key] = { reps: ex.reps, weight: ex.weight || 0, done: true, skipped: false, time: setTimeElapsed };
         } else {
             workoutState.completedSets[key].done = true;
             workoutState.completedSets[key].skipped = false;
+            workoutState.completedSets[key].time = setTimeElapsed;
         }
 
         lockPreviousSet(bIdx, exIdx, setNum, false);
@@ -1464,11 +1638,14 @@
     function completeSupersetItem(bIdx, exIdx, setNum) {
         const key = `${bIdx}-${exIdx}-${setNum}`;
         const ex = routines[currentRoutineKey][bIdx].exercises[exIdx];
+        const setTimeElapsed = workoutState.seconds;
+
         if (!workoutState.completedSets[key]) {
-            workoutState.completedSets[key] = { reps: ex.reps, weight: ex.weight || 0, done: true, skipped: false };
+            workoutState.completedSets[key] = { reps: ex.reps, weight: ex.weight || 0, done: true, skipped: false, time: setTimeElapsed };
         } else {
             workoutState.completedSets[key].done = true;
             workoutState.completedSets[key].skipped = false;
+            workoutState.completedSets[key].time = setTimeElapsed;
         }
 
         lockPreviousSet(bIdx, exIdx, setNum, true);
@@ -1543,7 +1720,7 @@
                 const targetExIdx = 0;
                 restDuration = block.exercises[0].restSet || 90;
                 const key = `${activeBlockIdx}-${targetExIdx}-${targetSet}`;
-                workoutState.completedSets[key] = { done: false, skipped: true, reps: block.exercises[0].reps, weight: block.exercises[0].weight || 0 };
+                workoutState.completedSets[key] = { done: false, skipped: true, reps: block.exercises[0].reps, weight: block.exercises[0].weight || 0, time: 0 };
                 workoutState.lockedSets[key] = true;
 
                 lockPreviousSet(activeBlockIdx, targetExIdx, targetSet, false);
@@ -1565,7 +1742,7 @@
                 const targetExIdx = activeSubExIdx;
                 restDuration = block.exercises[targetExIdx].restSet || 30;
                 const key = `${activeBlockIdx}-${targetExIdx}-${targetSet}`;
-                workoutState.completedSets[key] = { done: false, skipped: true, reps: block.exercises[targetExIdx].reps, weight: block.exercises[targetExIdx].weight || 0 };
+                workoutState.completedSets[key] = { done: false, skipped: true, reps: block.exercises[targetExIdx].reps, weight: block.exercises[targetExIdx].weight || 0, time: 0 };
                 workoutState.lockedSets[key] = true;
 
                 lockPreviousSet(activeBlockIdx, targetExIdx, targetSet, true);
@@ -1730,7 +1907,8 @@
                     if (workoutState.completedSets[key]?.done) {
                         setsDataArr.push({
                             reps: workoutState.completedSets[key].reps ?? ex.reps,
-                            weight: workoutState.completedSets[key].weight ?? (ex.weight || 0)
+                            weight: workoutState.completedSets[key].weight ?? (ex.weight || 0),
+                            time: workoutState.completedSets[key].time ?? 0
                         });
                     }
                 }
@@ -1760,7 +1938,7 @@
         let summaryHtml = '';
         currentSessionLogsTemp.forEach(l => {
             const badge = l.isSuperset ? '<span style="color:#c084fc; font-size:11px;">[Superset]</span> ' : '';
-            const setsDesc = l.setsData.map(sd => `${sd.weight}kg × ${sd.reps}r`).join(', ');
+            const setsDesc = l.setsData.map(sd => `${sd.weight}kg × ${sd.reps}r (${sd.time}s)`).join(', ');
             summaryHtml += `<div style="margin-bottom: 6px;">${badge}<b>${l.name}:</b> ${setsDesc}</div>`;
         });
 
@@ -1800,15 +1978,16 @@
 
             if (nameInput) l.name = nameInput;
             const parsedSets = [];
-            setsInput.split(',').forEach(item => {
+            setsInput.split(',').forEach((item, sIdx) => {
                 const parts = item.trim().split('x');
+                const prevTime = l.setsData[sIdx]?.time || 0;
                 if (parts.length === 2) {
                     const w = parseFloat(parts[0]);
                     const r = parseInt(parts[1]);
-                    if (!isNaN(w) && !isNaN(r)) parsedSets.push({ weight: w, reps: r });
+                    if (!isNaN(w) && !isNaN(r)) parsedSets.push({ weight: w, reps: r, time: prevTime });
                 } else if (parts.length === 1) {
                     const r = parseInt(parts[0]);
-                    if (!isNaN(r)) parsedSets.push({ weight: 0, reps: r });
+                    if (!isNaN(r)) parsedSets.push({ weight: 0, reps: r, time: prevTime });
                 }
             });
             if (parsedSets.length > 0) l.setsData = parsedSets;
@@ -1825,7 +2004,12 @@
         if (currentSessionLogsTemp.length > 0) {
             const now = new Date();
             const dateStr = now.toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
-            historyData.unshift({ date: dateStr, duration: `${currentDurationMinutesTemp} min`, logs: currentSessionLogsTemp });
+            historyData.unshift({ 
+                date: dateStr, 
+                dateIso: now.toISOString(), 
+                duration: `${currentDurationMinutesTemp} min`, 
+                logs: currentSessionLogsTemp 
+            });
             localStorage.setItem('ironflow_history', JSON.stringify(historyData));
             syncDataToSupabase();
         }
@@ -2033,137 +2217,257 @@
         renderChart();
     }
 
+    function setChartFilter(filterType, btnElement) {
+        currentChartFilter = filterType;
+        const parent = document.getElementById('chart-time-filters');
+        parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
+        renderChart();
+    }
+
+    // --- RENDER GRAFICO CON LOGICA BILANCIATA E ANTI-ERRORE ---
     function renderChart() {
         const canvas = document.getElementById('analyticsChart');
         const detailsContainer = document.getElementById('analytics-details-list');
         const selectedEx = document.getElementById('chart-ex-select').value;
+        const chartType = document.getElementById('chart-type-select').value;
+        const banner = document.getElementById('maxrep-percentage-banner');
+        const bannerText = document.getElementById('maxrep-percentage-text');
+        
         if (!selectedEx) {
             detailsContainer.innerHTML = '';
+            banner.classList.add('hidden');
             return;
         }
-
-        const ctx = canvas.getContext('2d');
-        const dpr = window.devicePixelRatio || 1;
-        const cssWidth = canvas.parentElement.clientWidth;
-        const cssHeight = 200;
-
-        canvas.width = cssWidth * dpr;
-        canvas.height = cssHeight * dpr;
-        ctx.scale(dpr, dpr);
-
-        const points = [];
-        const sessionsDetail = [];
 
         const chronologicalHistory = historyData.slice().reverse();
-        let prevScore = null;
 
-        chronologicalHistory.forEach(h => {
-            const found = h.logs.find(l => l.name === selectedEx);
-            if (found && found.setsData && found.setsData.length > 0) {
-                const totalVol = found.setsData.reduce((acc, sd) => acc + (sd.weight * sd.reps), 0);
-                const totalSets = found.setsData.length;
-                const maxWeight = Math.max(...found.setsData.map(sd => sd.weight));
-                
-                const avgScore = totalSets > 0 ? totalVol / totalSets : 0;
-                
-                let pctChange = 0;
-                if (prevScore !== null && prevScore > 0) {
-                    pctChange = ((avgScore - prevScore) / prevScore) * 100;
+        if (chartType === 'score') {
+            banner.classList.add('hidden');
+            let allProcessedSessions = [];
+            let baselineSetsTimes = null;
+            let baselineScore = null;
+            let prevScore = null;
+
+            chronologicalHistory.forEach((h, hIdx) => {
+                const found = h.logs.find(l => l.name === selectedEx);
+                if (found && found.setsData && found.setsData.length > 0) {
+                    const totalSets = found.setsData.length;
+                    const maxWeight = Math.max(...found.setsData.map(sd => sd.weight));
+                    
+                    let sessionScore = 0;
+                    found.setsData.forEach((sd, sIdx) => {
+                        const w = sd.weight || 0;
+                        const r = sd.reps || 0;
+                        const t = sd.time || 0;
+                        let setVal = w === 0 ? r : r * (1 + (w * 0.15));
+
+                        if (hIdx === 0) {
+                            if (!baselineSetsTimes) baselineSetsTimes = [];
+                            baselineSetsTimes[sIdx] = t;
+                        } else if (baselineSetsTimes && baselineSetsTimes[sIdx] !== undefined) {
+                            const baselineT = baselineSetsTimes[sIdx];
+                            const timeDiff = t - baselineT;
+                            if (timeDiff > 30) {
+                                const penalty = (timeDiff - 30) * 0.01;
+                                setVal = Math.max(0.1, setVal - penalty);
+                            }
+                        }
+                        sessionScore += setVal;
+                    });
+
+                    sessionScore = Math.round(sessionScore * 10) / 10;
+                    if (baselineScore === null) baselineScore = sessionScore;
+
+                    let cumulativeDiff = parseFloat((sessionScore - baselineScore).toFixed(1));
+                    let sessionDiff = prevScore !== null ? parseFloat((sessionScore - prevScore).toFixed(1)) : 0;
+                    prevScore = sessionScore;
+
+                    allProcessedSessions.push({
+                        date: h.date,
+                        dateIso: h.dateIso ? new Date(h.dateIso) : new Date(),
+                        totalSets: totalSets,
+                        setsData: found.setsData,
+                        maxWeight: maxWeight,
+                        score: sessionScore,
+                        cumulativeDiff: cumulativeDiff,
+                        sessionDiff: sessionDiff
+                    });
                 }
-                prevScore = avgScore;
+            });
 
-                points.push({ date: h.date, avgScore, maxWeight, pctChange });
-                sessionsDetail.unshift({
-                    date: h.date,
-                    duration: h.duration,
-                    totalSets: totalSets,
-                    setsData: found.setsData,
-                    maxWeight: maxWeight,
-                    avgScore: avgScore,
-                    pctChange: pctChange
-                });
+            const now = new Date();
+            let filteredSessions = allProcessedSessions;
+            if (currentChartFilter === 'week') {
+                const limitDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                filteredSessions = allProcessedSessions.filter(s => s.dateIso >= limitDate);
+            } else if (currentChartFilter === 'month') {
+                const limitDate = new Date();
+                limitDate.setMonth(limitDate.getMonth() - 1);
+                filteredSessions = allProcessedSessions.filter(s => s.dateIso >= limitDate);
+            } else if (currentChartFilter === 'year') {
+                const limitDate = new Date();
+                limitDate.setFullYear(limitDate.getFullYear() - 1);
+                filteredSessions = allProcessedSessions.filter(s => s.dateIso >= limitDate);
             }
-        });
 
-        ctx.clearRect(0, 0, cssWidth, cssHeight);
+            if (myChartInstance) myChartInstance.destroy();
+            if (filteredSessions.length === 0) {
+                detailsContainer.innerHTML = '<p style="color:var(--subtext); text-align:center; padding:15px; font-size:13px;">Nessun dato storico registrato.</p>';
+                return;
+            }
 
-        if (points.length === 0) {
-            ctx.fillStyle = '#9ca3af';
-            ctx.font = '12px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('Nessun dato registrato per questo esercizio', cssWidth / 2, cssHeight / 2);
-            detailsContainer.innerHTML = '<p style="color:var(--subtext); text-align:center; padding:15px; font-size:13px;">Nessun dato storico per questo esercizio.</p>';
-            return;
+            const labels = filteredSessions.map(s => s.date);
+            const cumulativeData = filteredSessions.map(s => s.cumulativeDiff);
+            const sessionData = filteredSessions.map(s => s.sessionDiff);
+
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createLinearGradient(0, 0, 0, 220);
+            grad.addColorStop(0, 'rgba(59, 130, 246, 0.3)');
+            grad.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+
+            myChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Progresso dal primo allenamento (punti)', data: cumulativeData, borderColor: '#3b82f6', backgroundColor: grad, borderWidth: 3, fill: true, tension: 0.3, pointRadius: 5 },
+                        { label: 'vs Sessione Precedente (punti)', data: sessionData, borderColor: '#8b5cf6', borderWidth: 2, borderDash: [4, 4], fill: false, tension: 0.3, pointRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: 'rgba(38, 41, 54, 0.5)' }, ticks: { color: '#94a3b8', font: { size: 11 } } },
+                        y: { grid: { color: 'rgba(38, 41, 54, 0.5)' }, ticks: { color: '#94a3b8', font: { size: 11 } } }
+                    }
+                }
+            });
+
+            let detailsHtml = '<h3 style="font-size:14px; font-weight:700; margin: 15px 0 10px 0; color:var(--text);">📈 Storico Progressione</h3>';
+            filteredSessions.slice().reverse().forEach(s => {
+                const setsStr = s.setsData.map(sd => `${sd.weight}kg × ${sd.reps}r`).join(', ');
+                const signTot = s.cumulativeDiff >= 0 ? '+' : '';
+                const colorTot = s.cumulativeDiff >= 0 ? 'var(--success)' : 'var(--danger)';
+                detailsHtml += `
+                    <div class="analytics-session-card">
+                        <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px; margin-bottom:4px;">
+                            <span>📅 ${s.date}</span>
+                            <span style="color:${colorTot};">Tot: ${signTot}${s.cumulativeDiff}</span>
+                        </div>
+                        <div style="font-size:12px; color:var(--subtext);">Serie eseguite: ${setsStr}</div>
+                    </div>
+                `;
+            });
+            detailsContainer.innerHTML = detailsHtml;
+
+        } else {
+            // Grafico 2: Miglioramento complessivo (Logica Bilanciata con Media delle ultime sessioni per evitare falsi zeri)
+            let maxRepSessions = [];
+
+            chronologicalHistory.forEach(h => {
+                const found = h.logs.find(l => l.name === selectedEx);
+                if (found && found.setsData && found.setsData.length > 0) {
+                    let bestSetScore = 0;
+                    let bestSetDesc = '';
+                    found.setsData.forEach(sd => {
+                        const w = sd.weight || 0;
+                        const r = sd.reps || 0;
+                        const effectiveRep = w === 0 ? r : r * (1 + (w * 0.05));
+                        if (effectiveRep > bestSetScore) {
+                            bestSetScore = effectiveRep;
+                            bestSetDesc = `${w}kg × ${r}r`;
+                        }
+                    });
+
+                    bestSetScore = Math.round(bestSetScore * 10) / 10;
+                    maxRepSessions.push({
+                        date: h.date,
+                        dateIso: h.dateIso ? new Date(h.dateIso) : new Date(),
+                        maxRepScore: bestSetScore,
+                        bestSetDesc: bestSetDesc,
+                        setsData: found.setsData
+                    });
+                }
+            });
+
+            if (maxRepSessions.length > 0) {
+                // Baseline: Prendiamo il primo valore valido (maggiore di 0 se possibile)
+                let firstScore = maxRepSessions[0].maxRepScore;
+                
+                // Recente bilanciato: Facciamo la media degli ultimi 3 allenamenti (o di quanti ce ne sono) per evitare fluttuazioni anomale dell'ultimo giorno
+                const recentCount = Math.min(3, maxRepSessions.length);
+                let recentSum = 0;
+                for (let i = 0; i < recentCount; i++) {
+                    recentSum += maxRepSessions[maxRepSessions.length - 1 - i].maxRepScore;
+                }
+                let recentAvgScore = recentSum / recentCount;
+
+                let pctChange = 0;
+                if (firstScore > 0) {
+                    pctChange = ((recentAvgScore - firstScore) / firstScore) * 100;
+                } else if (recentAvgScore > 0) {
+                    pctChange = 100; // Se partiva da zero netto
+                }
+
+                pctChange = parseFloat(pctChange.toFixed(1));
+                const sign = pctChange >= 0 ? '+' : '';
+                banner.classList.remove('hidden');
+                bannerText.innerHTML = `Sei ${pctChange >= 0 ? 'migliorato' : 'peggiorato'} del <b style="color:${pctChange >= 0 ? 'var(--success)' : 'var(--danger)'};">${sign}${pctChange}%</b> complessivamente!`;
+            } else {
+                banner.classList.add('hidden');
+            }
+
+            if (myChartInstance) myChartInstance.destroy();
+            if (maxRepSessions.length === 0) {
+                detailsContainer.innerHTML = '<p style="color:var(--subtext); text-align:center; padding:15px; font-size:13px;">Nessun dato storico registrato.</p>';
+                return;
+            }
+
+            const labels = maxRepSessions.map(s => s.date);
+            const dataValues = maxRepSessions.map(s => s.maxRepScore);
+
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createLinearGradient(0, 0, 0, 220);
+            grad.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
+            grad.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+            myChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Massimo Reps per Serie (con Zavorra)', data: dataValues, borderColor: '#10b981', backgroundColor: grad, borderWidth: 3, fill: true, tension: 0.3, pointRadius: 5 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: 'rgba(38, 41, 54, 0.5)' }, ticks: { color: '#94a3b8', font: { size: 11 } } },
+                        y: { grid: { color: 'rgba(38, 41, 54, 0.5)' }, ticks: { color: '#94a3b8', font: { size: 11 } } }
+                    }
+                }
+            });
+
+            let detailsHtml = '<h3 style="font-size:14px; font-weight:700; margin: 15px 0 10px 0; color:var(--text);">📈 Storico Serie Migliore</h3>';
+            maxRepSessions.slice().reverse().forEach(s => {
+                detailsHtml += `
+                    <div class="analytics-session-card">
+                        <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px; margin-bottom:4px;">
+                            <span>📅 ${s.date}</span>
+                            <span style="color:var(--success);">Miglior Set: ${s.bestSetDesc}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            detailsContainer.innerHTML = detailsHtml;
         }
-
-        const padding = 35;
-        const W = cssWidth - padding * 2;
-        const H = cssHeight - padding * 2;
-
-        const pctValues = points.map(p => p.pctChange);
-        const maxPct = Math.max(...pctValues, 10);
-        const minPct = Math.min(...pctValues, -10);
-        const rangePct = Math.max(maxPct - minPct, 20);
-
-        ctx.strokeStyle = '#262936';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(padding, padding);
-        ctx.lineTo(padding, cssHeight - padding);
-        ctx.lineTo(cssWidth - padding, cssHeight - padding);
-        ctx.stroke();
-
-        const zeroY = cssHeight - padding - ((0 - minPct) / rangePct) * H;
-        ctx.strokeStyle = 'rgba(148, 163, 184, 0.3)';
-        ctx.setLineDash([4, 4]);
-        ctx.beginPath();
-        ctx.moveTo(padding, zeroY);
-        ctx.lineTo(cssWidth - padding, zeroY);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        ctx.strokeStyle = '#3b82f6';
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        points.forEach((p, i) => {
-            const x = padding + (points.length === 1 ? W/2 : (i / (points.length - 1)) * W);
-            const y = cssHeight - padding - ((p.pctChange - minPct) / rangePct) * H;
-            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-        });
-        ctx.stroke();
-
-        points.forEach((p, i) => {
-            const x = padding + (points.length === 1 ? W/2 : (i / (points.length - 1)) * W);
-            const y = cssHeight - padding - ((p.pctChange - minPct) / rangePct) * H;
-
-            ctx.fillStyle = i === 0 ? '#3b82f6' : (p.pctChange >= 0 ? '#10b981' : '#ef4444');
-            ctx.beginPath();
-            ctx.arc(x, y, 4.5, 0, Math.PI * 2);
-            ctx.fill();
-        });
-
-        let detailsHtml = '<h3 style="font-size:14px; font-weight:700; margin: 15px 0 10px 0; color:var(--text);">📈 Storico Progressione</h3>';
-        sessionsDetail.forEach(s => {
-            const setsStr = s.setsData.map(sd => `${sd.weight}kg × ${sd.reps}r`).join(', ');
-            const sign = s.pctChange >= 0 ? '+' : '';
-            const color = s.pctChange >= 0 ? 'var(--success)' : 'var(--danger)';
-            detailsHtml += `
-                <div class="analytics-session-card">
-                    <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px; margin-bottom:4px;">
-                        <span>📅 ${s.date}</span>
-                        <span style="color:${color};">${s.pctChange !== undefined ? sign + s.pctChange.toFixed(1) + '%' : ''}</span>
-                    </div>
-                    <div style="font-size:12px; color:var(--subtext);">
-                        Serie eseguite: ${setsStr} <br>
-                        Carico massimo: <b>${s.maxWeight} kg</b>
-                    </div>
-                </div>
-            `;
-        });
-        detailsContainer.innerHTML = detailsHtml;
     }
 
-    // REGISTRAZIONE DEL SERVICE WORKER (Necessaria per attivare l'installazione PWA)
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js')
