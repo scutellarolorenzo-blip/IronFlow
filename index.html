@@ -61,7 +61,6 @@
             gap: 10px;
         }
 
-        /* INDICATORE DI CONNESSIONE */
         .sync-indicator {
             font-size: 11px;
             font-weight: 600;
@@ -114,7 +113,6 @@
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
         }
 
-        /* TIMER FISSO IN ALTO */
         .timer-sticky {
             position: sticky;
             top: 10px;
@@ -185,29 +183,23 @@
             font-weight: 700;
         }
 
-        button.btn-google {
-            background: #ffffff;
-            color: #1f2937;
-            border: 1px solid #e5e7eb;
-            width: 100%;
-            padding: 12px;
-            border-radius: 12px;
+        .field-label {
+            font-size: 11px;
             font-weight: 600;
-            margin-bottom: 16px;
+            color: var(--subtext);
+            margin-bottom: 4px;
+            display: block;
         }
 
-        button.btn-google:hover { background: #f9fafb; }
-
-        /* INPUTS STILIZZATI E CORRETTI */
         input[type="number"], input[type="text"], input[type="email"], input[type="password"], select {
             background: var(--input-bg) !important;
             border: 1px solid var(--input-border) !important;
             color: #ffffff !important;
-            padding: 12px 14px !important;
-            border-radius: 12px !important;
+            padding: 10px 12px !important;
+            border-radius: 10px !important;
             font-size: 14px !important;
             width: 100% !important;
-            margin-bottom: 12px !important;
+            margin-bottom: 8px !important;
             outline: none !important;
             transition: border-color 0.2s ease !important;
             box-shadow: none !important;
@@ -218,32 +210,12 @@
         }
 
         .sub-exercise-row input[type="number"] {
-            width: 60px !important;
+            width: 55px !important;
             text-align: center !important;
             margin-bottom: 0 !important;
-            padding: 8px !important;
+            padding: 8px 4px !important;
         }
 
-        /* DIVIDER */
-        .auth-divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            color: var(--subtext);
-            font-size: 12px;
-            margin: 16px 0;
-        }
-
-        .auth-divider::before, .auth-divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid var(--card-border);
-        }
-
-        .auth-divider::before { margin-right: .5em; }
-        .auth-divider::after { margin-left: .5em; }
-
-        /* SCHERMATA LOGIN */
         #auth-container {
             display: flex;
             flex-direction: column;
@@ -269,7 +241,6 @@
             font-weight: 500;
         }
 
-        /* BLOCCO SUPERSET VISIVO */
         .block-card {
             border: 1px solid var(--card-border);
             border-radius: 18px;
@@ -319,14 +290,20 @@
         .set-input-group {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
 
-        /* MODIFICA SCHEDA */
         .form-group-3 {
             display: grid;
             grid-template-columns: 2fr 1fr 1fr;
             gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .form-group-4 {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 6px;
             margin-bottom: 8px;
         }
 
@@ -357,7 +334,6 @@
             margin-bottom: 16px;
         }
 
-        /* STORICO E GRAFICI */
         .history-item {
             background: #11131a;
             border: 1px solid var(--card-border);
@@ -382,9 +358,17 @@
 
         canvas {
             width: 100% !important;
-            height: 220px !important;
+            height: 200px !important;
             margin-top: 10px;
             display: block;
+        }
+
+        .analytics-session-card {
+            background: #11131a;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 10px;
         }
 
         .hidden { display: none !important; }
@@ -401,18 +385,11 @@
         </div>
     </div>
 
-    <!-- SCHERMATA DI AUTENTICAZIONE -->
+    <!-- SCHERMATA DI AUTENTICAZIONE (Senza Google) -->
     <div id="auth-container" class="hidden">
         <div class="auth-box">
             <h2 id="auth-title" style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">Bentornato su IronFlow</h2>
             <p id="auth-subtitle" style="color: var(--subtext); font-size: 13px; margin-bottom: 22px;">Accedi per salvare tutti i tuoi dati in cloud</p>
-            
-            <button class="btn btn-google" onclick="handleGoogleAuth()">
-                <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-                Accedi con Google
-            </button>
-
-            <div class="auth-divider">oppure usa email</div>
 
             <input type="email" id="auth-email" placeholder="La tua email">
             <input type="password" id="auth-password" placeholder="La tua password">
@@ -481,7 +458,7 @@
                     </div>
 
                     <div id="summary-view-mode">
-                        <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--text);">📋 Dettaglio Serie e Ripetizioni</h3>
+                        <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--text);">📋 Dettaglio Serie, Peso e Ripetizioni</h3>
                         <div id="summary-exercises-list" style="font-size: 13px; color: var(--subtext); line-height: 1.5; margin-bottom: 15px;"></div>
                         <button class="btn btn-warning btn-sm" onclick="enableSummaryEditMode()" style="width: 100%;">✏️ Modifica Riepilogo</button>
                     </div>
@@ -521,31 +498,56 @@
                 <!-- AGGIUNGI ESERCIZIO SINGOLO -->
                 <div class="card">
                     <h3 style="font-size:16px; margin-bottom:12px;">➕ Aggiungi Esercizio Singolo</h3>
-                    <div class="form-group-3" style="margin-bottom:8px;">
-                        <input type="text" id="single-name" placeholder="Nome Esercizio" style="margin-bottom:0 !important;">
-                        <input type="number" id="single-sets" placeholder="Serie" value="4" style="margin-bottom:0 !important;">
-                        <input type="number" id="single-reps" placeholder="Rep" value="8" style="margin-bottom:0 !important;">
+                    
+                    <div style="margin-bottom:8px;">
+                        <span class="field-label">Nome Esercizio</span>
+                        <input type="text" id="single-name" placeholder="Es. Panca Piana" style="margin-bottom:0 !important;">
                     </div>
-                    <div class="form-group-2" style="margin-bottom:14px;">
-                        <input type="number" id="single-rest-set" placeholder="Rec. tra Serie (s)" value="90" style="margin-bottom:0 !important;">
-                        <input type="number" id="single-rest-block" placeholder="Rec. Fine Blocco (s)" value="120" style="margin-bottom:0 !important;">
+
+                    <div class="form-group-2" style="margin-bottom:8px;">
+                        <div>
+                            <span class="field-label">N° Serie</span>
+                            <input type="number" id="single-sets" placeholder="4" value="4" style="margin-bottom:0 !important;">
+                        </div>
+                        <div>
+                            <span class="field-label">N° Ripetizioni (rep)</span>
+                            <input type="number" id="single-reps" placeholder="8" value="8" style="margin-bottom:0 !important;">
+                        </div>
                     </div>
+
+                    <div class="form-group-2" style="margin-bottom:8px;">
+                        <div>
+                            <span class="field-label">Peso iniziale (kg)</span>
+                            <input type="number" id="single-weight" placeholder="0" value="0" style="margin-bottom:0 !important;">
+                        </div>
+                        <div>
+                            <span class="field-label">Recupero tra Serie (sec)</span>
+                            <input type="number" id="single-rest-set" placeholder="90" value="90" style="margin-bottom:0 !important;">
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:14px;">
+                        <span class="field-label">Recupero Fine Esercizio / Blocco (sec)</span>
+                        <input type="number" id="single-rest-block" placeholder="120" value="120" style="margin-bottom:0 !important;">
+                    </div>
+
                     <button class="btn btn-primary" style="width:100%" onclick="addSingleExercise()">+ Aggiungi alla Scheda</button>
                 </div>
 
                 <!-- AGGIUNGI SUPERSET -->
                 <div class="superset-builder-box">
                     <h3 style="font-size:16px; margin-bottom:12px; color:#c084fc;">⚡ Aggiungi Superset</h3>
+                    
                     <div id="superset-dynamic-rows" style="margin-bottom:10px;"></div>
                     <button class="btn btn-sm" onclick="addSupersetRow()" style="background:#3b2d54; color:#d8b4fe; margin-bottom:14px; width:100%;">+ Aggiungi esercizio al Superset</button>
                     
                     <div class="form-group-2" style="margin-bottom:14px;">
                         <div>
-                            <label style="font-size:11px; color:var(--subtext); display:block; margin-bottom:4px;">Rec. tra esercizi (s):</label>
+                            <span class="field-label" style="color:#d8b4fe;">Rec. Tra Esercizi Superset (sec)</span>
                             <input type="number" id="super-rest-set" value="30" style="margin-bottom:0 !important;">
                         </div>
                         <div>
-                            <label style="font-size:11px; color:var(--subtext); display:block; margin-bottom:4px;">Rec. Fine Superset (s):</label>
+                            <span class="field-label" style="color:#d8b4fe;">Rec. Fine Superset Completo (sec)</span>
                             <input type="number" id="super-rest-block" value="180" style="margin-bottom:0 !important;">
                         </div>
                     </div>
@@ -580,6 +582,7 @@
                 <select id="chart-ex-select" onchange="renderChart()" style="margin-bottom:15px !important;"></select>
                 <canvas id="analyticsChart"></canvas>
             </div>
+            <div id="analytics-details-list"></div>
         </div>
 
         <!-- 4. TAB STORICO -->
@@ -607,15 +610,15 @@
             {
                 isSuperset: false,
                 restAfterBlock: 120,
-                exercises: [{ name: "Panca Piana", sets: 4, reps: 8, restSet: 90 }]
+                exercises: [{ name: "Panca Piana", sets: 4, reps: 8, weight: 50, restSet: 90 }]
             },
             {
                 isSuperset: true,
                 restAfterBlock: 180,
                 exercises: [
-                    { name: "Trazioni", sets: 4, reps: 8, restSet: 30 },
-                    { name: "Spinte Manubri", sets: 4, reps: 10, restSet: 30 },
-                    { name: "Rematore", sets: 4, reps: 8, restSet: 90 }
+                    { name: "Trazioni", sets: 4, reps: 8, weight: 0, restSet: 30 },
+                    { name: "Spinte Manubri", sets: 4, reps: 10, weight: 20, restSet: 30 },
+                    { name: "Rematore", sets: 4, reps: 8, weight: 40, restSet: 90 }
                 ]
             }
         ]
@@ -754,16 +757,6 @@
                 showMainApp();
             }
         }
-    }
-
-    async function handleGoogleAuth() {
-        const { data, error } = await db.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: window.location.origin
-            }
-        });
-        if (error) alert("Errore di autenticazione con Google: " + error.message);
     }
 
     async function handleLogout() {
@@ -949,7 +942,7 @@
                 {
                     isSuperset: false,
                     restAfterBlock: 120,
-                    exercises: [{ name: "Esercizio 1", sets: 3, reps: 10, restSet: 90 }]
+                    exercises: [{ name: "Esercizio 1", sets: 3, reps: 10, weight: 0, restSet: 90 }]
                 }
             ];
             currentRoutineKey = trimmedName;
@@ -1001,15 +994,28 @@
         const container = document.getElementById('superset-dynamic-rows');
         const rowId = 'sup-row-' + Date.now() + Math.random();
         const div = document.createElement('div');
-        div.className = 'form-group-3';
+        div.className = 'form-group-4';
         div.id = rowId;
         div.style.marginBottom = '6px';
         div.innerHTML = `
-            <input type="text" placeholder="Nome Esercizio" class="sup-ex-name" style="margin-bottom:0 !important;">
-            <input type="number" placeholder="Serie" value="4" class="sup-ex-sets" style="margin-bottom:0 !important;">
-            <div style="display:flex; gap:4px;">
-                <input type="number" placeholder="Rep" value="10" class="sup-ex-reps" style="margin-bottom:0 !important;">
-                <button class="btn btn-danger btn-sm" onclick="document.getElementById('${rowId}').remove()">✕</button>
+            <div>
+                <span class="field-label">Esercizio</span>
+                <input type="text" placeholder="Es. Trazioni" class="sup-ex-name" style="margin-bottom:0 !important;">
+            </div>
+            <div>
+                <span class="field-label">Serie</span>
+                <input type="number" placeholder="4" value="4" class="sup-ex-sets" style="margin-bottom:0 !important;">
+            </div>
+            <div>
+                <span class="field-label">Rep</span>
+                <input type="number" placeholder="10" value="10" class="sup-ex-reps" style="margin-bottom:0 !important;">
+            </div>
+            <div>
+                <span class="field-label">Peso (kg)</span>
+                <div style="display:flex; gap:4px;">
+                    <input type="number" placeholder="0" value="0" class="sup-ex-weight" style="margin-bottom:0 !important;">
+                    <button class="btn btn-danger btn-sm" onclick="document.getElementById('${rowId}').remove()">✕</button>
+                </div>
             </div>
         `;
         container.appendChild(div);
@@ -1023,8 +1029,9 @@
             const name = r.querySelector('.sup-ex-name').value.trim();
             const sets = parseInt(r.querySelector('.sup-ex-sets').value) || 4;
             const reps = parseInt(r.querySelector('.sup-ex-reps').value) || 10;
+            const weight = parseFloat(r.querySelector('.sup-ex-weight').value) || 0;
             if (name) {
-                exercises.push({ name, sets, reps });
+                exercises.push({ name, sets, reps, weight });
             }
         });
 
@@ -1055,6 +1062,7 @@
         const name = document.getElementById('single-name').value.trim();
         const sets = parseInt(document.getElementById('single-sets').value) || 4;
         const reps = parseInt(document.getElementById('single-reps').value) || 8;
+        const weight = parseFloat(document.getElementById('single-weight').value) || 0;
         const restSet = parseInt(document.getElementById('single-rest-set').value) || 90;
         const restBlock = parseInt(document.getElementById('single-rest-block').value) || 120;
 
@@ -1062,7 +1070,7 @@
             routines[currentRoutineKey].push({
                 isSuperset: false,
                 restAfterBlock: restBlock,
-                exercises: [{ name, sets, reps, restSet }]
+                exercises: [{ name, sets, reps, weight, restSet }]
             });
             saveRoutinesStorage();
             document.getElementById('single-name').value = '';
@@ -1184,6 +1192,7 @@
                         const isSkipped = setObj.skipped;
                         const isLocked = workoutState.lockedSets[setKey];
                         const currentReps = setObj.reps ?? ex.reps;
+                        const currentWeight = setObj.weight ?? (ex.weight || 0);
                         const isInteractive = (bIdx === activeBlockIdx && s === activeSetNum && !workoutState.isRest);
 
                         let actionHTML = '';
@@ -1209,10 +1218,14 @@
                                 <div style="font-size:13px; font-weight:600;">
                                     ${ex.name} <span style="color:var(--subtext); font-size:11px; margin-left:4px;">(Set ${s}/${ex.sets})</span>
                                 </div>
-                                <div style="display:flex; align-items:center; gap:10px;">
+                                <div style="display:flex; align-items:center; gap:6px;">
                                     <div class="set-input-group">
-                                        <input type="number" value="${currentReps}" ${isLocked ? 'disabled' : ''} onchange="updateWorkoutReps(${bIdx}, ${exIdx}, ${s}, this.value)">
-                                        <span style="color:var(--subtext); font-size:12px;">rep</span>
+                                        <input type="number" value="${currentWeight}" ${isLocked ? 'disabled' : ''} onchange="updateWorkoutSetData(${bIdx}, ${exIdx}, ${s}, 'weight', this.value)" title="Peso (kg)">
+                                        <span style="color:var(--subtext); font-size:11px;">kg</span>
+                                    </div>
+                                    <div class="set-input-group">
+                                        <input type="number" value="${currentReps}" ${isLocked ? 'disabled' : ''} onchange="updateWorkoutSetData(${bIdx}, ${exIdx}, ${s}, 'reps', this.value)" title="Ripetizioni">
+                                        <span style="color:var(--subtext); font-size:11px;">rep</span>
                                     </div>
                                     ${actionHTML}
                                 </div>
@@ -1248,6 +1261,7 @@
                             const isSkipped = setObj.skipped;
                             const isLocked = workoutState.lockedSets[setKey];
                             const currentReps = setObj.reps ?? ex.reps;
+                            const currentWeight = setObj.weight ?? (ex.weight || 0);
                             const isCurrentSubInteractive = isCurrentSetGroup && (exIdx === activeSubExIdx) && !workoutState.isRest;
 
                             let actionHTML = '';
@@ -1273,10 +1287,14 @@
                                     <div style="font-size:13px; font-weight:600;">
                                         ${ex.name}
                                     </div>
-                                    <div style="display:flex; align-items:center; gap:10px;">
+                                    <div style="display:flex; align-items:center; gap:6px;">
                                         <div class="set-input-group">
-                                            <input type="number" value="${currentReps}" ${isLocked ? 'disabled' : ''} onchange="updateWorkoutReps(${bIdx}, ${exIdx}, ${s}, this.value)">
-                                            <span style="color:var(--subtext); font-size:12px;">rep</span>
+                                            <input type="number" value="${currentWeight}" ${isLocked ? 'disabled' : ''} onchange="updateWorkoutSetData(${bIdx}, ${exIdx}, ${s}, 'weight', this.value)" title="Peso (kg)">
+                                            <span style="color:var(--subtext); font-size:11px;">kg</span>
+                                        </div>
+                                        <div class="set-input-group">
+                                            <input type="number" value="${currentReps}" ${isLocked ? 'disabled' : ''} onchange="updateWorkoutSetData(${bIdx}, ${exIdx}, ${s}, 'reps', this.value)" title="Ripetizioni">
+                                            <span style="color:var(--subtext); font-size:11px;">rep</span>
                                         </div>
                                         ${actionHTML}
                                     </div>
@@ -1306,10 +1324,17 @@
         });
     }
 
-    function updateWorkoutReps(bIdx, exIdx, setNum, val) {
+    function updateWorkoutSetData(bIdx, exIdx, setNum, field, val) {
         const key = `${bIdx}-${exIdx}-${setNum}`;
-        if (!workoutState.completedSets[key]) workoutState.completedSets[key] = {};
-        workoutState.completedSets[key].reps = parseInt(val) || 0;
+        const ex = routines[currentRoutineKey][bIdx].exercises[exIdx];
+        if (!workoutState.completedSets[key]) {
+            workoutState.completedSets[key] = { reps: ex.reps, weight: ex.weight || 0, done: false, skipped: false };
+        }
+        if (field === 'reps') {
+            workoutState.completedSets[key].reps = parseInt(val) || 0;
+        } else if (field === 'weight') {
+            workoutState.completedSets[key].weight = parseFloat(val) || 0;
+        }
         saveActiveWorkoutSession();
     }
 
@@ -1329,8 +1354,9 @@
 
     function completeSingleSet(bIdx, exIdx, setNum) {
         const key = `${bIdx}-${exIdx}-${setNum}`;
+        const ex = routines[currentRoutineKey][bIdx].exercises[exIdx];
         if (!workoutState.completedSets[key]) {
-            workoutState.completedSets[key] = { reps: routines[currentRoutineKey][bIdx].exercises[exIdx].reps, done: true, skipped: false };
+            workoutState.completedSets[key] = { reps: ex.reps, weight: ex.weight || 0, done: true, skipped: false };
         } else {
             workoutState.completedSets[key].done = true;
             workoutState.completedSets[key].skipped = false;
@@ -1340,13 +1366,13 @@
 
         const block = routines[currentRoutineKey][bIdx];
         
-        let restDuration = block.exercises[exIdx].restSet || 90;
+        let restDuration = ex.restSet || 90;
         if (workoutState.savedRestSeconds !== null) {
             restDuration = workoutState.savedRestSeconds;
             workoutState.savedRestSeconds = null;
         }
 
-        if (setNum >= block.exercises[exIdx].sets) {
+        if (setNum >= ex.sets) {
             if (bIdx >= routines[currentRoutineKey].length - 1) {
                 terminateWorkout();
                 return;
@@ -1387,8 +1413,9 @@
 
     function completeSupersetItem(bIdx, exIdx, setNum) {
         const key = `${bIdx}-${exIdx}-${setNum}`;
+        const ex = routines[currentRoutineKey][bIdx].exercises[exIdx];
         if (!workoutState.completedSets[key]) {
-            workoutState.completedSets[key] = { reps: routines[currentRoutineKey][bIdx].exercises[exIdx].reps, done: true, skipped: false };
+            workoutState.completedSets[key] = { reps: ex.reps, weight: ex.weight || 0, done: true, skipped: false };
         } else {
             workoutState.completedSets[key].done = true;
             workoutState.completedSets[key].skipped = false;
@@ -1399,7 +1426,7 @@
         const block = routines[currentRoutineKey][bIdx];
         const numExercises = block.exercises.length;
 
-        let restDuration = block.exercises[exIdx].restSet || 30;
+        let restDuration = ex.restSet || 30;
         if (workoutState.savedRestSeconds !== null) {
             restDuration = workoutState.savedRestSeconds;
             workoutState.savedRestSeconds = null;
@@ -1461,13 +1488,12 @@
             const block = routines[currentRoutineKey][activeBlockIdx];
             let restDuration = 90;
             let targetSet = activeSetNum;
-            let targetExIdx = 0;
 
             if (!block.isSuperset) {
-                targetExIdx = 0;
+                const targetExIdx = 0;
                 restDuration = block.exercises[0].restSet || 90;
                 const key = `${activeBlockIdx}-${targetExIdx}-${targetSet}`;
-                workoutState.completedSets[key] = { done: false, skipped: true, reps: block.exercises[0].reps };
+                workoutState.completedSets[key] = { done: false, skipped: true, reps: block.exercises[0].reps, weight: block.exercises[0].weight || 0 };
                 workoutState.lockedSets[key] = true;
 
                 lockPreviousSet(activeBlockIdx, targetExIdx, targetSet, false);
@@ -1486,10 +1512,10 @@
                     activeSetNum++;
                 }
             } else {
-                targetExIdx = activeSubExIdx;
+                const targetExIdx = activeSubExIdx;
                 restDuration = block.exercises[targetExIdx].restSet || 30;
                 const key = `${activeBlockIdx}-${targetExIdx}-${targetSet}`;
-                workoutState.completedSets[key] = { done: false, skipped: true, reps: block.exercises[targetExIdx].reps };
+                workoutState.completedSets[key] = { done: false, skipped: true, reps: block.exercises[targetExIdx].reps, weight: block.exercises[targetExIdx].weight || 0 };
                 workoutState.lockedSets[key] = true;
 
                 lockPreviousSet(activeBlockIdx, targetExIdx, targetSet, true);
@@ -1648,15 +1674,18 @@
         routine.forEach((block, bIdx) => {
             const isSuperset = block.isSuperset && block.exercises.length > 1;
             block.exercises.forEach((ex, exIdx) => {
-                const repsArr = [];
+                const setsDataArr = [];
                 for (let s = 1; s <= ex.sets; s++) {
                     const key = `${bIdx}-${exIdx}-${s}`;
                     if (workoutState.completedSets[key]?.done) {
-                        repsArr.push(workoutState.completedSets[key].reps ?? ex.reps);
+                        setsDataArr.push({
+                            reps: workoutState.completedSets[key].reps ?? ex.reps,
+                            weight: workoutState.completedSets[key].weight ?? (ex.weight || 0)
+                        });
                     }
                 }
-                if (repsArr.length > 0) {
-                    currentSessionLogsTemp.push({ name: ex.name, reps: repsArr, isSuperset: isSuperset });
+                if (setsDataArr.length > 0) {
+                    currentSessionLogsTemp.push({ name: ex.name, setsData: setsDataArr, isSuperset: isSuperset });
                 }
             });
         });
@@ -1681,7 +1710,8 @@
         let summaryHtml = '';
         currentSessionLogsTemp.forEach(l => {
             const badge = l.isSuperset ? '<span style="color:#c084fc; font-size:11px;">[Superset]</span> ' : '';
-            summaryHtml += `<div style="margin-bottom: 6px;">${badge}<b>${l.name}:</b> ${l.reps.join(', ')} rep</div>`;
+            const setsDesc = l.setsData.map(sd => `${sd.weight}kg × ${sd.reps}r`).join(', ');
+            summaryHtml += `<div style="margin-bottom: 6px;">${badge}<b>${l.name}:</b> ${setsDesc}</div>`;
         });
 
         summaryLogsContainer.innerHTML = summaryHtml || '<p style="color:var(--subtext);">Nessun esercizio completato in questa sessione.</p>';
@@ -1694,16 +1724,16 @@
         editContainer.innerHTML = '';
 
         currentSessionLogsTemp.forEach((l, lIdx) => {
-            const repsString = l.reps.join(', ');
+            const formattedString = l.setsData.map(sd => `${sd.weight}x${sd.reps}`).join(', ');
             editContainer.innerHTML += `
                 <div style="background: #11131a; border: 1px solid var(--card-border); border-radius: 12px; padding: 12px; margin-bottom: 10px;">
                     <div style="margin-bottom: 6px;">
-                        <label style="font-size: 11px; color: var(--subtext); display: block; margin-bottom: 2px;">Nome Esercizio:</label>
+                        <span class="field-label">Nome Esercizio:</span>
                         <input type="text" id="sum-edit-name-${lIdx}" value="${l.name}" style="font-size: 13px; padding: 8px;">
                     </div>
                     <div>
-                        <label style="font-size: 11px; color: var(--subtext); display: block; margin-bottom: 2px;">Ripetizioni per serie (separate da virgola):</label>
-                        <input type="text" id="sum-edit-reps-${lIdx}" value="${repsString}" style="font-size: 13px; padding: 8px;">
+                        <span class="field-label">Serie (formato peso x rep, es: 50x8, 50x8):</span>
+                        <input type="text" id="sum-edit-sets-${lIdx}" value="${formattedString}" style="font-size: 13px; padding: 8px;">
                     </div>
                 </div>
             `;
@@ -1716,11 +1746,22 @@
     function saveSummaryEdits() {
         currentSessionLogsTemp.forEach((l, lIdx) => {
             const nameInput = document.getElementById(`sum-edit-name-${lIdx}`).value.trim();
-            const repsInput = document.getElementById(`sum-edit-reps-${lIdx}`).value;
+            const setsInput = document.getElementById(`sum-edit-sets-${lIdx}`).value;
 
             if (nameInput) l.name = nameInput;
-            const parsedReps = repsInput.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r));
-            if (parsedReps.length > 0) l.reps = parsedReps;
+            const parsedSets = [];
+            setsInput.split(',').forEach(item => {
+                const parts = item.trim().split('x');
+                if (parts.length === 2) {
+                    const w = parseFloat(parts[0]);
+                    const r = parseInt(parts[1]);
+                    if (!isNaN(w) && !isNaN(r)) parsedSets.push({ weight: w, reps: r });
+                } else if (parts.length === 1) {
+                    const r = parseInt(parts[0]);
+                    if (!isNaN(r)) parsedSets.push({ weight: 0, reps: r });
+                }
+            });
+            if (parsedSets.length > 0) l.setsData = parsedSets;
         });
 
         refreshSummaryDisplay();
@@ -1762,13 +1803,28 @@
                 exercisesHTML += `
                     <div style="background:#191c26; padding:10px; border-radius:10px; margin-bottom:8px;">
                         <div class="form-group-3" style="margin-bottom:4px;">
-                            <input type="text" value="${ex.name}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'name', this.value)" placeholder="Nome Esercizio" style="margin-bottom:0 !important;">
-                            <input type="number" value="${ex.sets}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'sets', this.value)" placeholder="Serie" style="margin-bottom:0 !important;">
-                            <input type="number" value="${ex.reps}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'reps', this.value)" placeholder="Rep" style="margin-bottom:0 !important;">
+                            <div>
+                                <span class="field-label">Nome Esercizio</span>
+                                <input type="text" value="${ex.name}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'name', this.value)" placeholder="Esercizio" style="margin-bottom:0 !important;">
+                            </div>
+                            <div>
+                                <span class="field-label">Serie</span>
+                                <input type="number" value="${ex.sets}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'sets', this.value)" placeholder="Serie" style="margin-bottom:0 !important;">
+                            </div>
+                            <div>
+                                <span class="field-label">Rep</span>
+                                <input type="number" value="${ex.reps}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'reps', this.value)" placeholder="Rep" style="margin-bottom:0 !important;">
+                            </div>
                         </div>
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span style="font-size:11px; color:var(--subtext);">Recupero Serie (s):</span>
-                            <input type="number" value="${ex.restSet || (block.isSuperset ? 30 : 90)}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'restSet', this.value)" style="width:70px; text-align:center; margin-bottom:0 !important;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <span class="field-label" style="margin-bottom:0;">Peso (kg):</span>
+                                <input type="number" value="${ex.weight || 0}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'weight', this.value)" style="width:65px; text-align:center; margin-bottom:0 !important;">
+                            </div>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <span class="field-label" style="margin-bottom:0;">Rec. Serie (sec):</span>
+                                <input type="number" value="${ex.restSet || (block.isSuperset ? 30 : 90)}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'restSet', this.value)" style="width:65px; text-align:center; margin-bottom:0 !important;">
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1788,7 +1844,7 @@
                     </div>
                     ${exercisesHTML}
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; border-top:1px solid var(--card-border); padding-top:8px;">
-                        <span style="font-size:11px; color:var(--subtext);">Recupero Fine Blocco (s):</span>
+                        <span class="field-label" style="margin-bottom:0;">Recupero Fine Blocco (sec):</span>
                         <input type="number" value="${block.restAfterBlock || 120}" onchange="updateBlockRest(${bIdx}, this.value)" style="width:70px; text-align:center; margin-bottom:0 !important;">
                     </div>
                 </div>
@@ -1804,6 +1860,8 @@
             ex.sets = parseInt(val) || 1;
         } else if (field === 'reps') {
             ex.reps = parseInt(val) || 1;
+        } else if (field === 'weight') {
+            ex.weight = parseFloat(val) || 0;
         } else if (field === 'restSet') {
             ex.restSet = parseInt(val) || 0;
         }
@@ -1835,7 +1893,7 @@
 
         const blocks = routines[currentRoutineKey];
         blocks.forEach((block, bIdx) => {
-            let listText = block.exercises.map(e => `• ${e.name} (${e.sets} × ${e.reps})`).join('<br>');
+            let listText = block.exercises.map(e => `• ${e.name} (${e.sets} × ${e.reps} rep @ ${e.weight || 0}kg)`).join('<br>');
             const tag = block.isSuperset ? `<span style="color:var(--superset-border); font-weight:bold; font-size:11px;">[Superset]</span> ` : '';
             container.innerHTML += `
                 <div class="card" style="margin-bottom:10px; background:#11131a;">
@@ -1874,13 +1932,13 @@
             let singleHtml = '';
             if (singleExercises.length > 0) {
                 singleHtml = `<div style="margin-bottom:8px;"><strong style="font-size:13px; color:var(--text);">💪 Esercizi Singoli:</strong><br>` +
-                    singleExercises.map(l => `• <b>${l.name}:</b> ${l.reps.join(', ')} rep`).join('<br>') + `</div>`;
+                    singleExercises.map(l => `• <b>${l.name}:</b> ` + l.setsData.map(sd => `${sd.weight}kg × ${sd.reps}r`).join(', ')).join('<br>') + `</div>`;
             }
 
             let supersetHtml = '';
             if (supersetExercises.length > 0) {
                 supersetHtml = `<div><strong style="font-size:13px; color:#c084fc;">⚡ Esercizi in Superset:</strong><br>` +
-                    supersetExercises.map(l => `• <b>${l.name}:</b> ${l.reps.join(', ')} rep`).join('<br>') + `</div>`;
+                    supersetExercises.map(l => `• <b>${l.name}:</b> ` + l.setsData.map(sd => `${sd.weight}kg × ${sd.reps}r`).join(', ')).join('<br>') + `</div>`;
             }
 
             container.innerHTML += `
@@ -1927,25 +1985,53 @@
 
     function renderChart() {
         const canvas = document.getElementById('analyticsChart');
+        const detailsContainer = document.getElementById('analytics-details-list');
         const selectedEx = document.getElementById('chart-ex-select').value;
-        if (!selectedEx) return;
+        if (!selectedEx) {
+            detailsContainer.innerHTML = '';
+            return;
+        }
 
         const ctx = canvas.getContext('2d');
         const dpr = window.devicePixelRatio || 1;
         const cssWidth = canvas.parentElement.clientWidth;
-        const cssHeight = 220;
+        const cssHeight = 200;
 
         canvas.width = cssWidth * dpr;
         canvas.height = cssHeight * dpr;
         ctx.scale(dpr, dpr);
 
         const points = [];
-        historyData.slice().reverse().forEach(h => {
+        const sessionsDetail = [];
+
+        const chronologicalHistory = historyData.slice().reverse();
+        let prevScore = null;
+
+        chronologicalHistory.forEach(h => {
             const found = h.logs.find(l => l.name === selectedEx);
-            if (found) {
-                const totalVol = found.reps.reduce((a, b) => a + b, 0);
-                const maxRep = Math.max(...found.reps);
-                points.push({ date: h.date.replace(/ \d{4}/, ''), totalVol, maxRep });
+            if (found && found.setsData && found.setsData.length > 0) {
+                const totalVol = found.setsData.reduce((acc, sd) => acc + (sd.weight * sd.reps), 0);
+                const totalSets = found.setsData.length;
+                const maxWeight = Math.max(...found.setsData.map(sd => sd.weight));
+                
+                const avgScore = totalSets > 0 ? totalVol / totalSets : 0;
+                
+                let pctChange = 0;
+                if (prevScore !== null && prevScore > 0) {
+                    pctChange = ((avgScore - prevScore) / prevScore) * 100;
+                }
+                prevScore = avgScore;
+
+                points.push({ date: h.date, avgScore, maxWeight, pctChange });
+                sessionsDetail.unshift({
+                    date: h.date,
+                    duration: h.duration,
+                    totalSets: totalSets,
+                    setsData: found.setsData,
+                    maxWeight: maxWeight,
+                    avgScore: avgScore,
+                    pctChange: pctChange
+                });
             }
         });
 
@@ -1956,13 +2042,18 @@
             ctx.font = '12px sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('Nessun dato registrato per questo esercizio', cssWidth / 2, cssHeight / 2);
+            detailsContainer.innerHTML = '<p style="color:var(--subtext); text-align:center; padding:15px; font-size:13px;">Nessun dato storico per questo esercizio.</p>';
             return;
         }
 
         const padding = 35;
         const W = cssWidth - padding * 2;
         const H = cssHeight - padding * 2;
-        const maxVol = Math.max(...points.map(p => p.totalVol), 10);
+
+        const pctValues = points.map(p => p.pctChange);
+        const maxPct = Math.max(...pctValues, 10);
+        const minPct = Math.min(...pctValues, -10);
+        const rangePct = Math.max(maxPct - minPct, 20);
 
         ctx.strokeStyle = '#262936';
         ctx.lineWidth = 1;
@@ -1972,68 +2063,100 @@
         ctx.lineTo(cssWidth - padding, cssHeight - padding);
         ctx.stroke();
 
+        const zeroY = cssHeight - padding - ((0 - minPct) / rangePct) * H;
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.3)';
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(padding, zeroY);
+        ctx.lineTo(cssWidth - padding, zeroY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
         ctx.strokeStyle = '#3b82f6';
         ctx.lineWidth = 2.5;
         ctx.beginPath();
         points.forEach((p, i) => {
             const x = padding + (points.length === 1 ? W/2 : (i / (points.length - 1)) * W);
-            const y = cssHeight - padding - (p.totalVol / maxVol) * H;
-            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-        });
-        ctx.stroke();
-
-        ctx.strokeStyle = '#10b981';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        points.forEach((p, i) => {
-            const x = padding + (points.length === 1 ? W/2 : (i / (points.length - 1)) * W);
-            const y = cssHeight - padding - (p.maxRep / maxVol) * H;
+            const y = cssHeight - padding - ((p.pctChange - minPct) / rangePct) * H;
             if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         });
         ctx.stroke();
 
         points.forEach((p, i) => {
             const x = padding + (points.length === 1 ? W/2 : (i / (points.length - 1)) * W);
-            const yVol = cssHeight - padding - (p.totalVol / maxVol) * H;
-            const yMax = cssHeight - padding - (p.maxRep / maxVol) * H;
+            const y = cssHeight - padding - ((p.pctChange - minPct) / rangePct) * H;
 
-            ctx.fillStyle = '#3b82f6';
+            ctx.fillStyle = i === 0 ? '#3b82f6' : (p.pctChange >= 0 ? '#10b981' : '#ef4444');
             ctx.beginPath();
-            ctx.arc(x, yVol, 4, 0, Math.PI * 2);
+            ctx.arc(x, y, 4.5, 0, Math.PI * 2);
             ctx.fill();
 
             ctx.fillStyle = '#94a3b8';
             ctx.font = '10px sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText(p.date, x, cssHeight - padding + 15);
-            ctx.fillText(p.totalVol, x, yVol - 8);
-
-            ctx.fillStyle = '#10b981';
-            ctx.beginPath();
-            ctx.arc(x, yMax, 4, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.fillText(p.maxRep, x, yMax < yVol ? yMax - 8 : yMax + 16);
+            ctx.fillText(p.date.replace(/ \d{4}/, ''), x, cssHeight - padding + 15);
+            
+            const labelText = i === 0 ? 'Base' : (p.pctChange >= 0 ? `+${p.pctChange.toFixed(1)}%` : `${p.pctChange.toFixed(1)}%`);
+            ctx.fillStyle = i === 0 ? '#3b82f6' : (p.pctChange >= 0 ? '#10b981' : '#ef4444');
+            ctx.fillText(labelText, x, y - 8);
         });
 
         ctx.fillStyle = '#3b82f6';
-        ctx.fillRect(padding, 10, 10, 10);
+        ctx.fillRect(padding, 8, 10, 10);
         ctx.fillStyle = '#94a3b8';
         ctx.font = '11px sans-serif';
         ctx.textAlign = 'left';
-        ctx.fillText('Volume Totale', padding + 15, 18);
+        ctx.fillText('Trend Variazione Performance (%)', padding + 15, 16);
 
-        ctx.fillStyle = '#10b981';
-        ctx.fillRect(padding + 120, 10, 10, 10);
-        ctx.fillStyle = '#94a3b8';
-        ctx.fillText('Max Rep', padding + 135, 18);
+        let detailHTML = '<h3 style="font-size:14px; font-weight:700; margin:15px 0 10px 4px; color:var(--text);">📊 Dettaglio Variazione e Performance per Allenamento:</h3>';
+        sessionsDetail.forEach((s) => {
+            const setsListFormatted = s.setsData.map((sd, i) => `
+                <span style="background:#1e2230; padding:3px 8px; border-radius:6px; border:1px solid #2e3446; display:inline-block; margin:2px 0;">
+                    <b>S${i+1}:</b> ${sd.weight}kg × ${sd.reps} rep
+                </span>
+            `).join(' ');
+
+            const isOldest = (s === sessionsDetail[sessionsDetail.length - 1]);
+            
+            let badgeStyle = 'color:var(--subtext);';
+            let badgeText = 'Sessione Base (0%)';
+            if (!isOldest) {
+                if (s.pctChange > 0) {
+                    badgeStyle = 'color:var(--success); font-weight:bold;';
+                    badgeText = `Miglioramento: +${s.pctChange.toFixed(1)}%`;
+                } else if (s.pctChange < 0) {
+                    badgeStyle = 'color:var(--danger); font-weight:bold;';
+                    badgeText = `Variazione: ${s.pctChange.toFixed(1)}%`;
+                } else {
+                    badgeStyle = 'color:var(--subtext);';
+                    badgeText = 'Invariato (0%)';
+                }
+            }
+
+            detailHTML += `
+                <div class="analytics-session-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid var(--card-border); padding-bottom:6px;">
+                        <span style="font-weight:700; font-size:13px; color:var(--accent);">📅 ${s.date}</span>
+                        <span style="font-size:12px; ${badgeStyle}">${badgeText}</span>
+                    </div>
+                    <div style="font-size:12px; margin-bottom:8px; display:flex; flex-wrap:wrap; gap:4px;">
+                        ${setsListFormatted}
+                    </div>
+                    <div style="font-size:11px; color:var(--subtext); display:flex; justify-content:space-between; margin-top:4px;">
+                        <span>Carico Max: <b style="color:var(--success);">${s.maxWeight} kg</b></span>
+                        <span>Performance media: <b style="color:var(--text);">${s.avgScore.toFixed(1)}</b></span>
+                    </div>
+                </div>
+            `;
+        });
+
+        detailsContainer.innerHTML = detailHTML;
     }
 
     window.addEventListener('resize', () => {
         if (document.getElementById('tab-chart').classList.contains('active')) renderChart();
     });
 
-    // Avvio controllo autenticazione
     updateOnlineStatus();
     initAuth();
 </script>
