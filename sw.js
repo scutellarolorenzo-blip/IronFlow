@@ -1,5 +1,5 @@
 self.addEventListener('install', (e) => {
-  self.skipWaiting(); // Forza l'installazione immediata del nuovo service worker
+  self.skipWaiting();
   e.waitUntil(
     caches.open('ironflow-cache-v2').then((cache) => cache.addAll([
       './',
@@ -11,7 +11,6 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('activate', (e) => {
-  // Pulisce le vecchie cache salvate nei browser degli utenti
   e.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(

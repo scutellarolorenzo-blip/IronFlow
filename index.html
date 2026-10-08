@@ -385,7 +385,7 @@
         </div>
     </div>
 
-    <!-- SCHERMATA DI AUTENTICAZIONE (Senza Google) -->
+    <!-- SCHERMATA DI AUTENTICAZIONE -->
     <div id="auth-container" class="hidden">
         <div class="auth-box">
             <h2 id="auth-title" style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">Bentornato su IronFlow</h2>
@@ -593,9 +593,6 @@
 </div>
 
 <script>
-    /* ==========================================
-       CONFIGURAZIONE SUPABASE & AUTENTICAZIONE
-       ========================================== */
     const SUPABASE_URL = 'https://cecxydkxovabamyhxjfn.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNlY3h5ZGt4b3ZhYmFteWh4amZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0MDY3NDYsImV4cCI6MjEwNjk4Mjc0Nn0.71PDE1YlLtNAwSieUIkzkp-2X5Vq83bUTcCe7qQryh4';
     
@@ -652,9 +649,6 @@
     let currentDurationMinutesTemp = 1;
     let audioCtx = null;
 
-    /* ==========================================
-       GESTIONE AUTENTICAZIONE
-       ========================================== */
     async function initAuth() {
         try {
             const { data: { session } } = await db.auth.getSession();
