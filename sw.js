@@ -1,7 +1,7 @@
 self.addEventListener('install', (e) => {
   self.skipWaiting();
   e.waitUntil(
-    caches.open('ironflow-cache-v2.0.0').then((cache) => cache.addAll([
+    caches.open('ironflow-cache-v2.0.1').then((cache) => cache.addAll([
       './',
       './index.html',
       './manifest.json',
@@ -15,7 +15,7 @@ self.addEventListener('activate', (e) => {
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
-          if (key !== 'ironflow-cache-v2.0.0') {
+          if (key !== 'ironflow-cache-v2.0.1') {
             return caches.delete(key);
           }
         })

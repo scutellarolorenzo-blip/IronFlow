@@ -32,6 +32,7 @@
             display: flex;
             justify-content: center;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .app-container {
@@ -101,8 +102,18 @@
             box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
         }
 
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        /* Gestione Animazioni Dissolvenza e Transizione Tab */
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
 
         .card {
             background: var(--card-bg);
@@ -376,7 +387,7 @@
 </head>
 <body>
 
-<div class="app-container">
+<div class="app-container" id="swipe-container">
     <div class="header">
         <h1>IronFlow</h1>
         <div class="header-actions">
@@ -404,10 +415,10 @@
     <div id="main-app-container" class="hidden">
         <!-- TAB NAVIGATION -->
         <div class="nav-tabs" id="main-nav-tabs">
-            <button class="tab-btn active" onclick="switchTab('tab-workout', this)">Allenamento</button>
-            <button class="tab-btn" onclick="switchTab('tab-edit', this)">Scheda</button>
-            <button class="tab-btn" onclick="switchTab('tab-chart', this)">Analisi</button>
-            <button class="tab-btn" onclick="switchTab('tab-history', this)">Storico</button>
+            <button class="tab-btn active" onclick="switchTab(0, this)">Allenamento</button>
+            <button class="tab-btn" onclick="switchTab(1, this)">Scheda</button>
+            <button class="tab-btn" onclick="switchTab(2, this)">Analisi</button>
+            <button class="tab-btn" onclick="switchTab(3, this)">Storico</button>
         </div>
 
         <!-- 1. TAB ALLENAMENTO -->
@@ -601,6 +612,8 @@
 
     let currentUser = null;
     let isRegistering = false;
+    let currentTabIndex = 0;
+    const tabIds = ['tab-workout', 'tab-edit', 'tab-chart', 'tab-history'];
 
     const defaultRoutines = {
         "Scheda A (Forza)": [
@@ -648,6 +661,69 @@
     let currentSessionLogsTemp = [];
     let currentDurationMinutesTemp = 1;
     let audioCtx = null;
+
+    // --- SWIPE GESTURE & TAB TRANSITION LOGIC ---
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const swipeContainer = document.getElementById('swipe-container');
+
+    swipeContainer.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, {passive: true});
+
+    swipeContainer.addEventListener('touchend', e => {
+        const touchEndX = e.changedTouches[0].screenX;
+        const touchEndY = e.changedTouches[0].screenY;
+        const diffX = touchEndX - touchStartX;
+        const diffY = touchEndY - touchStartY;
+
+        // Assicuriamoci che sia uno swipe prevalentemente orizzontale e abbastanza ampio
+        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 60) {
+            if (diffX < 0) {
+                // Swipe a sinistra -> Tab successivo
+                if (currentTabIndex < tabIds.length - 1) {
+                    switchTab(currentTabIndex + 1, document.querySelectorAll('.tab-btn')[currentTabIndex + 1]);
+                }
+            } else {
+                // Swipe a destra -> Tab precedente
+                if (currentTabIndex > 0) {
+                    switchTab(currentTabIndex - 1, document.querySelectorAll('.tab-btn')[currentTabIndex - 1]);
+                }
+            }
+        }
+    }, {passive: true});
+
+    function switchTab(index, btn) {
+        currentTabIndex = index;
+        const buttons = document.querySelectorAll('.tab-btn');
+        buttons.forEach((b, idx) => {
+            if (idx === index) b.classList.add('active');
+            else b.classList.remove('active');
+        });
+
+        tabIds.forEach((id, idx) => {
+            const content = document.getElementById(id);
+            if (idx === index) {
+                content.classList.add('active');
+            } else {
+                content.classList.remove('active');
+            }
+        });
+
+        const tabId = tabIds[index];
+        if (tabId === 'tab-workout') initActiveRoutineSelect();
+        if (tabId === 'tab-edit') {
+            initRoutineSelectors();
+            if (isRoutineSaved) saveAndShowSummary();
+            else {
+                renderEditRoutine();
+                initSupersetBuilderRows();
+            }
+        }
+        if (tabId === 'tab-chart') initChartSelect();
+        if (tabId === 'tab-history') renderHistory();
+    }
 
     async function initAuth() {
         try {
@@ -847,25 +923,6 @@
         } catch (e) {
             console.log("Audio non supportato", e);
         }
-    }
-
-    function switchTab(tabId, btn) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById(tabId).classList.add('active');
-
-        if (tabId === 'tab-workout') initActiveRoutineSelect();
-        if (tabId === 'tab-edit') {
-            initRoutineSelectors();
-            if (isRoutineSaved) saveAndShowSummary();
-            else {
-                renderEditRoutine();
-                initSupersetBuilderRows();
-            }
-        }
-        if (tabId === 'tab-chart') initChartSelect();
-        if (tabId === 'tab-history') renderHistory();
     }
 
     function initActiveRoutineSelect() {
@@ -2084,85 +2141,33 @@
             ctx.beginPath();
             ctx.arc(x, y, 4.5, 0, Math.PI * 2);
             ctx.fill();
-
-            ctx.fillStyle = '#94a3b8';
-            ctx.font = '10px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(p.date.replace(/ \d{4}/, ''), x, cssHeight - padding + 15);
-            
-            const labelText = i === 0 ? 'Base' : (p.pctChange >= 0 ? `+${p.pctChange.toFixed(1)}%` : `${p.pctChange.toFixed(1)}%`);
-            ctx.fillStyle = i === 0 ? '#3b82f6' : (p.pctChange >= 0 ? '#10b981' : '#ef4444');
-            ctx.fillText(labelText, x, y - 8);
         });
 
-        ctx.fillStyle = '#3b82f6';
-        ctx.fillRect(padding, 8, 10, 10);
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '11px sans-serif';
-        ctx.textAlign = 'left';
-        ctx.fillText('Trend Variazione Performance (%)', padding + 15, 16);
-
-        let detailHTML = '<h3 style="font-size:14px; font-weight:700; margin:15px 0 10px 4px; color:var(--text);">📊 Dettaglio Variazione e Performance per Allenamento:</h3>';
-        sessionsDetail.forEach((s) => {
-            const setsListFormatted = s.setsData.map((sd, i) => `
-                <span style="background:#1e2230; padding:3px 8px; border-radius:6px; border:1px solid #2e3446; display:inline-block; margin:2px 0;">
-                    <b>S${i+1}:</b> ${sd.weight}kg × ${sd.reps} rep
-                </span>
-            `).join(' ');
-
-            const isOldest = (s === sessionsDetail[sessionsDetail.length - 1]);
-            
-            let badgeStyle = 'color:var(--subtext);';
-            let badgeText = 'Sessione Base (0%)';
-            if (!isOldest) {
-                if (s.pctChange > 0) {
-                    badgeStyle = 'color:var(--success); font-weight:bold;';
-                    badgeText = `Miglioramento: +${s.pctChange.toFixed(1)}%`;
-                } else if (s.pctChange < 0) {
-                    badgeStyle = 'color:var(--danger); font-weight:bold;';
-                    badgeText = `Variazione: ${s.pctChange.toFixed(1)}%`;
-                } else {
-                    badgeStyle = 'color:var(--subtext);';
-                    badgeText = 'Invariato (0%)';
-                }
-            }
-
-            detailHTML += `
+        let detailsHtml = '<h3 style="font-size:14px; font-weight:700; margin: 15px 0 10px 0; color:var(--text);">📈 Storico Progressione</h3>';
+        sessionsDetail.forEach(s => {
+            const setsStr = s.setsData.map(sd => `${sd.weight}kg × ${sd.reps}r`).join(', ');
+            const sign = s.pctChange >= 0 ? '+' : '';
+            const color = s.pctChange >= 0 ? 'var(--success)' : 'var(--danger)';
+            detailsHtml += `
                 <div class="analytics-session-card">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid var(--card-border); padding-bottom:6px;">
-                        <span style="font-weight:700; font-size:13px; color:var(--accent);">📅 ${s.date}</span>
-                        <span style="font-size:12px; ${badgeStyle}">${badgeText}</span>
+                    <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px; margin-bottom:4px;">
+                        <span>📅 ${s.date}</span>
+                        <span style="color:${color};">${s.pctChange !== undefined ? sign + s.pctChange.toFixed(1) + '%' : ''}</span>
                     </div>
-                    <div style="font-size:12px; margin-bottom:8px; display:flex; flex-wrap:wrap; gap:4px;">
-                        ${setsListFormatted}
-                    </div>
-                    <div style="font-size:11px; color:var(--subtext); display:flex; justify-content:space-between; margin-top:4px;">
-                        <span>Carico Max: <b style="color:var(--success);">${s.maxWeight} kg</b></span>
-                        <span>Performance media: <b style="color:var(--text);">${s.avgScore.toFixed(1)}</b></span>
+                    <div style="font-size:12px; color:var(--subtext);">
+                        Serie eseguite: ${setsStr} <br>
+                        Carico massimo: <b>${s.maxWeight} kg</b>
                     </div>
                 </div>
             `;
         });
-
-        detailsContainer.innerHTML = detailHTML;
+        detailsContainer.innerHTML = detailsHtml;
     }
 
-    window.addEventListener('resize', () => {
-        if (document.getElementById('tab-chart').classList.contains('active')) renderChart();
-    });
-
-    updateOnlineStatus();
-    initAuth();
+    window.onload = () => {
+        initAuth();
+    };
 </script>
 
-<script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-                .then((reg) => console.log('Service Worker registrato:', reg.scope))
-                .catch((err) => console.log('Registrazione fallita:', err));
-        });
-    }
-</script>
 </body>
 </html>
