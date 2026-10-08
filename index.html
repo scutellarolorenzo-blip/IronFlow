@@ -46,6 +46,12 @@
 
         .header h1 { font-size: 24px; font-weight: 700; }
 
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         /* INDICATORE DI CONNESSIONE */
         .sync-indicator {
             font-size: 11px;
@@ -209,19 +215,46 @@
             gap: 4px;
         }
 
-        input[type="number"], input[type="text"], select {
+        input[type="number"], input[type="text"], input[type="password"], select {
             background: var(--input-bg);
             border: 1px solid var(--card-border);
             color: white;
-            padding: 8px;
-            border-radius: 6px;
+            padding: 10px;
+            border-radius: 8px;
             font-size: 14px;
             width: 100%;
+            margin-bottom: 10px;
         }
 
         .sub-exercise-row input[type="number"] {
             width: 55px;
             text-align: center;
+            margin-bottom: 0;
+            padding: 8px;
+        }
+
+        /* SCHERMATA LOGIN */
+        #auth-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px 10px;
+        }
+
+        .auth-box {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .auth-toggle {
+            font-size: 13px;
+            color: var(--accent);
+            cursor: pointer;
+            margin-top: 12px;
+            display: inline-block;
         }
 
         /* MODIFICA SCHEDA */
@@ -297,169 +330,190 @@
 <div class="app-container">
     <div class="header">
         <h1>IronFlow</h1>
-        <div id="sync-status" class="sync-indicator sync-online">🟢 Online</div>
-    </div>
-
-    <!-- TAB NAVIGATION -->
-    <div class="nav-tabs" id="main-nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('tab-workout', this)">Allenamento</button>
-        <button class="tab-btn" onclick="switchTab('tab-edit', this)">Scheda</button>
-        <button class="tab-btn" onclick="switchTab('tab-chart', this)">Analisi</button>
-        <button class="tab-btn" onclick="switchTab('tab-history', this)">Storico</button>
-    </div>
-
-    <!-- 1. TAB ALLENAMENTO -->
-    <div id="tab-workout" class="tab-content active">
-        <div id="start-session-view" class="card" style="text-align: center; padding: 25px 20px;">
-            <h2 style="font-size:20px; margin-bottom:10px;">Pronto per l'Allenamento?</h2>
-            <p style="color:var(--subtext); font-size:13px; margin-bottom:16px;">Seleziona la scheda da eseguire:</p>
-            <div style="margin-bottom: 16px;">
-                <select id="active-routine-select" style="font-size:15px; padding:10px; text-align:center;"></select>
-            </div>
-            <button class="btn btn-primary btn-large" onclick="startWorkoutSession()">🚀 Avvia Sessione</button>
-        </div>
-
-        <div id="active-workout-view" class="hidden">
-            <div class="card timer-box timer-sticky">
-                <div id="timer-status" class="timer-status">ESERCIZIO IN CORSO</div>
-                <div id="timer-display" class="timer-display">00:00</div>
-                <div class="btn-group" id="timer-controls">
-                    <button class="btn" onclick="togglePause()" id="btn-pause">Pausa</button>
-                    <button class="btn btn-warning" onclick="promptSkipCurrentSet()">Salta set</button>
-                    <button class="btn btn-danger" onclick="cancelWorkout()">Annulla</button>
-                    <button class="btn btn-danger" onclick="terminateWorkout()">Termina</button>
-                </div>
-            </div>
-
-            <div id="workout-list"></div>
-        </div>
-
-        <!-- SCHERMATA RIEPILOGO FINE ALLENAMENTO -->
-        <div id="workout-summary-view" class="hidden">
-            <div class="card" style="text-align: center; padding: 24px 16px; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(37,99,235,0.05)); border: 1px solid var(--success);">
-                <div style="font-size: 40px; margin-bottom: 8px;">🔥</div>
-                <h2 style="font-size: 22px; font-weight: 800; color: var(--success); margin-bottom: 6px;">Allenamento Completato con Successo!</h2>
-                <p style="color: var(--subtext); font-size: 13px;">Ottimo lavoro! Ecco il resoconto della sessione odierna.</p>
-            </div>
-
-            <div class="card" style="background: #111;">
-                <div style="display: flex; justify-content: space-around; text-align: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--card-border);">
-                    <div>
-                        <div style="font-size: 11px; color: var(--subtext); text-transform: uppercase; letter-spacing: 0.5px;">Tempo Totale</div>
-                        <div id="summary-stat-time" style="font-size: 20px; font-weight: 700; color: var(--text); margin-top: 4px;">0 min</div>
-                    </div>
-                    <div style="border-left: 1px solid var(--card-border);"></div>
-                    <div>
-                        <div style="font-size: 11px; color: var(--subtext); text-transform: uppercase; letter-spacing: 0.5px;">Esercizi Registrati</div>
-                        <div id="summary-stat-count" style="font-size: 20px; font-weight: 700; color: var(--accent); margin-top: 4px;">0</div>
-                    </div>
-                </div>
-
-                <div id="summary-view-mode">
-                    <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--text);">📋 Dettaglio Serie e Repetizioni</h3>
-                    <div id="summary-exercises-list" style="font-size: 13px; color: var(--subtext); line-height: 1.5; margin-bottom: 15px;"></div>
-                    <button class="btn btn-warning btn-sm" onclick="enableSummaryEditMode()" style="width: 100%;">✏️ Modifica Riepilogo</button>
-                </div>
-
-                <div id="summary-edit-mode" class="hidden">
-                    <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--accent);">✏️ Modifica Dati Allenamento</h3>
-                    <div id="summary-edit-exercises-list" style="margin-bottom: 15px;"></div>
-                    <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-success btn-sm" onclick="saveSummaryEdits()" style="flex: 1;">💾 Salva Modifiche</button>
-                        <button class="btn btn-danger btn-sm" onclick="cancelSummaryEdits()" style="flex: 1;">Annulla</button>
-                    </div>
-                </div>
-            </div>
-
-            <button class="btn btn-primary btn-large" onclick="closeSummaryAndReturnHome()" style="margin-top: 4px; margin-bottom: 25px;">🏠 Torna alla Home</button>
+        <div class="header-actions">
+            <div id="sync-status" class="sync-indicator sync-online">🟢 Online</div>
+            <button id="logout-btn" class="btn btn-danger btn-sm hidden" onclick="handleLogout()">Esci</button>
         </div>
     </div>
 
-    <!-- 2. TAB MODIFICA SCHEDA -->
-    <div id="tab-edit" class="tab-content">
-        <div class="card" style="background:#111;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <h3 style="font-size:15px;">Seleziona Scheda:</h3>
-                <button class="btn btn-sm btn-primary" onclick="createNewRoutinePrompt()">+ Nuova Scheda</button>
+    <!-- SCHERMATA DI AUTENTICAZIONE (LOGIN / REGISTRAZIONE) -->
+    <div id="auth-container" class="hidden">
+        <div class="auth-box">
+            <h2 id="auth-title" style="font-size: 22px; margin-bottom: 6px;">Bentornato su IronFlow</h2>
+            <p id="auth-subtitle" style="color: var(--subtext); font-size: 13px; margin-bottom: 20px;">Accedi per mantenere i tuoi dati al sicuro</p>
+            
+            <input type="email" id="auth-email" placeholder="La tua email">
+            <input type="password" id="auth-password" placeholder="La tua password (min. 6 caratteri)">
+            
+            <button id="auth-submit-btn" class="btn btn-primary btn-large" style="margin-top: 10px;" onclick="handleAuthSubmit()">Accedi</button>
+            
+            <span id="auth-switch-text" class="auth-toggle" onclick="toggleAuthMode()">Non hai un account? Registrati</span>
+        </div>
+    </div>
+
+    <!-- CONTENITORE PRINCIPALE DELL'APP -->
+    <div id="main-app-container" class="hidden">
+        <!-- TAB NAVIGATION -->
+        <div class="nav-tabs" id="main-nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('tab-workout', this)">Allenamento</button>
+            <button class="tab-btn" onclick="switchTab('tab-edit', this)">Scheda</button>
+            <button class="tab-btn" onclick="switchTab('tab-chart', this)">Analisi</button>
+            <button class="tab-btn" onclick="switchTab('tab-history', this)">Storico</button>
+        </div>
+
+        <!-- 1. TAB ALLENAMENTO -->
+        <div id="tab-workout" class="tab-content active">
+            <div id="start-session-view" class="card" style="text-align: center; padding: 25px 20px;">
+                <h2 style="font-size:20px; margin-bottom:10px;">Pronto per l'Allenamento?</h2>
+                <p style="color:var(--subtext); font-size:13px; margin-bottom:16px;">Seleziona la scheda da eseguire:</p>
+                <div style="margin-bottom: 16px;">
+                    <select id="active-routine-select" style="font-size:15px; padding:10px; text-align:center;"></select>
+                </div>
+                <button class="btn btn-primary btn-large" onclick="startWorkoutSession()">🚀 Avvia Sessione</button>
             </div>
-            <div style="display:flex; gap:8px; margin-bottom: 10px;">
-                <select id="routine-selector" onchange="switchActiveRoutine(this.value)" style="flex:1;"></select>
-                <button class="btn btn-sm btn-danger" onclick="deleteCurrentRoutine()">Elimina</button>
+
+            <div id="active-workout-view" class="hidden">
+                <div class="card timer-box timer-sticky">
+                    <div id="timer-status" class="timer-status">ESERCIZIO IN CORSO</div>
+                    <div id="timer-display" class="timer-display">00:00</div>
+                    <div class="btn-group" id="timer-controls">
+                        <button class="btn" onclick="togglePause()" id="btn-pause">Pausa</button>
+                        <button class="btn btn-warning" onclick="promptSkipCurrentSet()">Salta set</button>
+                        <button class="btn btn-danger" onclick="cancelWorkout()">Annulla</button>
+                        <button class="btn btn-danger" onclick="terminateWorkout()">Termina</button>
+                    </div>
+                </div>
+
+                <div id="workout-list"></div>
             </div>
-            <div style="display:flex; gap:8px; align-items:center;">
-                <input type="text" id="rename-routine-input" placeholder="Nome Scheda" style="flex:1;">
-                <button class="btn btn-sm btn-primary" onclick="renameCurrentRoutine()">Rinomina</button>
+
+            <!-- SCHERMATA RIEPILOGO FINE ALLENAMENTO -->
+            <div id="workout-summary-view" class="hidden">
+                <div class="card" style="text-align: center; padding: 24px 16px; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(37,99,235,0.05)); border: 1px solid var(--success);">
+                    <div style="font-size: 40px; margin-bottom: 8px;">🔥</div>
+                    <h2 style="font-size: 22px; font-weight: 800; color: var(--success); margin-bottom: 6px;">Allenamento Completato con Successo!</h2>
+                    <p style="color: var(--subtext); font-size: 13px;">Ottimo lavoro! Ecco il resoconto della sessione odierna.</p>
+                </div>
+
+                <div class="card" style="background: #111;">
+                    <div style="display: flex; justify-content: space-around; text-align: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--card-border);">
+                        <div>
+                            <div style="font-size: 11px; color: var(--subtext); text-transform: uppercase; letter-spacing: 0.5px;">Tempo Totale</div>
+                            <div id="summary-stat-time" style="font-size: 20px; font-weight: 700; color: var(--text); margin-top: 4px;">0 min</div>
+                        </div>
+                        <div style="border-left: 1px solid var(--card-border);"></div>
+                        <div>
+                            <div style="font-size: 11px; color: var(--subtext); text-transform: uppercase; letter-spacing: 0.5px;">Esercizi Registrati</div>
+                            <div id="summary-stat-count" style="font-size: 20px; font-weight: 700; color: var(--accent); margin-top: 4px;">0</div>
+                        </div>
+                    </div>
+
+                    <div id="summary-view-mode">
+                        <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--text);">📋 Dettaglio Serie e Repetizioni</h3>
+                        <div id="summary-exercises-list" style="font-size: 13px; color: var(--subtext); line-height: 1.5; margin-bottom: 15px;"></div>
+                        <button class="btn btn-warning btn-sm" onclick="enableSummaryEditMode()" style="width: 100%;">✏️ Modifica Riepilogo</button>
+                    </div>
+
+                    <div id="summary-edit-mode" class="hidden">
+                        <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--accent);">✏️ Modifica Dati Allenamento</h3>
+                        <div id="summary-edit-exercises-list" style="margin-bottom: 15px;"></div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-success btn-sm" onclick="saveSummaryEdits()" style="flex: 1;">💾 Salva Modifiche</button>
+                            <button class="btn btn-danger btn-sm" onclick="cancelSummaryEdits()" style="flex: 1;">Annulla</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-large" onclick="closeSummaryAndReturnHome()" style="margin-top: 4px; margin-bottom: 25px;">🏠 Torna alla Home</button>
             </div>
         </div>
 
-        <div id="edit-mode-view">
-            <!-- AGGIUNGI ESERCIZIO SINGOLO -->
+        <!-- 2. TAB MODIFICA SCHEDA -->
+        <div id="tab-edit" class="tab-content">
+            <div class="card" style="background:#111;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <h3 style="font-size:15px;">Seleziona Scheda:</h3>
+                    <button class="btn btn-sm btn-primary" onclick="createNewRoutinePrompt()">+ Nuova Scheda</button>
+                </div>
+                <div style="display:flex; gap:8px; margin-bottom: 10px;">
+                    <select id="routine-selector" onchange="switchActiveRoutine(this.value)" style="flex:1; margin-bottom:0;"></select>
+                    <button class="btn btn-sm btn-danger" onclick="deleteCurrentRoutine()">Elimina</button>
+                </div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <input type="text" id="rename-routine-input" placeholder="Nome Scheda" style="flex:1; margin-bottom:0;">
+                    <button class="btn btn-sm btn-primary" onclick="renameCurrentRoutine()">Rinomina</button>
+                </div>
+            </div>
+
+            <div id="edit-mode-view">
+                <!-- AGGIUNGI ESERCIZIO SINGOLO -->
+                <div class="card">
+                    <h3 style="font-size:16px; margin-bottom:10px;">➕ Aggiungi Esercizio Singolo</h3>
+                    <div class="form-group-3" style="margin-bottom:8px;">
+                        <input type="text" id="single-name" placeholder="Nome Esercizio" style="margin-bottom:0;">
+                        <input type="number" id="single-sets" placeholder="Serie" value="4" style="margin-bottom:0;">
+                        <input type="number" id="single-reps" placeholder="Rep" value="8" style="margin-bottom:0;">
+                    </div>
+                    <div class="form-group-2" style="margin-bottom:12px;">
+                        <input type="number" id="single-rest-set" placeholder="Rec. tra Serie (s)" value="90" style="margin-bottom:0;">
+                        <input type="number" id="single-rest-block" placeholder="Rec. Fine Blocco (s)" value="120" style="margin-bottom:0;">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%" onclick="addSingleExercise()">+ Aggiungi alla Scheda</button>
+                </div>
+
+                <!-- AGGIUNGI SUPERSET -->
+                <div class="superset-builder-box">
+                    <h3 style="font-size:16px; margin-bottom:10px; color:#c084fc;">⚡ Aggiungi Superset</h3>
+                    <div id="superset-dynamic-rows" style="margin-bottom:10px;"></div>
+                    <button class="btn btn-sm" onclick="addSupersetRow()" style="background:#3b2d54; color:#d8b4fe; margin-bottom:12px; width:100%;">+ Aggiungi esercizio al Superset</button>
+                    
+                    <div class="form-group-2" style="margin-bottom:12px;">
+                        <div>
+                            <label style="font-size:11px; color:var(--subtext); display:block; margin-bottom:4px;">Rec. tra esercizi (s):</label>
+                            <input type="number" id="super-rest-set" value="30" style="margin-bottom:0;">
+                        </div>
+                        <div>
+                            <label style="font-size:11px; color:var(--subtext); display:block; margin-bottom:4px;">Rec. Fine Superset (s):</label>
+                            <input type="number" id="super-rest-block" value="180" style="margin-bottom:0;">
+                        </div>
+                    </div>
+                    <button class="btn btn-success" style="width:100%; background:var(--superset-border);" onclick="saveNewSupersetBlock()">💾 Salva Superset nella Scheda</button>
+                </div>
+
+                <div id="edit-routine-list"></div>
+
+                <div style="margin-top: 15px; margin-bottom: 25px;">
+                    <button class="btn btn-success btn-large" onclick="saveAndShowSummary()">💾 Salva Scheda</button>
+                </div>
+            </div>
+
+            <div id="summary-mode-view" class="hidden">
+                <div class="card" style="margin-bottom: 12px; background: #111; text-align:center;">
+                    <h3 style="font-size:18px; color:var(--text);" id="summary-routine-title">📋 Scheda Salvata</h3>
+                    <p style="font-size:12px; color:var(--subtext); margin-top:4px;">Riepilogo blocchi di allenamento</p>
+                </div>
+
+                <div id="summary-routine-list"></div>
+
+                <div style="margin-top: 20px; margin-bottom: 25px;">
+                    <button class="btn btn-primary btn-large" onclick="enableEditMode()">✏️ Modifica Scheda</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. TAB ANALISI -->
+        <div id="tab-chart" class="tab-content">
             <div class="card">
-                <h3 style="font-size:16px; margin-bottom:10px;">➕ Aggiungi Esercizio Singolo</h3>
-                <div class="form-group-3" style="margin-bottom:8px;">
-                    <input type="text" id="single-name" placeholder="Nome Esercizio">
-                    <input type="number" id="single-sets" placeholder="Serie" value="4">
-                    <input type="number" id="single-reps" placeholder="Rep" value="8">
-                </div>
-                <div class="form-group-2" style="margin-bottom:12px;">
-                    <input type="number" id="single-rest-set" placeholder="Rec. tra Serie (s)" value="90">
-                    <input type="number" id="single-rest-block" placeholder="Rec. Fine Blocco (s)" value="120">
-                </div>
-                <button class="btn btn-primary" style="width:100%" onclick="addSingleExercise()">+ Aggiungi alla Scheda</button>
-            </div>
-
-            <!-- AGGIUNGI SUPERSET -->
-            <div class="superset-builder-box">
-                <h3 style="font-size:16px; margin-bottom:10px; color:#c084fc;">⚡ Aggiungi Superset</h3>
-                <div id="superset-dynamic-rows" style="margin-bottom:10px;"></div>
-                <button class="btn btn-sm" onclick="addSupersetRow()" style="background:#3b2d54; color:#d8b4fe; margin-bottom:12px; width:100%;">+ Aggiungi esercizio al Superset</button>
-                
-                <div class="form-group-2" style="margin-bottom:12px;">
-                    <div>
-                        <label style="font-size:11px; color:var(--subtext); display:block; margin-bottom:4px;">Rec. tra esercizi (s):</label>
-                        <input type="number" id="super-rest-set" value="30">
-                    </div>
-                    <div>
-                        <label style="font-size:11px; color:var(--subtext); display:block; margin-bottom:4px;">Rec. Fine Superset (s):</label>
-                        <input type="number" id="super-rest-block" value="180">
-                    </div>
-                </div>
-                <button class="btn btn-success" style="width:100%; background:var(--superset-border);" onclick="saveNewSupersetBlock()">💾 Salva Superset nella Scheda</button>
-            </div>
-
-            <div id="edit-routine-list"></div>
-
-            <div style="margin-top: 15px; margin-bottom: 25px;">
-                <button class="btn btn-success btn-large" onclick="saveAndShowSummary()">💾 Salva Scheda</button>
+                <label style="font-size:13px; color:var(--subtext); display:block; margin-bottom:6px;">Seleziona Esercizio:</label>
+                <select id="chart-ex-select" onchange="renderChart()" style="margin-bottom:15px;"></select>
+                <canvas id="analyticsChart"></canvas>
             </div>
         </div>
 
-        <div id="summary-mode-view" class="hidden">
-            <div class="card" style="margin-bottom: 12px; background: #111; text-align:center;">
-                <h3 style="font-size:18px; color:var(--text);" id="summary-routine-title">📋 Scheda Salvata</h3>
-                <p style="font-size:12px; color:var(--subtext); margin-top:4px;">Riepilogo blocchi di allenamento</p>
-            </div>
-
-            <div id="summary-routine-list"></div>
-
-            <div style="margin-top: 20px; margin-bottom: 25px;">
-                <button class="btn btn-primary btn-large" onclick="enableEditMode()">✏️ Modifica Scheda</button>
-            </div>
+        <!-- 4. TAB STORICO -->
+        <div id="tab-history" class="tab-content">
+            <div id="history-container"></div>
         </div>
-    </div>
-
-    <!-- 3. TAB ANALISI -->
-    <div id="tab-chart" class="tab-content">
-        <div class="card">
-            <label style="font-size:13px; color:var(--subtext); display:block; margin-bottom:6px;">Seleziona Esercizio:</label>
-            <select id="chart-ex-select" onchange="renderChart()" style="margin-bottom:15px;"></select>
-            <canvas id="analyticsChart"></canvas>
-        </div>
-    </div>
-
-    <!-- 4. TAB STORICO -->
-    <div id="tab-history" class="tab-content">
-        <div id="history-container"></div>
     </div>
 </div>
 
@@ -474,6 +528,7 @@
     const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let currentUser = null;
+    let isRegistering = false;
 
     const defaultRoutines = {
         "Scheda A (Forza)": [
@@ -523,23 +578,118 @@
     let audioCtx = null;
 
     /* ==========================================
-       GESTIONE AUTENTICAZIONE E SINCRONIZZAZIONE
+       GESTIONE AUTENTICAZIONE (LOGIN / REGISTRAZIONE)
        ========================================== */
     async function initAuth() {
         try {
-            // Controlla se c'è una sessione attiva
             const { data: { session } } = await db.auth.getSession();
             if (session) {
                 currentUser = session.user;
+                showMainApp();
             } else {
-                // Se non c'è, effettua il login anonimo automatico per isolare i dati dell'utente
-                const { data, error } = await db.auth.signInAnonymously();
-                if (!error && data) {
-                    currentUser = data.user;
-                }
+                showAuthScreen();
             }
         } catch (e) {
-            console.log("Errore inizializzazione autenticazione:", e);
+            console.log("Errore sessione:", e);
+            showAuthScreen();
+        }
+    }
+
+    function showAuthScreen() {
+        document.getElementById('auth-container').classList.remove('hidden');
+        document.getElementById('main-app-container').classList.add('hidden');
+        document.getElementById('logout-btn').classList.add('hidden');
+    }
+
+    function showMainApp() {
+        document.getElementById('auth-container').classList.add('hidden');
+        document.getElementById('main-app-container').classList.remove('hidden');
+        document.getElementById('logout-btn').classList.remove('hidden');
+        
+        fetchRemoteData().then(() => {
+            initActiveRoutineSelect();
+            if (isRoutineSaved) saveAndShowSummary();
+            else {
+                renderEditRoutine();
+                initSupersetBuilderRows();
+            }
+        });
+
+        if (loadActiveWorkoutSession()) {
+            document.getElementById('start-session-view').classList.add('hidden');
+            document.getElementById('active-workout-view').classList.remove('hidden');
+            renderWorkout();
+            updateTimerDisplay();
+
+            if (workoutState.isRest) {
+                startRestTimer(workoutState.seconds);
+            } else {
+                workoutState.interval = setInterval(() => {
+                    if (!workoutState.isPaused) {
+                        workoutState.seconds++;
+                        updateTimerDisplay();
+                        saveActiveWorkoutSession();
+                    }
+                }, 1000);
+            }
+        }
+    }
+
+    function toggleAuthMode() {
+        isRegistering = !isRegistering;
+        const title = document.getElementById('auth-title');
+        const subtitle = document.getElementById('auth-subtitle');
+        const submitBtn = document.getElementById('auth-submit-btn');
+        const switchText = document.getElementById('auth-switch-text');
+
+        if (isRegistering) {
+            title.innerText = "Crea un Account";
+            subtitle.innerText = "Salva i tuoi progressi nel cloud per sempre";
+            submitBtn.innerText = "Registrati";
+            switchText.innerText = "Hai già un account? Accedi";
+        } else {
+            title.innerText = "Bentornato su IronFlow";
+            subtitle.innerText = "Accedi per mantenere i tuoi dati al sicuro";
+            submitBtn.innerText = "Accedi";
+            switchText.innerText = "Non hai un account? Registrati";
+        }
+    }
+
+    async function handleAuthSubmit() {
+        const email = document.getElementById('auth-email').value.trim();
+        const password = document.getElementById('auth-password').value;
+
+        if (!email || !password) {
+            alert("Inserisci email e password.");
+            return;
+        }
+
+        if (isRegistering) {
+            const { data, error } = await db.auth.signUp({ email, password });
+            if (error) {
+                alert("Errore di registrazione: " + error.message);
+            } else {
+                alert("Registrazione completata! Ora puoi accedere.");
+                isRegistering = false;
+                toggleAuthMode();
+            }
+        } else {
+            const { data, error } = await db.auth.signInWithPassword({ email, password });
+            if (error) {
+                alert("Credenziali non valide: " + error.message);
+            } else if (data.session) {
+                currentUser = data.session.user;
+                showMainApp();
+            }
+        }
+    }
+
+    async function handleLogout() {
+        if (confirm("Vuoi uscire dal tuo account?")) {
+            await db.auth.signOut();
+            currentUser = null;
+            localStorage.removeItem('ironflow_active_session');
+            showAuthScreen();
         }
     }
 
@@ -568,19 +718,19 @@
         try {
             const localHistory = JSON.parse(localStorage.getItem('ironflow_history')) || [];
             const { error } = await db.from('ironflow_data').upsert({
-                id: currentUser.id, // ID univoco dell'utente corrente (protetto da RLS)
+                id: currentUser.id,
                 routines: routines,
                 history: localHistory,
                 saved_status: savedStatusMap,
                 updated_at: new Date()
             });
             if (error) {
-                console.log("Sincronizzazione Supabase rimandata:", error.message);
+                console.log("Sincronizzazione rimandata:", error.message);
             } else {
-                console.log("Dati sincronizzati con successo per l'utente:", currentUser.id);
+                console.log("Dati sincronizzati con successo!");
             }
         } catch (e) {
-            console.error("Errore di connessione a Supabase:", e);
+            console.error("Errore sincronizzazione:", e);
         }
     }
 
@@ -607,7 +757,7 @@
                 }
             }
         } catch (e) {
-            console.log("Impossibile recuperare dati remoti, uso la versione locale.");
+            console.log("Nessun dato remoto trovato, uso la versione locale.");
         }
     }
 
@@ -773,10 +923,10 @@
         div.id = rowId;
         div.style.marginBottom = '6px';
         div.innerHTML = `
-            <input type="text" placeholder="Nome Esercizio" class="sup-ex-name">
-            <input type="number" placeholder="Serie" value="4" class="sup-ex-sets">
+            <input type="text" placeholder="Nome Esercizio" class="sup-ex-name" style="margin-bottom:0;">
+            <input type="number" placeholder="Serie" value="4" class="sup-ex-sets" style="margin-bottom:0;">
             <div style="display:flex; gap:4px;">
-                <input type="number" placeholder="Rep" value="10" class="sup-ex-reps">
+                <input type="number" placeholder="Rep" value="10" class="sup-ex-reps" style="margin-bottom:0;">
                 <button class="btn btn-danger btn-sm" onclick="document.getElementById('${rowId}').remove()">✕</button>
             </div>
         `;
@@ -1530,13 +1680,13 @@
                 exercisesHTML += `
                     <div style="background:#191919; padding:8px; border-radius:8px; margin-bottom:6px;">
                         <div class="form-group-3" style="margin-bottom:4px;">
-                            <input type="text" value="${ex.name}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'name', this.value)" placeholder="Nome Esercizio">
-                            <input type="number" value="${ex.sets}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'sets', this.value)" placeholder="Serie">
-                            <input type="number" value="${ex.reps}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'reps', this.value)" placeholder="Rep">
+                            <input type="text" value="${ex.name}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'name', this.value)" placeholder="Nome Esercizio" style="margin-bottom:0;">
+                            <input type="number" value="${ex.sets}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'sets', this.value)" placeholder="Serie" style="margin-bottom:0;">
+                            <input type="number" value="${ex.reps}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'reps', this.value)" placeholder="Rep" style="margin-bottom:0;">
                         </div>
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <span style="font-size:11px; color:var(--subtext);">Recupero Serie (s):</span>
-                            <input type="number" value="${ex.restSet || (block.isSuperset ? 30 : 90)}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'restSet', this.value)" style="width:60px; text-align:center;">
+                            <input type="number" value="${ex.restSet || (block.isSuperset ? 30 : 90)}" onchange="updateEditableExercise(${bIdx}, ${exIdx}, 'restSet', this.value)" style="width:60px; text-align:center; margin-bottom:0;">
                         </div>
                     </div>
                 `;
@@ -1557,7 +1707,7 @@
                     ${exercisesHTML}
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; border-top:1px solid #222; padding-top:6px;">
                         <span style="font-size:11px; color:var(--subtext);">Recupero Fine Blocco (s):</span>
-                        <input type="number" value="${block.restAfterBlock || 120}" onchange="updateBlockRest(${bIdx}, this.value)" style="width:60px; text-align:center;">
+                        <input type="number" value="${block.restAfterBlock || 120}" onchange="updateBlockRest(${bIdx}, this.value)" style="width:60px; text-align:center; margin-bottom:0;">
                     </div>
                 </div>
             `;
@@ -1801,37 +1951,9 @@
         if (document.getElementById('tab-chart').classList.contains('active')) renderChart();
     });
 
-    // Avvio e gestione sincronizzazione iniziale con autenticazione anonima
+    // Avvio controllo autenticazione
     updateOnlineStatus();
-    initAuth().then(() => {
-        fetchRemoteData().then(() => {
-            initActiveRoutineSelect();
-            if (isRoutineSaved) saveAndShowSummary();
-            else {
-                renderEditRoutine();
-                initSupersetBuilderRows();
-            }
-        });
-    });
-
-    if (loadActiveWorkoutSession()) {
-        document.getElementById('start-session-view').classList.add('hidden');
-        document.getElementById('active-workout-view').classList.remove('hidden');
-        renderWorkout();
-        updateTimerDisplay();
-
-        if (workoutState.isRest) {
-            startRestTimer(workoutState.seconds);
-        } else {
-            workoutState.interval = setInterval(() => {
-                if (!workoutState.isPaused) {
-                    workoutState.seconds++;
-                    updateTimerDisplay();
-                    saveActiveWorkoutSession();
-                }
-            }, 1000);
-        }
-    }
+    initAuth();
 </script>
 
 <script>
