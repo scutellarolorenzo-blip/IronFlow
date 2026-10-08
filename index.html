@@ -966,7 +966,7 @@ input:focus,select:focus{
 .history-date .btn-danger{
     width:30px;height:30px;
     padding:0!important;
-    border-radius:9px!important;
+    border-radius:999px!important;
     background:rgba(255,93,120,.08)!important;
     color:#ff7f95!important;
     border:1px solid rgba(255,93,120,.12)!important;
@@ -1694,17 +1694,10 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         currentRoutineKey = Object.keys(routines)[0];
         isRoutineSaved = false;
 
-        fetchRemoteData().then(() => {
-            initActiveRoutineSelect();
-            updateIronFlowDashboard();
-            if (isRoutineSaved) saveAndShowSummary();
-            else {
-                renderEditRoutine();
-                initSupersetBuilderRows();
-            }
-        });
+        // 1. CARICAMENTO PRIMARIO ALLENAMENTO ATTIVO (se presente nel LocalStorage)
+        const hasActiveSession = loadActiveWorkoutSession();
 
-        if (loadActiveWorkoutSession()) {
+        if (hasActiveSession) {
             document.getElementById('start-session-view').classList.add('hidden');
             document.getElementById('active-workout-view').classList.remove('hidden');
             renderWorkout();
@@ -1713,15 +1706,22 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
             if (workoutState.isRest) {
                 startRestTimer(workoutState.seconds);
             } else {
-                workoutState.interval = setInterval(() => {
-                    if (!workoutState.isPaused) {
-                        workoutState.seconds++;
-                        updateTimerDisplay();
-                        saveActiveWorkoutSession();
-                    }
-                }, 1000);
+                startWorkTimer();
             }
         }
+
+        // 2. SINCRONIZZAZIONE DATI DA SUPABASE IN BACKGROUND
+        fetchRemoteData().then(() => {
+            if (!workoutState.active) {
+                initActiveRoutineSelect();
+                updateIronFlowDashboard();
+                if (isRoutineSaved) saveAndShowSummary();
+                else {
+                    renderEditRoutine();
+                    initSupersetBuilderRows();
+                }
+            }
+        });
     }
 
     function toggleAuthMode() {
@@ -1904,15 +1904,15 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
                 } else {
                     savedStatusMap = {};
                 }
-            } else {
-                routines = JSON.parse(JSON.stringify(defaultRoutines));
-                historyData = [];
-                savedStatusMap = {};
             }
-            
-            currentRoutineKey = Object.keys(routines)[0];
-            if (!routines[currentRoutineKey]) currentRoutineKey = Object.keys(routines)[0];
-            isRoutineSaved = savedStatusMap[currentRoutineKey] || false;
+
+            // NON SOVRASCRIVERE O CAMBIARE CHIAVE SE C'È UN ALLENAMENTO ATTIVO
+            if (!workoutState.active) {
+                if (!routines[currentRoutineKey]) {
+                    currentRoutineKey = Object.keys(routines)[0];
+                }
+                isRoutineSaved = savedStatusMap[currentRoutineKey] || false;
+            }
 
             localStorage.setItem('ironflow_routines', JSON.stringify(routines));
             localStorage.setItem('ironflow_history', JSON.stringify(historyData));
@@ -1920,12 +1920,7 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
             localStorage.setItem('ironflow_current_key', currentRoutineKey);
 
         } catch (e) {
-            console.log("Nessun dato remoto trovato o errore di recupero, uso la versione pulita.");
-            routines = JSON.parse(JSON.stringify(defaultRoutines));
-            historyData = [];
-            savedStatusMap = {};
-            currentRoutineKey = Object.keys(routines)[0];
-            isRoutineSaved = false;
+            console.log("Nessun dato remoto trovato o errore di recupero, uso la versione locale.");
         }
     }
 
@@ -2193,7 +2188,8 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
             activeBlockIdx: activeBlockIdx,
             activeSetNum: activeSetNum,
             activeSubExIdx: activeSubExIdx,
-            routineKey: currentRoutineKey
+            routineKey: currentRoutineKey,
+            routineStructure: routines[currentRoutineKey] || [] // Backup completo della struttura della scheda
         };
         localStorage.setItem('ironflow_active_session', JSON.stringify(sessionData));
     }
@@ -2204,20 +2200,32 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         try {
             const data = JSON.parse(saved);
             if (data && data.active) {
+                if (data.routineKey) {
+                    currentRoutineKey = data.routineKey;
+                }
+                // Se la scheda non è ancora in memoria o scaricata parzialmente, usiamo il backup al volo
+                if (data.routineStructure && data.routineStructure.length > 0) {
+                    routines[currentRoutineKey] = data.routineStructure;
+                }
+
                 workoutState.active = data.active;
                 workoutState.isRest = data.isRest;
                 workoutState.isPaused = data.isPaused;
-                workoutState.seconds = data.seconds;
                 workoutState.savedRestSeconds = data.savedRestSeconds !== undefined ? data.savedRestSeconds : null;
                 workoutState.startTime = data.startTime ? new Date(data.startTime) : new Date();
+                
+                if (!workoutState.isRest && workoutState.startTime) {
+                    const elapsed = Math.floor((new Date() - workoutState.startTime) / 1000);
+                    workoutState.seconds = Math.max(0, elapsed);
+                } else {
+                    workoutState.seconds = data.seconds;
+                }
+
                 workoutState.completedSets = data.completedSets || {};
                 workoutState.lockedSets = data.lockedSets || {};
                 activeBlockIdx = data.activeBlockIdx || 0;
                 activeSetNum = data.activeSetNum || 1;
                 activeSubExIdx = data.activeSubExIdx || 0;
-                if (data.routineKey && routines[data.routineKey]) {
-                    currentRoutineKey = data.routineKey;
-                }
                 return true;
             }
         } catch (e) {
@@ -2255,6 +2263,8 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         const container = document.getElementById('workout-list');
         container.innerHTML = '';
         const blocks = routines[currentRoutineKey];
+
+        if (!blocks) return;
 
         blocks.forEach((block, bIdx) => {
             const isSupersetGroup = block.isSuperset && block.exercises.length > 1;
@@ -2656,6 +2666,7 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
             });
         }
 
+        // Il timer dell'esercizio riparte sempre da 0 per la nuova serie
         startWorkTimer();
         renderWorkout();
         saveActiveWorkoutSession();
@@ -2690,8 +2701,13 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
     }
 
     function startWorkTimer() {
+        clearInterval(workoutState.interval);
         workoutState.isRest = false;
+        
+        // Reset azzerato ad ogni inizio di serie/esercizio
+        workoutState.startTime = new Date();
         workoutState.seconds = 0;
+        
         updateTimerDisplay();
         saveActiveWorkoutSession();
 
@@ -2756,25 +2772,27 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         const routine = routines[currentRoutineKey];
         currentSessionLogsTemp = [];
 
-        routine.forEach((block, bIdx) => {
-            const isSuperset = block.isSuperset && block.exercises.length > 1;
-            block.exercises.forEach((ex, exIdx) => {
-                const setsDataArr = [];
-                for (let s = 1; s <= ex.sets; s++) {
-                    const key = `${bIdx}-${exIdx}-${s}`;
-                    if (workoutState.completedSets[key]?.done) {
-                        setsDataArr.push({
-                            reps: workoutState.completedSets[key].reps ?? ex.reps,
-                            weight: workoutState.completedSets[key].weight ?? (ex.weight || 0),
-                            time: workoutState.completedSets[key].time ?? 0
-                        });
+        if (routine) {
+            routine.forEach((block, bIdx) => {
+                const isSuperset = block.isSuperset && block.exercises.length > 1;
+                block.exercises.forEach((ex, exIdx) => {
+                    const setsDataArr = [];
+                    for (let s = 1; s <= ex.sets; s++) {
+                        const key = `${bIdx}-${exIdx}-${s}`;
+                        if (workoutState.completedSets[key]?.done) {
+                            setsDataArr.push({
+                                reps: workoutState.completedSets[key].reps ?? ex.reps,
+                                weight: workoutState.completedSets[key].weight ?? (ex.weight || 0),
+                                time: workoutState.completedSets[key].time ?? 0
+                            });
+                        }
                     }
-                }
-                if (setsDataArr.length > 0) {
-                    currentSessionLogsTemp.push({ name: ex.name, setsData: setsDataArr, isSuperset: isSuperset });
-                }
+                    if (setsDataArr.length > 0) {
+                        currentSessionLogsTemp.push({ name: ex.name, setsData: setsDataArr, isSuperset: isSuperset });
+                    }
+                });
             });
-        });
+        }
 
         refreshSummaryDisplay();
 
@@ -2888,6 +2906,8 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         const container = document.getElementById('edit-routine-list');
         container.innerHTML = '';
 
+        if (!blocks) return;
+
         blocks.forEach((block, bIdx) => {
             let exercisesHTML = '';
             block.exercises.forEach((ex, exIdx) => {
@@ -2983,17 +3003,19 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         container.innerHTML = '';
 
         const blocks = routines[currentRoutineKey];
-        blocks.forEach((block, bIdx) => {
-            let listText = block.exercises.map(e => `• ${e.name} (${e.sets} × ${e.reps} rep @ ${e.weight || 0}kg)`).join('<br>');
-            const tag = block.isSuperset ? `<span style="color:var(--superset-border); font-weight:bold; font-size:11px;">[Superset]</span> ` : '';
-            container.innerHTML += `
-                <div class="card" style="margin-bottom:10px; background:#11131a;">
-                    <h4 style="font-size:15px; margin-bottom:6px; color:var(--text);">${tag}Blocco ${bIdx + 1}</h4>
-                    <div style="font-size:13px; color:var(--subtext); line-height:1.4;">${listText}</div>
-                    <div style="font-size:11px; color:var(--subtext); margin-top:8px;">Recupero fine blocco: ${block.restAfterBlock || 120}s</div>
-                </div>
-            `;
-        });
+        if (blocks) {
+            blocks.forEach((block, bIdx) => {
+                let listText = block.exercises.map(e => `• ${e.name} (${e.sets} × ${e.reps} rep @ ${e.weight || 0}kg)`).join('<br>');
+                const tag = block.isSuperset ? `<span style="color:var(--superset-border); font-weight:bold; font-size:11px;">[Superset]</span> ` : '';
+                container.innerHTML += `
+                    <div class="card" style="margin-bottom:10px; background:#11131a;">
+                        <h4 style="font-size:15px; margin-bottom:6px; color:var(--text);">${tag}Blocco ${bIdx + 1}</h4>
+                        <div style="font-size:13px; color:var(--subtext); line-height:1.4;">${listText}</div>
+                        <div style="font-size:11px; color:var(--subtext); margin-top:8px;">Recupero fine blocco: ${block.restAfterBlock || 120}s</div>
+                    </div>
+                `;
+            });
+        }
     }
 
     function enableEditMode() {
@@ -3245,7 +3267,7 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
             detailsContainer.innerHTML = detailsHtml;
 
         } else {
-            // Grafico 2: Miglioramento complessivo (Logica Bilanciata con Media delle ultime sessioni per evitare falsi zeri)
+            // Grafico 2: Miglioramento complessivo
             let maxRepSessions = [];
 
             chronologicalHistory.forEach(h => {
@@ -3275,10 +3297,8 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
             });
 
             if (maxRepSessions.length > 0) {
-                // Baseline: Prendiamo il primo valore valido (maggiore di 0 se possibile)
                 let firstScore = maxRepSessions[0].maxRepScore;
                 
-                // Recente bilanciato: Facciamo la media degli ultimi 3 allenamenti (o di quanti ce ne sono) per evitare fluttuazioni anomale dell'ultimo giorno
                 const recentCount = Math.min(3, maxRepSessions.length);
                 let recentSum = 0;
                 for (let i = 0; i < recentCount; i++) {
@@ -3290,7 +3310,7 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
                 if (firstScore > 0) {
                     pctChange = ((recentAvgScore - firstScore) / firstScore) * 100;
                 } else if (recentAvgScore > 0) {
-                    pctChange = 100; // Se partiva da zero netto
+                    pctChange = 100;
                 }
 
                 pctChange = parseFloat(pctChange.toFixed(1));
