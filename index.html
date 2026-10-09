@@ -33,209 +33,7 @@
     --input-border: rgba(255,255,255,.09);
     --shadow: 0 22px 60px rgba(0,0,0,.38);
     --shadow-soft: 0 10px 30px rgba(0,0,0,.24);
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-html { background: var(--bg); }
-body {
-    background:
-        radial-gradient(circle at 12% 0%, rgba(91,140,255,.16), transparent 28rem),
-        radial-gradient(circle at 92% 12%, rgba(124,92,255,.13), transparent 25rem),
-        radial-gradient(circle at 50% 100%, rgba(33,212,154,.055), transparent 30rem),
-        linear-gradient(180deg, #07080c 0%, #090b10 48%, #07080c 100%);
-    color: var(--text);
-    padding: 18px 14px 40px;
-    display: flex;
-    justify-content: center;
-    min-height: 100vh;
-    overflow-x: hidden;
-}
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.014) 1px, transparent 1px);
-    background-size: 42px 42px;
-    mask-image: linear-gradient(to bottom, black, transparent 75%);
-    opacity: .3;
-}
-
-.app-container { width: 100%; max-width: 560px; position: relative; z-index: 1; }
-.header {
-    margin: 4px 2px 18px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    min-height: 46px;
-}
-.header h1 {
-    font-size: 27px;
-    line-height: 1;
-    font-weight: 900;
-    letter-spacing: -1.2px;
-    background: linear-gradient(110deg, #ffffff 8%, #8fb2ff 48%, #7c5cff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    position: relative;
-}
-.header h1::after {
-    content: "TRAIN • TRACK • EVOLVE";
-    display: block;
-    margin-top: 6px;
-    font-size: 7px;
-    letter-spacing: 2.2px;
-    font-weight: 800;
-    background: linear-gradient(90deg, #69758c, #454d5d);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-.header-actions { display: flex; align-items: center; gap: 8px; }
-
-.sync-indicator {
-    font-size: 10px; font-weight: 800; padding: 7px 10px; border-radius: 999px;
-    display: flex; align-items: center; gap: 6px; backdrop-filter: blur(16px);
-    text-transform: uppercase; letter-spacing: .4px;
-}
-.sync-online { background: rgba(33,212,154,.08); color: #67e8b9; border: 1px solid rgba(33,212,154,.18); box-shadow: inset 0 1px rgba(255,255,255,.04); }
-.sync-offline { background: rgba(255,85,112,.08); color: #ff8297; border: 1px solid rgba(255,85,112,.18); }
-
-.nav-tabs {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 18px;
-    padding: 5px; border: 1px solid var(--card-border); border-radius: 17px;
-    background: rgba(12,14,20,.72); backdrop-filter: blur(18px); box-shadow: var(--shadow-soft);
-    position: sticky; top: 8px; z-index: 120;
-}
-.tab-btn {
-    position: relative; overflow: hidden; background: transparent; border: 0; color: var(--subtext);
-    padding: 11px 4px; border-radius: 12px; font-size: 11px; font-weight: 800; cursor: pointer;
-    text-align: center; transition: .22s ease; letter-spacing: .1px;
-}
-.tab-btn::before { content:""; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,.06),transparent); opacity:0; transition:.22s; }
-.tab-btn:hover::before { opacity:1; }
-.tab-btn.active {
-    color:#fff; background: linear-gradient(135deg, #4d7df2, #6b54e8); border-color: transparent;
-    box-shadow: 0 7px 20px rgba(76,103,238,.28), inset 0 1px rgba(255,255,255,.18);
-}
-.tab-btn.active::after { content:""; position:absolute; bottom:3px; left:34%; right:34%; height:2px; border-radius:2px; background:rgba(255,255,255,.8); }
-
-.tab-content { display:none; opacity:0; transform:translateY(7px); }
-.tab-content.active { display:block; opacity:1; transform:none; animation: pageIn .28s ease both; }
-@keyframes pageIn { from { opacity:0; transform:translateY(8px) scale(.992); } to { opacity:1; transform:none; } }
-
-.card, .block-card, .edit-block-item, .history-item, .analytics-session-card, .set-group-card {
-    background: linear-gradient(145deg, rgba(20,23,33,.92), rgba(13,15,22,.88));
-    border: 1px solid var(--card-border); box-shadow: var(--shadow-soft); backdrop-filter: blur(16px);
-}
-.card {
-    border-radius: 22px; padding: 19px; margin-bottom: 14px; position: relative; overflow: hidden;
-}
-.card::before { content:""; position:absolute; top:0; left:14%; right:14%; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent); }
-.block-card { border-radius: 18px; padding: 15px; margin-bottom: 13px; }
-.block-card.is-superset-group { border: 1px solid rgba(155,114,255,.42); background:linear-gradient(145deg,rgba(126,81,218,.10),rgba(16,14,25,.78)); box-shadow:0 12px 30px rgba(89,54,161,.13); }
-.edit-block-item { border-radius: 17px; padding: 14px; margin-bottom: 11px; }
-.edit-block-item.superset-item { border-left: 3px solid var(--superset-border); }
-.set-group-card { background:rgba(9,11,16,.58); border-radius:14px; padding:11px; margin-bottom:9px; }
-.sub-exercise-row { display:flex; justify-content:space-between; align-items:center; background:rgba(27,31,43,.72); padding:10px 11px; border-radius:11px; margin-bottom:6px; border:1px solid rgba(255,255,255,.035); }
-
-.timer-sticky {
-    position: sticky; top: 72px; z-index: 100; border-color: rgba(91,140,255,.18);
-    box-shadow: 0 18px 45px rgba(0,0,0,.52); backdrop-filter: blur(24px);
-    background: linear-gradient(145deg, rgba(18,22,33,.92), rgba(10,12,18,.9));
-}
-.timer-box { text-align:center; padding: 15px 0 12px; }
-.timer-status { font-size:9px; font-weight:900; letter-spacing:2px; color:#71809a; text-transform:uppercase; }
-.timer-display {
-    font-size: clamp(48px, 13vw, 66px); line-height:1; font-weight:900; margin:9px 0 16px;
-    font-variant-numeric:tabular-nums; letter-spacing:-2px;
-    background:linear-gradient(180deg,#fff,#9eabd0); -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    text-shadow:0 0 35px rgba(91,140,255,.16);
-}
-.btn-group { display:flex; gap:7px; justify-content:center; flex-wrap:wrap; }
-button.btn {
-    position:relative; overflow:hidden; background:rgba(255,255,255,.065); color:var(--text); border:1px solid rgba(255,255,255,.07);
-    padding:11px 16px; border-radius:12px; font-size:13px; font-weight:800; cursor:pointer; transition:.18s ease;
-    display:inline-flex; align-items:center; justify-content:center; gap:7px; box-shadow:inset 0 1px rgba(255,255,255,.04);
-}
-button.btn::after { content:""; position:absolute; inset:0; background:linear-gradient(120deg,transparent,rgba(255,255,255,.09),transparent); transform:translateX(-110%); transition:.45s; }
-button.btn:hover::after { transform:translateX(110%); }
-button.btn:hover { transform:translateY(-1px); border-color:rgba(255,255,255,.13); }
-button.btn:active { transform:translateY(0) scale(.985); }
-button.btn-primary { background:linear-gradient(135deg,#4f82ff,#6655e8); color:#fff; border-color:rgba(255,255,255,.1); box-shadow:0 10px 24px rgba(70,103,230,.23); }
-button.btn-success { background:linear-gradient(135deg,#18c991,#12a97e); color:#fff; border-color:rgba(255,255,255,.08); box-shadow:0 10px 24px rgba(18,169,126,.18); }
-button.btn-danger { background:rgba(255,85,112,.09); color:#ff8da0; border:1px solid rgba(255,85,112,.19); }
-button.btn-warning { background:rgba(255,181,71,.09); color:#ffc96f; border:1px solid rgba(255,181,71,.2); }
-button.btn-sm { padding:7px 11px; font-size:11px; border-radius:9px; }
-.btn-large { padding:15px 16px; font-size:14px; width:100%; border-radius:14px; font-weight:900; }
-
-.field-label { font-size:9px; font-weight:800; color:#78839a; margin-bottom:5px; display:block; text-transform:uppercase; letter-spacing:.65px; }
-input[type="number"], input[type="text"], input[type="email"], input[type="password"], select {
-    background:var(--input-bg) !important; border:1px solid var(--input-border) !important; color:#fff !important;
-    padding:11px 12px !important; border-radius:11px !important; font-size:13px !important; width:100% !important;
-    margin-bottom:8px !important; outline:none !important; transition:.2s ease !important; box-shadow:inset 0 1px rgba(255,255,255,.025) !important;
-}
-input::placeholder { color:#505a6e !important; }
-input:focus, select:focus { border-color:rgba(91,140,255,.7) !important; box-shadow:0 0 0 3px rgba(91,140,255,.09), inset 0 1px rgba(255,255,255,.04) !important; }
-select { cursor:pointer; }
-.sub-exercise-row input[type="number"] { width:55px !important; text-align:center !important; margin-bottom:0 !important; padding:8px 4px !important; }
-
-#auth-container { display:flex; flex-direction:column; justify-content:center; padding:7vh 0 20px; min-height:72vh; }
-.auth-box {
-    position:relative; overflow:hidden; background:linear-gradient(145deg,rgba(20,24,35,.92),rgba(10,12,18,.94));
-    border:1px solid var(--card-border-strong); border-radius:27px; padding:31px 23px; text-align:center;
-    box-shadow:0 30px 80px rgba(0,0,0,.55), inset 0 1px rgba(255,255,255,.05); backdrop-filter:blur(22px);
-}
-.auth-box::before { content:""; position:absolute; width:180px; height:180px; border-radius:50%; background:rgba(91,140,255,.15); filter:blur(45px); top:-100px; left:-70px; pointer-events:none; }
-.auth-box::after { content:""; position:absolute; width:160px; height:160px; border-radius:50%; background:rgba(124,92,255,.11); filter:blur(45px); bottom:-100px; right:-60px; pointer-events:none; }
-.auth-toggle { font-size:11px; color:#729cff; cursor:pointer; margin-top:14px; display:inline-block; font-weight:800; transition:.18s; }
-.auth-toggle:hover { color:#a8bdff; }
-
-.block-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:11px; padding-bottom:9px; border-bottom:1px solid rgba(255,255,255,.055); }
-.block-title { font-size:14px; font-weight:850; color:var(--text); }
-.set-input-group { display:flex; align-items:center; gap:4px; }
-.form-group-3 { display:grid; grid-template-columns:2fr 1fr 1fr; gap:8px; margin-bottom:8px; }
-.form-group-4 { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:6px; margin-bottom:8px; }
-.form-group-2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px; }
-.superset-builder-box { background:linear-gradient(145deg,rgba(139,92,246,.10),rgba(38,25,67,.16)); border:1px solid rgba(155,114,255,.38); border-radius:18px; padding:16px; margin-bottom:14px; box-shadow:0 14px 35px rgba(70,42,132,.12); }
-.history-item { border-radius:16px; padding:14px; margin-bottom:10px; }
-.history-date { display:flex; justify-content:space-between; font-weight:800; font-size:13px; margin-bottom:6px; }
-.history-details { font-size:11px; color:var(--subtext); line-height:1.55; }
-.analytics-session-card { border-radius:14px; padding:12px; margin-top:9px; }
-.hidden { display:none !important; }
-
-/* Micro-polish for common inline sections */
-#workout-list > div { animation: itemIn .25s ease both; }
-@keyframes itemIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:none; } }
-#start-session-view { background:radial-gradient(circle at 50% -10%,rgba(91,140,255,.13),transparent 55%), linear-gradient(145deg,rgba(20,23,33,.92),rgba(12,14,21,.9)); }
-#start-session-view h2 { letter-spacing:-.5px; }
-#summary-routine-list, #analytics-details-list, #history-container { padding-bottom:4px; }
-
-@media (max-width: 390px) {
-    body { padding-left:10px; padding-right:10px; }
-    .header h1 { font-size:24px; }
-    .sync-indicator { padding:6px 8px; font-size:9px; }
-    .tab-btn { font-size:10px; }
-    .card { padding:15px; border-radius:18px; }
-    .form-group-4 { grid-template-columns:1.7fr 1fr 1fr 1fr; gap:4px; }
-}
-
-@media (min-width: 700px) {
-    body { padding-top:28px; }
-    .app-container { max-width:620px; }
-    .nav-tabs { margin-bottom:22px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration:.01ms !important; transition-duration:.01ms !important; }
-}
-
-/* =========================================================
-   IRONFLOW — APP STORE / PLAY STORE VISUAL SYSTEM
-   Visual-only layer + small UI helpers. Core workout logic
-   remains untouched.
-   ========================================================= */
-
-:root{
+    
     --if-bg:#05070b;
     --if-surface:rgba(15,18,27,.84);
     --if-surface-2:rgba(21,25,37,.92);
@@ -252,16 +50,32 @@ select { cursor:pointer; }
     --if-shadow:0 24px 70px rgba(0,0,0,.42);
 }
 
-body{
-    padding:16px 12px 38px;
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+html { background: var(--bg); }
+body {
     background:
-      radial-gradient(600px 420px at 8% -4%,rgba(91,116,255,.22),transparent 62%),
-      radial-gradient(520px 400px at 100% 4%,rgba(154,124,255,.16),transparent 60%),
-      radial-gradient(620px 440px at 50% 108%,rgba(36,230,163,.07),transparent 62%),
-      #05070b;
+        radial-gradient(600px 420px at 8% -4%,rgba(91,116,255,.22),transparent 62%),
+        radial-gradient(520px 400px at 100% 4%,rgba(154,124,255,.16),transparent 60%),
+        radial-gradient(620px 440px at 50% 108%,rgba(36,230,163,.07),transparent 62%),
+        #05070b;
+    color: var(--text);
+    padding: 16px 12px 38px;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
-
-body::after{
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.014) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: linear-gradient(to bottom, black, transparent 75%);
+    opacity: .3;
+}
+body::after {
     content:"";
     position:fixed;
     inset:0;
@@ -270,863 +84,511 @@ body::after{
     z-index:0;
 }
 
-.app-container{max-width:590px;z-index:1;}
+.app-container { width: 100%; max-width: 590px; position: relative; z-index: 1; }
+.header {
+    margin: 5px 2px 14px;
+    padding: 2px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 46px;
+    position: relative;
+}
+.header h1 {
+    font-size: 30px;
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: -1.5px;
+    background: linear-gradient(110deg, #ffffff 8%, #8fb2ff 48%, #7c5cff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+}
+.header::after {
+    content: "TRAIN • TRACK • EVOLVE";
+    display: block;
+    position: absolute;
+    margin-top: 35px;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 2.1px;
+    color: #657087;
+}
+.header-actions { display: flex; align-items: center; gap: 8px; }
 
-.header{
-    margin:5px 2px 14px;
-    padding:2px 0;
-}
-.header h1{
-    font-size:30px;
-    letter-spacing:-1.5px;
-}
-.header::after{
-    content:"TRAIN • TRACK • EVOLVE";
-    display:block;
-    position:absolute;
-    margin-top:35px;
-    font-size:8px;
-    font-weight:800;
-    letter-spacing:2.1px;
-    color:#657087;
-}
-#logout-btn{
-    border-radius:12px!important;
-    border:1px solid var(--if-line-strong)!important;
-    background:rgba(255,255,255,.045)!important;
-    backdrop-filter:blur(18px);
-    -webkit-backdrop-filter:blur(18px);
-    box-shadow:none!important;
-}
-
-#main-nav-tabs{
-    position:sticky;
-    top:10px;
-    z-index:50;
-    padding:5px;
-    margin:0 0 15px;
-    border:1px solid var(--if-line);
-    border-radius:19px;
-    background:rgba(8,10,16,.76);
-    backdrop-filter:blur(22px);
-    -webkit-backdrop-filter:blur(22px);
-    box-shadow:0 16px 45px rgba(0,0,0,.30);
-    gap:4px!important;
-}
-#main-nav-tabs .tab-btn{
-    position:relative;
-    min-height:48px;
-    border:0!important;
-    border-radius:14px!important;
-    background:transparent!important;
-    color:#6f798d!important;
-    font-weight:800!important;
-    letter-spacing:.1px;
-    transition:transform .2s ease,color .2s ease,background .2s ease,box-shadow .2s ease;
-}
-#main-nav-tabs .tab-btn.active{
-    color:#fff!important;
-    background:linear-gradient(135deg,rgba(109,140,255,.22),rgba(154,124,255,.13))!important;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 22px rgba(78,92,190,.14);
-}
-#main-nav-tabs .tab-btn.active::after{
-    content:"";
-    position:absolute;
-    left:25%;
-    right:25%;
-    bottom:4px;
-    height:2px;
-    border-radius:99px;
-    background:linear-gradient(90deg,var(--if-blue),var(--if-violet));
-    box-shadow:0 0 12px rgba(109,140,255,.65);
+#logout-btn {
+    border-radius: 12px!important;
+    border: 1px solid var(--if-line-strong)!important;
+    background: rgba(255,255,255,.045)!important;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: none!important;
 }
 
-.tab-icon{
-    width:19px;height:19px;
-    display:block;
-    margin:0 auto 4px;
-    opacity:.85;
+.sync-indicator {
+    font-size: 10px; font-weight: 800; padding: 7px 10px; border-radius: 999px;
+    display: flex; align-items: center; gap: 6px; backdrop-filter: blur(16px);
+    text-transform: uppercase; letter-spacing: .4px;
 }
-.tab-btn.active .tab-icon{opacity:1;filter:drop-shadow(0 0 7px rgba(109,140,255,.35));}
-.tab-label{display:block;font-size:10px;line-height:1;}
+.sync-online { background: rgba(33,212,154,.08); color: #67e8b9; border: 1px solid rgba(33,212,154,.18); box-shadow: inset 0 1px rgba(255,255,255,.04); }
+.sync-offline { background: rgba(255,85,112,.08); color: #ff8297; border: 1px solid rgba(255,85,112,.18); }
 
-.card,.block-card,.history-item,.analytics-session-card{
-    border:1px solid var(--if-line)!important;
-    box-shadow:0 14px 42px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.025);
+#main-nav-tabs {
+    position: sticky;
+    top: 10px;
+    z-index: 50;
+    padding: 5px;
+    margin: 0 0 15px;
+    border: 1px solid var(--if-line);
+    border-radius: 19px;
+    background: rgba(8,10,16,.76);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    box-shadow: 0 16px 45px rgba(0,0,0,.30);
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px!important;
 }
-.card{
-    background:linear-gradient(145deg,rgba(19,23,34,.90),rgba(11,14,21,.90))!important;
-    border-radius:20px!important;
+#main-nav-tabs .tab-btn {
+    position: relative;
+    min-height: 48px;
+    overflow: hidden;
+    border: 0!important;
+    border-radius: 14px!important;
+    background: transparent!important;
+    color: #6f798d!important;
+    padding: 6px 4px; font-size: 11px; font-weight: 800!important; cursor: pointer;
+    text-align: center; transition: transform .2s ease, color .2s ease, background .2s ease, box-shadow .2s ease;
+    letter-spacing: .1px;
 }
-.btn{
-    border-radius:13px!important;
-    font-weight:800!important;
-    letter-spacing:.05px;
-    transition:transform .18s ease,filter .18s ease,box-shadow .18s ease!important;
+#main-nav-tabs .tab-btn.active {
+    color: #fff!important;
+    background: linear-gradient(135deg,rgba(109,140,255,.22),rgba(154,124,255,.13))!important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08),0 8px 22px rgba(78,92,190,.14);
 }
-.btn:hover{transform:translateY(-1px);filter:brightness(1.06);}
-.btn:active{transform:translateY(1px) scale(.985);}
-.btn-primary{
-    background:linear-gradient(135deg,#5f83ff,#8669ff)!important;
-    border:1px solid rgba(255,255,255,.12)!important;
-    box-shadow:0 10px 25px rgba(91,112,255,.24)!important;
-}
-.btn-success{
-    box-shadow:0 10px 25px rgba(36,230,163,.13)!important;
-}
-input,select{
-    border-radius:13px!important;
-    border:1px solid var(--if-line)!important;
-    background:rgba(5,8,13,.72)!important;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
-}
-input:focus,select:focus{
-    border-color:rgba(109,140,255,.55)!important;
-    box-shadow:0 0 0 3px rgba(109,140,255,.10),0 0 24px rgba(109,140,255,.08)!important;
-}
-
-#start-session-view{
-    position:relative;
-    overflow:hidden;
-    padding:0!important;
-    background:
-      radial-gradient(330px 190px at 85% 0%,rgba(109,140,255,.17),transparent 70%),
-      linear-gradient(145deg,rgba(19,24,37,.96),rgba(9,12,18,.98))!important;
-}
-#start-session-view::before{
-    content:"";
-    position:absolute;
-    width:190px;height:190px;
-    border-radius:50%;
-    right:-90px;top:-100px;
-    background:rgba(109,140,255,.14);
-    filter:blur(5px);
-}
-.dashboard-hero{
-    position:relative;
-    padding:25px 21px 20px;
-    text-align:left;
-    border-bottom:1px solid var(--if-line);
-}
-.dashboard-kicker{
-    display:flex;align-items:center;gap:7px;
-    color:#8590a6;font-size:9px;font-weight:900;
-    letter-spacing:1.8px;text-transform:uppercase;
-}
-.dashboard-kicker i{
-    width:7px;height:7px;border-radius:50%;
-    background:var(--if-green);
-    box-shadow:0 0 12px rgba(36,230,163,.75);
-}
-.dashboard-hero h2{
-    margin-top:9px!important;
-    font-size:27px!important;
-    letter-spacing:-1.1px;
-}
-.dashboard-hero p{margin-top:6px!important;color:#818ba0!important;}
-.dashboard-routine{
-    margin-top:18px;
-    padding:13px 14px;
-    border:1px solid rgba(109,140,255,.17);
-    border-radius:15px;
-    background:linear-gradient(135deg,rgba(109,140,255,.10),rgba(154,124,255,.055));
-}
-.dashboard-routine-label{
-    font-size:9px;color:#7e8aa2;font-weight:800;text-transform:uppercase;letter-spacing:1px;
-}
-.dashboard-routine-name{
-    margin-top:5px;font-size:16px;font-weight:850;color:#fff;
-}
-.dashboard-routine-meta{
-    display:flex;gap:7px;flex-wrap:wrap;margin-top:9px;
-}
-.dashboard-pill{
-    font-size:10px;color:#aab4c8;padding:5px 8px;
-    border-radius:999px;background:rgba(255,255,255,.045);
-    border:1px solid rgba(255,255,255,.06);
-}
-.dashboard-stats{
-    display:grid;grid-template-columns:repeat(4,1fr);
-    gap:7px;padding:13px 13px 5px;
-}
-.dashboard-stat{
-    min-width:0;padding:12px 7px;border-radius:15px;
-    background:rgba(255,255,255,.026);
-    border:1px solid rgba(255,255,255,.055);
-}
-.dashboard-stat-value{
-    font-size:18px;font-weight:900;letter-spacing:-.5px;
-}
-.dashboard-stat-label{
-    margin-top:4px;font-size:8px;color:#737e93;
-    font-weight:800;text-transform:uppercase;letter-spacing:.6px;
-}
-.dashboard-progress{
-    margin:9px 13px 14px;padding:13px 14px;
-    border-radius:15px;
-    background:rgba(255,255,255,.025);
-    border:1px solid rgba(255,255,255,.05);
-}
-.dashboard-progress-top{
-    display:flex;justify-content:space-between;align-items:center;
-    font-size:10px;font-weight:800;color:#8994a9;
-}
-.progress-track{
-    height:6px;margin-top:9px;border-radius:99px;background:#171c28;overflow:hidden;
-}
-.progress-fill{
-    width:0%;height:100%;border-radius:99px;
-    background:linear-gradient(90deg,var(--if-blue),var(--if-violet));
-    box-shadow:0 0 14px rgba(109,140,255,.45);
-    transition:width .5s ease;
-}
-.dashboard-start{
-    padding:7px 13px 19px;
-}
-.dashboard-start .btn{min-height:52px;font-size:15px!important;}
-
-.workout-hud{
-    display:grid;grid-template-columns:1fr auto;
-    gap:10px;align-items:center;
-    margin-bottom:11px;
-    padding:13px 15px;
-    border-radius:17px;
-    border:1px solid rgba(109,140,255,.13);
-    background:linear-gradient(135deg,rgba(109,140,255,.08),rgba(154,124,255,.045));
-}
-.workout-hud-kicker{font-size:8px;letter-spacing:1.5px;font-weight:900;color:#79849a;text-transform:uppercase;}
-.workout-hud-name{margin-top:4px;font-size:15px;font-weight:850;}
-.workout-hud-meta{margin-top:3px;font-size:10px;color:#788398;}
-.workout-progress-ring{
-    width:53px;height:53px;border-radius:50%;
-    display:grid;place-items:center;
-    background:conic-gradient(var(--if-blue) 0deg,rgba(255,255,255,.06) 0deg);
-    position:relative;
-}
-.workout-progress-ring::after{
-    content:"";position:absolute;inset:5px;border-radius:50%;background:#0d111a;
-}
-.workout-progress-value{position:relative;z-index:1;font-size:11px;font-weight:900;}
-
-.timer-box{
-    overflow:hidden;
-    background:
-      radial-gradient(280px 160px at 50% 0%,rgba(109,140,255,.14),transparent 72%),
-      linear-gradient(145deg,rgba(17,22,34,.97),rgba(8,11,17,.97))!important;
-    border-color:rgba(109,140,255,.13)!important;
-}
-.timer-status{
-    letter-spacing:1.7px!important;
-    font-size:9px!important;
-    font-weight:900!important;
-}
-.timer-display{
-    font-size:62px!important;
-    letter-spacing:-3px!important;
-    font-variant-numeric:tabular-nums;
-    text-shadow:0 0 35px rgba(109,140,255,.16);
-}
-#timer-controls{gap:7px!important;}
-#timer-controls .btn{flex:1;min-height:42px;}
-
-.block-card{
-    border-radius:19px!important;
-    background:linear-gradient(145deg,rgba(18,22,32,.95),rgba(10,13,20,.96))!important;
-}
-.block-header{padding-bottom:10px!important;}
-.block-title{font-weight:900!important;letter-spacing:-.2px;}
-
-.set-group-card{
-    border-radius:16px!important;
-    background:rgba(255,255,255,.018)!important;
-}
-.set-row{
-    border-color:rgba(255,255,255,.055)!important;
-    transition:background .2s ease,transform .2s ease;
-}
-.set-row:has(.btn-primary){
-    background:rgba(109,140,255,.045);
+#main-nav-tabs .tab-btn.active::after {
+    content: "";
+    position: absolute;
+    left: 25%;
+    right: 25%;
+    bottom: 4px;
+    height: 2px;
+    border-radius: 99px;
+    background: linear-gradient(90deg,var(--if-blue),var(--if-violet));
+    box-shadow: 0 0 12px rgba(109,140,255,.65);
 }
 
-#tab-chart > .card{
-    overflow:hidden;
-    background:
-      radial-gradient(360px 190px at 90% 0%,rgba(109,140,255,.10),transparent 70%),
-      linear-gradient(145deg,rgba(18,22,33,.96),rgba(9,12,18,.98))!important;
+.tab-icon {
+    width: 19px; height: 19px;
+    display: block;
+    margin: 0 auto 4px;
+    opacity: .85;
 }
-#analyticsChart{filter:drop-shadow(0 8px 18px rgba(70,90,190,.10));}
-#analytics-details-list .analytics-session-card{
-    border-radius:17px!important;
-    background:linear-gradient(145deg,rgba(18,22,32,.92),rgba(10,13,19,.95))!important;
+.tab-btn.active .tab-icon { opacity: 1; filter: drop-shadow(0 0 7px rgba(109,140,255,.35)); }
+.tab-label { display: block; font-size: 10px; line-height: 1; }
+
+.tab-content { display: none; opacity: 0; transform: translateY(7px); }
+.tab-content.active { display: block; opacity: 1; transform: none; animation: pageIn .28s ease both; }
+@keyframes pageIn { from { opacity: 0; transform: translateY(8px) scale(.992); } to { opacity: 1; transform: none; } }
+
+.card, .block-card, .edit-block-item, .history-item, .analytics-session-card, .set-group-card {
+    border: 1px solid var(--if-line)!important;
+    box-shadow: 0 14px 42px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.025);
+    backdrop-filter: blur(16px);
+}
+.card {
+    background: linear-gradient(145deg,rgba(19,23,34,.90),rgba(11,14,21,.90))!important;
+    border-radius: 20px!important; padding: 19px; margin-bottom: 14px; position: relative;
+    /* overflow: visible per non tagliare i menù a tendina custom */
+    overflow: visible !important;
+}
+/* Porta in primo piano la card quando un menù al suo interno viene aperto */
+.card:has(.custom-select-wrapper.open) {
+    z-index: 100 !important;
 }
 
-.history-item{
-    border-radius:18px!important;
-    background:linear-gradient(145deg,rgba(18,22,32,.94),rgba(10,13,19,.96))!important;
-    padding:16px!important;
+.block-card {
+    border-radius: 19px!important;
+    background: linear-gradient(145deg,rgba(18,22,32,.95),rgba(10,13,20,.96))!important;
+    padding: 15px; margin-bottom: 13px;
 }
-.history-date{margin-bottom:10px!important;}
-.history-date strong{font-size:15px!important;}
+.block-card.is-superset-group { border: 1px solid rgba(155,114,255,.42)!important; background: linear-gradient(145deg,rgba(126,81,218,.10),rgba(16,14,25,.78))!important; }
+.edit-block-item { border-radius: 18px!important; padding: 16px!important; margin-bottom: 10px!important; background: linear-gradient(145deg,rgba(20,24,35,.95),rgba(10,13,20,.97))!important; }
+.edit-block-item.superset-item { border-left: 3px solid var(--superset-border)!important; }
+.set-group-card { background: rgba(255,255,255,.018)!important; border-radius: 16px!important; padding: 11px; margin-bottom: 9px; }
+.sub-exercise-row { display: flex; justify-content: space-between; align-items: center; background: rgba(27,31,43,.72); padding: 10px 11px; border-radius: 11px; margin-bottom: 6px; border: 1px solid rgba(255,255,255,.035); }
 
-#tab-edit .card,.superset-builder-box{
-    border-radius:19px!important;
+.timer-sticky {
+    position: sticky; top: 72px; z-index: 100;
+    box-shadow: 0 18px 45px rgba(0,0,0,.52); backdrop-filter: blur(24px);
 }
-.superset-builder-box{
-    background:linear-gradient(145deg,rgba(42,27,66,.34),rgba(12,13,21,.94))!important;
-    border:1px solid rgba(154,124,255,.22)!important;
-    box-shadow:0 16px 42px rgba(0,0,0,.22)!important;
+.timer-box {
+    text-align: center; padding: 15px 0 12px;
+    overflow: hidden;
+    background: radial-gradient(280px 160px at 50% 0%,rgba(109,140,255,.14),transparent 72%), linear-gradient(145deg,rgba(17,22,34,.97),rgba(8,11,17,.97))!important;
+    border-color: rgba(109,140,255,.13)!important;
 }
+.timer-status { font-size: 9px!important; font-weight: 900!important; letter-spacing: 1.7px!important; color: #71809a; text-transform: uppercase; }
+.timer-display {
+    font-size: 62px!important; line-height: 1; font-weight: 900; margin: 9px 0 16px;
+    font-variant-numeric: tabular-nums; letter-spacing: -3px!important;
+    background: linear-gradient(180deg,#fff,#9eabd0); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 35px rgba(109,140,255,.16);
+}
+.btn-group { display: flex; gap: 7px!important; justify-content: center; flex-wrap: wrap; }
+#timer-controls .btn { flex: 1; min-height: 42px; }
 
-#workout-summary-view .card:first-child{
-    box-shadow:0 18px 50px rgba(36,230,163,.10),inset 0 1px 0 rgba(255,255,255,.04)!important;
+button.btn {
+    position: relative; overflow: hidden; background: rgba(255,255,255,.065); color: var(--text); border: 1px solid rgba(255,255,255,.07);
+    padding: 11px 16px; border-radius: 13px!important; font-size: 13px; font-weight: 800!important; cursor: pointer; transition: transform .18s ease, filter .18s ease, box-shadow .18s ease!important;
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px; box-shadow: inset 0 1px rgba(255,255,255,.04);
 }
+button.btn:hover { transform: translateY(-1px); filter: brightness(1.06); }
+button.btn:active { transform: translateY(1px) scale(.985); }
+button.btn-primary { background: linear-gradient(135deg,#5f83ff,#8669ff)!important; color: #fff; border: 1px solid rgba(255,255,255,.12)!important; box-shadow: 0 10px 25px rgba(91,112,255,.24)!important; }
+button.btn-success { background: linear-gradient(135deg,#1fbf91,#24d7a0)!important; color: #04130e!important; box-shadow: 0 10px 25px rgba(36,230,163,.13)!important; }
+button.btn-danger { background: rgba(255,93,120,.09)!important; border: 1px solid rgba(255,93,120,.14)!important; color: #ff8ba0!important; }
+button.btn-warning { background: rgba(255,181,71,.09); color: #ffc96f; border: 1px solid rgba(255,181,71,.2); }
+button.btn-sm { padding: 7px 11px; font-size: 11px; border-radius: 99px; }
+.btn-large { padding: 15px 16px; font-size: 14px; width: 100%; border-radius: 14px; font-weight: 900; }
 
-@media (max-width:430px){
-    .dashboard-stats{grid-template-columns:repeat(2,1fr);}
-    .dashboard-hero h2{font-size:24px!important;}
-    .timer-display{font-size:54px!important;}
-    #main-nav-tabs .tab-btn{min-height:45px;}
+.field-label { font-size: 9px; font-weight: 800; color: #78839a; margin-bottom: 5px; display: block; text-transform: uppercase; letter-spacing: .65px; }
+input[type="number"], input[type="text"], input[type="email"], input[type="password"], select {
+    background: rgba(15, 18, 27, 0.85) !important; 
+    border: 1px solid var(--if-line-strong) !important; 
+    color: var(--text) !important;
+    padding: 11px 14px !important; 
+    border-radius: 13px !important; 
+    font-size: 13px !important; 
+    width: 100% !important;
+    margin-bottom: 8px !important; 
+    outline: none !important; 
+    transition: all .2s cubic-bezier(0.4, 0, 0.2, 1) !important; 
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.03) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
-@media (min-width:700px){
-    body{padding-top:30px;}
-    .app-container{max-width:620px;}
-}
-
-
-/* =========================================================
-   IRONFLOW — SECOND PASS: CONSISTENCY / PRODUCT UI
-   ========================================================= */
-
-/* ---------- Global typography & section rhythm ---------- */
-.section-kicker{
-    display:flex;align-items:center;gap:8px;
-    margin-bottom:7px;
-    color:#768198;font-size:9px;font-weight:900;
-    letter-spacing:1.8px;text-transform:uppercase;
-}
-.section-kicker::before{
-    content:"";width:7px;height:7px;border-radius:50%;
-    background:linear-gradient(135deg,var(--if-blue),var(--if-violet));
-    box-shadow:0 0 11px rgba(109,140,255,.55);
-}
-.section-title{
-    margin:0!important;font-size:23px!important;
-    letter-spacing:-.8px!important;
-}
-.section-subtitle{
-    margin:5px 0 0!important;color:#7e899e!important;
-    font-size:11px!important;line-height:1.5!important;
-}
-
-/* ---------- Edit / Workout Builder ---------- */
-#tab-edit{padding-top:1px;}
-#tab-edit .card,
-#tab-edit .superset-builder-box{
-    margin-bottom:11px;
-}
-#tab-edit > .card:first-child{
-    position:relative;
-    overflow:hidden;
-    padding:20px!important;
-    background:
-      radial-gradient(260px 150px at 100% 0%,rgba(109,140,255,.14),transparent 70%),
-      linear-gradient(145deg,rgba(19,24,37,.96),rgba(9,12,18,.98))!important;
-}
-#tab-edit > .card:first-child::after{
-    content:"";
-    position:absolute;right:-50px;top:-60px;width:140px;height:140px;
-    border-radius:50%;border:1px solid rgba(109,140,255,.10);
-    box-shadow:0 0 0 18px rgba(109,140,255,.025),0 0 0 36px rgba(109,140,255,.015);
-}
-#tab-edit > .card:first-child > div:first-child{
-    position:relative;display:block!important;margin-bottom:14px!important;z-index:1;
-}
-#tab-edit > .card:first-child h3{
-    font-size:22px!important;letter-spacing:-.7px;
-    margin:0!important;
-}
-#tab-edit > .card:first-child h3::before{
-    content:"WORKOUT BUILDER";
-    display:block;margin-bottom:6px;
-    font-size:8px;font-weight:900;letter-spacing:1.8px;color:#748097;
-}
-#tab-edit > .card:first-child > div:nth-child(2),
-#tab-edit > .card:first-child > div:nth-child(3){
-    position:relative;z-index:2;
-}
-#tab-edit > .card:first-child > div:nth-child(2) select{
-    min-height:46px!important;
-}
-#tab-edit > .card:first-child > div:nth-child(2) .btn-danger{
-    min-width:82px;
-}
-#tab-edit > .card:first-child > div:nth-child(3) .btn{
-    min-width:82px;
+input::placeholder { color: #505a6e !important; }
+input:focus, select:focus { 
+    border-color: var(--if-blue) !important; 
+    box-shadow: 0 0 0 3px rgba(109,140,255,.18), 0 0 20px rgba(109,140,255,.15) !important; 
 }
 
-#edit-mode-view .card:not(:first-child),
-#edit-mode-view .superset-builder-box{
-    padding:19px!important;
-}
-#edit-mode-view .card:not(:first-child) > h3,
-#edit-mode-view .superset-builder-box > h3{
-    display:flex;align-items:center;gap:8px;
-    font-size:16px!important;
-    margin-bottom:15px!important;
-}
-#edit-mode-view .card:not(:first-child) > h3::after,
-#edit-mode-view .superset-builder-box > h3::after{
-    content:"";
-    flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.08),transparent);
-}
-#edit-mode-view .field-label{
-    color:#788399!important;
-    font-size:8px!important;
-    letter-spacing:.65px;
-    text-transform:uppercase;
-    font-weight:850!important;
-}
-#edit-mode-view input,#edit-mode-view select{
-    min-height:42px;
-}
-#edit-mode-view .card:not(:first-child) .btn-primary{
-    min-height:46px;
-}
-#edit-mode-view .superset-builder-box{
-    background:
-      radial-gradient(260px 130px at 100% 0%,rgba(192,132,252,.13),transparent 72%),
-      linear-gradient(145deg,rgba(37,25,55,.72),rgba(11,13,20,.97))!important;
-}
-#edit-mode-view .superset-builder-box h3{
-    color:#d7b5ff!important;
-}
-#edit-mode-view .superset-builder-box .btn-success{
-    background:linear-gradient(135deg,#7b4bc1,#a765ed)!important;
-    border-color:rgba(255,255,255,.10)!important;
-}
-#edit-routine-list{
-    margin-top:13px;
-}
-#edit-routine-list::before{
-    content:"STRUTTURA DELLA SCHEDA";
-    display:block;margin:0 3px 9px;
-    font-size:9px;font-weight:900;letter-spacing:1.5px;color:#717c91;
-}
-.edit-block-item{
-    padding:16px!important;
-    margin-bottom:10px!important;
-    border-radius:18px!important;
-    border:1px solid rgba(255,255,255,.07)!important;
-    background:
-      linear-gradient(145deg,rgba(20,24,35,.95),rgba(10,13,20,.97))!important;
-    box-shadow:0 14px 35px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.025);
-}
-.edit-block-item.superset-item{
-    border-color:rgba(168,85,247,.22)!important;
-    background:
-      radial-gradient(280px 100px at 100% 0%,rgba(168,85,247,.11),transparent 70%),
-      linear-gradient(145deg,rgba(25,18,38,.96),rgba(10,13,20,.97))!important;
-}
-.edit-block-item > div:first-child{
-    padding-bottom:11px;
-    border-bottom:1px solid rgba(255,255,255,.055);
-}
-.edit-block-item > div:first-child > span{
-    font-size:11px!important;letter-spacing:.2px;
-}
-.edit-block-item > div:first-child .btn{
-    border-radius:9px!important;
-    min-width:31px;
-}
-.edit-block-item > div:nth-child(n+2) > div:first-child{
-    background:rgba(255,255,255,.025)!important;
-    border:1px solid rgba(255,255,255,.045);
-    border-radius:14px!important;
-    padding:11px!important;
-}
-.edit-block-item > div:nth-child(n+2) input{
-    background:rgba(5,8,13,.60)!important;
-}
-#edit-mode-view > div:last-child{
-    margin-top:14px!important;
-}
-#edit-mode-view > div:last-child .btn{
-    min-height:54px;
-    font-size:14px!important;
-    background:linear-gradient(135deg,#5f83ff,#8669ff)!important;
-    border:1px solid rgba(255,255,255,.12)!important;
-    box-shadow:0 15px 32px rgba(91,112,255,.22)!important;
-}
-#edit-mode-view > div:last-child .btn::before{
-    content:"✓";
-    display:inline-grid;place-items:center;
-    width:19px;height:19px;margin-right:7px;
-    border-radius:50%;background:rgba(255,255,255,.16);
+/* CONTAINER DROPDOWN CUSTOM */
+.custom-select-wrapper {
+    position: relative;
+    user-select: none;
+    z-index: 50;
 }
 
-/* Saved routine summary */
-#summary-mode-view > .card:first-child{
-    padding:22px!important;
-    position:relative;overflow:hidden;
-    background:
-      radial-gradient(300px 150px at 100% 0%,rgba(36,230,163,.10),transparent 70%),
-      linear-gradient(145deg,rgba(18,27,30,.96),rgba(9,13,18,.98))!important;
-}
-#summary-mode-view > .card:first-child h3{
-    font-size:22px!important;letter-spacing:-.7px;
-}
-#summary-mode-view > .card:first-child p{
-    color:#7f8b9f!important;
-}
-#summary-routine-list > *{
-    border-radius:17px!important;
-    background:linear-gradient(145deg,rgba(18,22,32,.95),rgba(9,12,18,.98))!important;
-    border:1px solid rgba(255,255,255,.07)!important;
-    box-shadow:0 12px 30px rgba(0,0,0,.17);
-}
-#summary-mode-view .btn-large{
-    min-height:51px;
+/* TASTO ELIMINA NEL MENÙ A TENDINA CUSTOM */
+.custom-option-delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    color: rgba(255, 93, 120, 0.6);
+    font-size: 11px;
+    font-weight: 800;
+    margin-left: 8px;
+    transition: all 0.18s ease;
 }
 
-/* ---------- Analytics ---------- */
-#tab-chart{
-    padding-top:1px;
-}
-#tab-chart > .card{
-    padding:17px!important;
-}
-#tab-chart > .card::before{
-    content:"PERFORMANCE LAB";
-    display:block;
-    margin:1px 2px 5px;
-    color:#748097;font-size:8px;font-weight:900;letter-spacing:1.8px;
-}
-#tab-chart > .card::after{
-    content:"Analizza la tua progressione, non solo il risultato.";
-    display:block;
-    margin:0 2px 16px;
-    color:#7e899e;font-size:11px;
-}
-#tab-chart > .card > div:first-child{
-    margin-bottom:11px!important;
-}
-#tab-chart label{
-    color:#727e94!important;
-    font-size:8px!important;
-    text-transform:uppercase;
-    letter-spacing:.8px;
-    font-weight:900;
-}
-#chart-time-filters{
-    padding:4px;
-    border-radius:13px;
-    background:rgba(255,255,255,.025);
-    border:1px solid rgba(255,255,255,.05);
-}
-#chart-time-filters .tab-btn{
-    border:0!important;
-    border-radius:9px!important;
-    color:#707b90!important;
-    background:transparent!important;
-    font-weight:800!important;
-}
-#chart-time-filters .tab-btn.active{
-    color:#fff!important;
-    background:linear-gradient(135deg,rgba(109,140,255,.25),rgba(154,124,255,.16))!important;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
-}
-#tab-chart > .card > div[style*="height: 220px"]{
-    height:250px!important;
-    margin:7px 0 4px;
-    padding:8px 0 0;
-    border-radius:16px;
-    background:linear-gradient(180deg,rgba(255,255,255,.018),rgba(255,255,255,.006));
-}
-#maxrep-percentage-banner{
-    background:linear-gradient(135deg,rgba(36,230,163,.10),rgba(109,140,255,.07))!important;
-    border:1px solid rgba(36,230,163,.18)!important;
-    border-radius:16px!important;
-    padding:15px!important;
-    box-shadow:0 12px 30px rgba(0,0,0,.16);
-}
-#maxrep-percentage-banner > div:first-child{
-    color:#788399!important;
-    font-size:8px!important;
-    text-transform:uppercase;
-    letter-spacing:.8px;
-    font-weight:900;
-}
-#maxrep-percentage-text{
-    font-size:24px!important;
-    letter-spacing:-.6px;
-}
-#tab-chart > .card > div[style*="flex-direction: column"]{
-    margin-top:14px!important;
-    padding:13px!important;
-    border-radius:16px!important;
-    background:rgba(255,255,255,.022)!important;
-    border:1px solid rgba(255,255,255,.055)!important;
-}
-#tab-chart > .card > div[style*="flex-direction: column"] b{
-    color:#dbe1ed;
-}
-#analytics-details-list{
-    margin-top:11px;
-}
-#analytics-details-list > h3{
-    padding:0 3px;
-    margin:15px 0 9px!important;
-    font-size:9px!important;
-    letter-spacing:1.5px!important;
-    text-transform:uppercase;
-    color:#748097!important;
-}
-.analytics-session-card{
-    position:relative;
-    overflow:hidden;
-    padding:16px!important;
-    margin-bottom:9px;
-    border-radius:17px!important;
-    background:
-      radial-gradient(180px 80px at 100% 0%,rgba(109,140,255,.08),transparent 75%),
-      linear-gradient(145deg,rgba(18,22,32,.96),rgba(9,12,18,.98))!important;
-}
-.analytics-session-card::before{
-    content:"";
-    position:absolute;left:0;top:12px;bottom:12px;width:2px;
-    border-radius:99px;background:linear-gradient(var(--if-blue),var(--if-violet));
-}
-.analytics-session-card > div:first-child{
-    padding-left:6px;
-}
-.analytics-session-card > div:last-child{
-    margin-top:8px!important;
-    padding:9px 10px;
-    border-radius:11px;
-    background:rgba(255,255,255,.025);
-    color:#8792a7!important;
-}
-.analytics-session-card span{
-    font-size:11px!important;
+.custom-option-delete:hover {
+    background: rgba(255, 93, 120, 0.18);
+    color: #ff5d78;
 }
 
-/* ---------- History / Training journal ---------- */
-#tab-history{
-    padding-top:1px;
-}
-#history-container::before{
-    content:"TRAINING JOURNAL";
-    display:block;
-    margin:3px 2px 5px;
-    color:#748097;font-size:8px;font-weight:900;letter-spacing:1.8px;
-}
-#history-container::after{
-    content:"Tutte le tue sessioni, in un unico posto.";
-    display:block;
-    margin:0 2px 15px;
-    color:#7e899e;font-size:11px;
-}
-#history-container:empty::before,
-#history-container:empty::after{display:none;}
-#history-container > .history-empty-state{
-    display:none;
-}
-.history-item{
-    position:relative;
-    overflow:hidden;
-    padding:17px!important;
-    margin-bottom:10px!important;
-    background:
-      radial-gradient(220px 100px at 100% 0%,rgba(109,140,255,.09),transparent 70%),
-      linear-gradient(145deg,rgba(18,22,32,.96),rgba(9,12,18,.98))!important;
-}
-.history-item::before{
-    content:"";
-    position:absolute;left:0;top:0;bottom:0;width:3px;
-    background:linear-gradient(180deg,var(--if-blue),var(--if-violet));
-}
-.history-date{
-    padding:0 0 12px 5px!important;
-    margin-bottom:12px!important;
-    border-bottom:1px solid rgba(255,255,255,.055);
-}
-.history-date > div > span:first-child{
-    font-size:15px!important;
-    font-weight:900!important;
-    letter-spacing:-.2px;
-}
-.history-date > div > span:nth-child(2){
-    display:inline-block;
-    padding:4px 7px;
-    border-radius:999px;
-    background:rgba(255,255,255,.045);
-    border:1px solid rgba(255,255,255,.05);
-    font-size:9px!important;
-}
-.history-date .btn-danger{
-    width:30px;height:30px;
-    padding:0!important;
-    border-radius:999px!important;
-    background:rgba(255,93,120,.08)!important;
-    color:#ff7f95!important;
-    border:1px solid rgba(255,93,120,.12)!important;
-}
-.history-details{
-    padding-left:5px;
-    color:#929db1!important;
-    font-size:11px!important;
-    line-height:1.65!important;
-}
-.history-details > div{
-    padding:11px 12px!important;
-    margin-bottom:8px!important;
-    border-radius:13px;
-    background:rgba(255,255,255,.022);
-    border:1px solid rgba(255,255,255,.045);
-}
-.history-details > div:last-child{margin-bottom:0!important;}
-.history-details strong{
-    font-size:9px!important;
-    text-transform:uppercase;
-    letter-spacing:.7px;
-    color:#aeb8ca!important;
-}
-.history-details b{color:#f0f3f8;}
-.history-details br + *{line-height:1.65;}
-
-/* Empty states */
-#history-container > p,
-#analytics-details-list > p{
-    margin:0!important;
-    padding:34px 20px!important;
-    border:1px solid rgba(255,255,255,.06);
-    border-radius:18px;
-    background:linear-gradient(145deg,rgba(18,22,32,.9),rgba(9,12,18,.95));
-    color:#7f8a9f!important;
+/* PULSANTE PRINCIPALE */
+.custom-select-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: linear-gradient(135deg, rgba(109, 140, 255, 0.18), rgba(154, 124, 255, 0.12)) !important;
+    border: 1px solid rgba(109, 140, 255, 0.35) !important;
+    color: var(--if-blue) !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    padding: 8px 14px !important;
+    border-radius: 14px !important;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    white-space: nowrap;
 }
 
-/* ---------- Session summary ---------- */
-#workout-summary-view{
-    animation:ifFadeUp .35s ease both;
-}
-#workout-summary-view > .card:first-child{
-    padding:24px 20px!important;
-    border-radius:21px!important;
-    background:
-      radial-gradient(300px 150px at 50% 0%,rgba(36,230,163,.13),transparent 70%),
-      linear-gradient(145deg,rgba(15,29,27,.96),rgba(9,14,17,.98))!important;
-}
-#workout-summary-view > .card:first-child::before{
-    content:"SESSION COMPLETE";
-    display:block;
-    margin-bottom:8px;
-    color:#5fe7ba;font-size:8px;font-weight:900;letter-spacing:2px;
-}
-#workout-summary-view > .card:first-child h2{
-    font-size:29px!important;
-    letter-spacing:-1.2px;
-}
-#workout-summary-view .summary-stat{
-    background:rgba(255,255,255,.035)!important;
-    border:1px solid rgba(255,255,255,.06)!important;
-    border-radius:15px!important;
-}
-#summary-exercises-list > div{
-    padding:12px!important;
-    margin-bottom:8px!important;
-    border-radius:14px!important;
-    background:rgba(255,255,255,.025)!important;
-    border:1px solid rgba(255,255,255,.045);
-}
-#summary-exercises-list b{color:#fff;}
-#workout-summary-view .btn-primary{
-    min-height:53px;
+.custom-select-trigger:hover {
+    background: linear-gradient(135deg, rgba(109, 140, 255, 0.3), rgba(154, 124, 255, 0.22)) !important;
+    border-color: rgba(109, 140, 255, 0.6) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 20px rgba(109, 140, 255, 0.35) !important;
 }
 
-/* ---------- Tiny polish ---------- */
-.btn-danger{background:rgba(255,93,120,.09)!important;border-color:rgba(255,93,120,.14)!important;color:#ff8ba0!important;}
-.btn-success{background:linear-gradient(135deg,#1fbf91,#24d7a0)!important;color:#04130e!important;}
-#tab-edit .btn-sm,#tab-chart .btn-sm{font-size:10px!important;}
-select option{background:#0b0e15;color:#f5f7fb;}
-
-@keyframes ifFadeUp{
-    from{opacity:0;transform:translateY(8px);}
-    to{opacity:1;transform:translateY(0);}
+.custom-select-wrapper.open .custom-select-trigger {
+    border-color: var(--if-violet) !important;
+    box-shadow: 0 0 0 3px rgba(154, 124, 255, 0.25), 0 0 20px rgba(154, 124, 255, 0.3) !important;
 }
 
-
-.history-metrics{
-    display:grid;grid-template-columns:repeat(3,1fr);
-    gap:6px;margin:0 0 10px 5px;
-}
-.history-metrics span{
-    padding:9px 7px;text-align:center;
-    border-radius:11px;
-    background:rgba(255,255,255,.025);
-    border:1px solid rgba(255,255,255,.045);
-    color:#707c91;font-size:8px;
-    text-transform:uppercase;letter-spacing:.45px;font-weight:800;
-}
-.history-metrics b{
-    display:block;margin-bottom:3px;
-    color:#eef2f8;font-size:12px;letter-spacing:-.2px;
-}
-.history-exercise-group{margin-bottom:0!important;}
-.history-exercise-row{
-    display:flex;justify-content:space-between;gap:10px;
-    padding:7px 0;
-    border-bottom:1px solid rgba(255,255,255,.035);
-    font-size:10px;
-}
-.history-exercise-row:last-child{border-bottom:0;padding-bottom:0;}
-.history-exercise-row span:first-child{color:#e9edf5;font-weight:750;}
-.history-exercise-row span:last-child{color:#778398;text-align:right;font-variant-numeric:tabular-nums;}
-.history-superset-group{margin-top:9px!important;}
-
-
-.analytics-session-card.positive::before{background:linear-gradient(var(--if-green),var(--if-blue));}
-.analytics-session-card.negative::before{background:linear-gradient(var(--if-red),var(--if-violet));}
-.analytics-card-head{
-    display:flex;align-items:center;justify-content:space-between;
-    gap:10px;padding-left:6px;
-}
-.analytics-card-date{
-    display:block;font-size:12px!important;font-weight:900;color:#eef2f8;
-}
-.analytics-card-label{
-    display:block;margin-top:3px;
-    font-size:7px!important;letter-spacing:1.2px;
-    color:#667187;text-transform:uppercase;font-weight:900;
-}
-.analytics-delta,.analytics-best-set{
-    padding:7px 9px;border-radius:10px;
-    background:rgba(36,230,163,.08);
-    border:1px solid rgba(36,230,163,.13);
-    color:#4ee0b0;font-size:12px;font-weight:900;
-    white-space:nowrap;
-}
-.analytics-best-set{color:#d8c4ff;background:rgba(154,124,255,.09);border-color:rgba(154,124,255,.14);}
-.analytics-card-body{
-    display:flex;justify-content:space-between;gap:8px;align-items:center;
-    margin-top:10px!important;
-    padding:10px 11px!important;
-    border-radius:11px;
-    background:rgba(255,255,255,.022);
-    color:#7e899d;font-size:9px;
-}
-.analytics-card-body > span:first-child{color:#929caf;}
-.analytics-session-delta{
-    color:#6f7b90!important;
-    font-weight:800;
-    white-space:nowrap;
+.custom-select-arrow {
+    font-size: 9px;
+    transition: transform 0.22s ease;
 }
 
+.custom-select-wrapper.open .custom-select-arrow {
+    transform: rotate(180deg);
+}
 
-/* Interaction safety: decorative effects never intercept controls. */
-button, input, select, textarea, a { position:relative; z-index:2; pointer-events:auto; }
-#logout-btn, #main-nav-tabs, #start-session-view .btn, #tab-edit button, #tab-history button { position:relative; z-index:10; }
+/* MENÙ APERTO CON GRADIENTE E ANGOLI ARROTONDATI */
+.custom-select-options {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 170px;
+    max-height: 240px; /* Limita l'altezza massima per attivare lo scroll */
+    overflow-y: auto; /* Attiva la barra di scorrimento verticale quando ci sono molti elementi */
+    background: linear-gradient(145deg, rgba(20, 24, 37, 0.98), rgba(10, 13, 20, 0.99)) !important;
+    border: 1px solid var(--if-line-strong) !important;
+    border-radius: 18px !important;
+    padding: 6px !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px) scale(0.96);
+    transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s ease;
+    z-index: 200;
+}
 
-</style>
+/* STILIZZAZIONE SCROLLBAR IN STILE IRONFLOW */
+.custom-select-options::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-select-options::-webkit-scrollbar-track {
+    background: rgba(10, 13, 20, 0.6);
+    border-radius: 99px;
+    margin: 6px 0;
+}
+
+.custom-select-options::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--if-blue), var(--if-violet));
+    border-radius: 99px;
+}
+
+.custom-select-options::-webkit-scrollbar-thumb:hover {
+    background: var(--if-cyan);
+}
+
+/* Supporto per Firefox */
+.custom-select-options {
+    scrollbar-width: thin;
+    scrollbar-color: var(--if-blue) rgba(10, 13, 20, 0.6);
+}
+
+.custom-select-wrapper.open .custom-select-options {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+/* VOCE DEL MENÙ CON GRADIENTE AL HOVER */
+.custom-option {
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--subtext);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.custom-option:hover {
+    background: linear-gradient(135deg, rgba(109, 140, 255, 0.2), rgba(154, 124, 255, 0.15));
+    color: #ffffff;
+}
+
+.custom-option.selected {
+    background: linear-gradient(135deg, rgba(109, 140, 255, 0.3), rgba(154, 124, 255, 0.25));
+    color: var(--if-blue);
+    font-weight: 900;
+}
+
+/* Modale / Pop-up personalizzato in perfetto stile IronFlow */
+.custom-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(3, 4, 7, 0.78);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: modalFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
+.custom-modal-box {
+    width: 100%;
+    max-width: 420px;
+    background: linear-gradient(145deg, rgba(20, 24, 37, 0.96), rgba(9, 12, 18, 0.98));
+    border: 1px solid var(--if-line-strong);
+    border-radius: 22px;
+    padding: 22px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.08);
+    color: var(--text);
+    position: relative;
+}
+.custom-modal-title {
+    font-size: 18px;
+    font-weight: 900;
+    margin-bottom: 8px;
+    background: linear-gradient(110deg, #ffffff, var(--if-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.custom-modal-message {
+    font-size: 13px;
+    color: var(--subtext);
+    margin-bottom: 18px;
+    line-height: 1.5;
+}
+.custom-modal-input {
+    margin-bottom: 18px !important;
+}
+.custom-modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+.sub-exercise-row input[type="number"] { width: 55px !important; text-align: center !important; margin-bottom: 0 !important; padding: 8px 4px !important; }
+
+#auth-container { display: flex; flex-direction: column; justify-content: center; padding: 7vh 0 20px; min-height: 72vh; }
+.auth-box {
+    position: relative; overflow: hidden; background: linear-gradient(145deg,rgba(20,24,35,.92),rgba(10,12,18,.94));
+    border: 1px solid var(--card-border-strong); border-radius: 27px; padding: 31px 23px; text-align: center;
+    box-shadow: 0 30px 80px rgba(0,0,0,.55), inset 0 1px rgba(255,255,255,.05); backdrop-filter: blur(22px);
+}
+.auth-box::before { content:""; position:absolute; width:180px; height:180px; border-radius:50%; background:rgba(91,140,255,.15); filter:blur(45px); top:-100px; left:-70px; pointer-events:none; }
+.auth-box::after { content:""; position:absolute; width:160px; height:160px; border-radius:50%; background:rgba(124,92,255,.11); filter:blur(45px); bottom:-100px; right:-60px; pointer-events:none; }
+.auth-toggle { font-size: 11px; color: #729cff; cursor: pointer; margin-top: 14px; display: inline-block; font-weight: 800; transition: .18s; }
+.auth-toggle:hover { color: #a8bdff; }
+
+.block-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 11px; padding-bottom: 10px!important; border-bottom: 1px solid rgba(255,255,255,.055); }
+.block-title { font-size: 14px; font-weight: 900!important; letter-spacing: -.2px; color: var(--text); }
+.set-input-group { display: flex; align-items: center; gap: 4px; }
+.form-group-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.form-group-4 { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+.form-group-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.superset-builder-box {
+    background: linear-gradient(145deg,rgba(42,27,66,.34),rgba(12,13,21,.94))!important;
+    border: 1px solid rgba(154,124,255,.22)!important;
+    border-radius: 19px!important; padding: 16px; margin-bottom: 14px;
+    box-shadow: 0 16px 42px rgba(0,0,0,.22)!important;
+}
+.history-item {
+    position: relative; overflow: hidden; border-radius: 18px!important; padding: 17px!important; margin-bottom: 10px!important;
+    background: radial-gradient(220px 100px at 100% 0%,rgba(109,140,255,.09),transparent 70%), linear-gradient(145deg,rgba(18,22,32,.96),rgba(9,12,18,.98))!important;
+}
+.history-item::before { content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:linear-gradient(180deg,var(--if-blue),var(--if-violet)); }
+.history-date { display: flex; justify-content: space-between; font-weight: 800; font-size: 13px; margin-bottom: 12px!important; padding: 0 0 12px 5px!important; border-bottom: 1px solid rgba(255,255,255,.055); }
+.history-details { font-size: 11px!important; color: #929db1!important; line-height: 1.65!important; padding-left: 5px; }
+
+.analytics-session-card {
+    position: relative; overflow: hidden; border-radius: 17px!important; padding: 16px!important; margin-bottom: 9px;
+    background: radial-gradient(180px 80px at 100% 0%,rgba(109,140,255,.08),transparent 75%), linear-gradient(145deg,rgba(18,22,32,.96),rgba(9,12,18,.98))!important;
+}
+.analytics-session-card::before { content:""; position:absolute; left:0; top:12px; bottom:12px; width:2px; border-radius:99px; background:linear-gradient(var(--if-blue),var(--if-violet)); }
+
+.hidden { display: none !important; }
+
+#start-session-view {
+    position: relative; padding: 0!important;
+    background: radial-gradient(330px 190px at 85% 0%,rgba(109,140,255,.17),transparent 70%), linear-gradient(145deg,rgba(19,24,37,.96),rgba(9,12,18,.98))!important;
+}
+#start-session-view::before { content:""; position:absolute; width:190px; height:190px; border-radius:50%; right:-90px; top:-100px; background:rgba(109,140,255,.14); filter:blur(5px); }
+.dashboard-hero { position: relative; padding: 25px 21px 20px; text-align: left; }
+.dashboard-kicker { display: flex; align-items: center; gap: 7px; color: #8590a6; font-size: 9px; font-weight: 900; letter-spacing: 1.8px; text-transform: uppercase; }
+.dashboard-kicker i { width: 7px; height: 7px; border-radius: 50%; background: var(--if-green); box-shadow: 0 0 12px rgba(36,230,163,.75); }
+.dashboard-hero h2 { margin-top: 9px!important; font-size: 27px!important; letter-spacing: -1.1px; }
+.dashboard-hero p { color: #818ba0!important; font-size: 13px; margin-top: 6px!important; line-height: 1.45; }
+.dashboard-routine { margin-top: 18px; padding: 16px; border: 1px solid rgba(109,140,255,.17); border-radius: 18px; background: linear-gradient(135deg,rgba(109,140,255,.10),rgba(154,124,255,.055)); }
+.dashboard-routine-label { font-size: 9px; color: #7e8aa2; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+
+/* LAYOUT E STILI INTESTAZIONE SCHEDA */
+.routine-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+    margin-bottom: 8px;
+    gap: 12px;
+}
+.routine-title-display {
+    font-size: 22px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.select-btn-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.dashboard-routine-meta { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 6px; }
+.dashboard-pill { font-size: 10px; color: #aab4c8; padding: 5px 9px; border-radius: 999px; background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.06); font-weight: 600; }
+.dashboard-start { padding: 4px 21px 21px; }
+.dashboard-start .btn { min-height: 52px; font-size: 15px!important; }
+
+.workout-hud {
+    display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; margin-bottom: 11px; padding: 13px 15px;
+    border-radius: 17px; border: 1px solid rgba(109,140,255,.13); background: linear-gradient(135deg,rgba(109,140,255,.08),rgba(154,124,255,.045));
+}
+.workout-hud-kicker { font-size: 8px; letter-spacing: 1.5px; font-weight: 900; color: #79849a; text-transform: uppercase; }
+.workout-hud-name { margin-top: 4px; font-size: 15px; font-weight: 850; }
+.workout-hud-meta { margin-top: 3px; font-size: 10px; color: #788398; }
+.workout-progress-ring { width: 53px; height: 53px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--if-blue) 0deg,rgba(255,255,255,.06) 0deg); position: relative; }
+.workout-progress-ring::after { content:""; position:absolute; inset:5px; border-radius:50%; background:#0d111a; }
+.workout-progress-value { position: relative; z-index: 1; font-size: 11px; font-weight: 900; }
+
+.history-metrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin: 0 0 10px 5px; }
+.history-metrics span { padding: 9px 7px; text-align: center; border-radius: 11px; background: rgba(255,255,255,.025); border: 1px solid rgba(255,255,255,.045); color: #707c91; font-size: 8px; text-transform: uppercase; letter-spacing: .45px; font-weight: 800; }
+.history-metrics b { display: block; margin-bottom: 3px; color: #eef2f8; font-size: 12px; letter-spacing: -.2px; }
+.history-exercise-row { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,.035); font-size: 10px; }
+.history-exercise-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.history-exercise-row span:first-child { color: #e9edf5; font-weight: 750; }
+.history-exercise-row span:last-child { color: #778398; text-align: right; font-variant-numeric: tabular-nums; }
+
+.analytics-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-left: 6px; }
+.analytics-card-date { display: block; font-size: 12px!important; font-weight: 900; color: #eef2f8; }
+.analytics-card-label { display: block; margin-top: 3px; font-size: 7px!important; letter-spacing: 1.2px; color: #667187; text-transform: uppercase; font-weight: 900; }
+.analytics-delta,.analytics-best-set { padding: 7px 9px; border-radius: 10px; background: rgba(36,230,163,.08); border: 1px solid rgba(36,230,163,.13); color: #4ee0b0; font-size: 12px; font-weight: 900; white-space: nowrap; }
+.analytics-best-set { color: #d8c4ff; background: rgba(154,124,255,.09); border-color: rgba(154,124,255,.14); }
+.analytics-card-body { display: flex; justify-content: space-between; gap: 8px; align-items: center; margin-top: 10px!important; padding: 10px 11px!important; border-radius: 11px; background: rgba(255,255,255,.022); color: #7e899d; font-size: 9px; }
+
+button, input, textarea, a { position: relative; z-index: 2; pointer-events: auto; }
+#logout-btn, #main-nav-tabs, #start-session-view .btn, #tab-edit button, #tab-history button { position: relative; z-index: 10; }
+
+@media (max-width: 430px) {
+    .dashboard-hero h2 { font-size: 24px!important; }
+    .timer-display { font-size: 54px!important; }
+    #main-nav-tabs .tab-btn { min-height: 45px; }
+    .form-group-4 { grid-template-columns: 1.7fr 1fr 1fr 1fr; gap: 4px; }
+}
+    </style>
 </head>
 <body>
 
@@ -1142,7 +604,6 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
     <!-- SCHERMATA DI AUTENTICAZIONE -->
     <div id="auth-container" class="hidden">
         <div class="auth-box">
-            <!-- Form Standard di Login / Registrazione -->
             <div id="standard-auth-form">
                 <h2 id="auth-title" style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">Bentornato su IronFlow</h2>
                 <p id="auth-subtitle" style="color: var(--subtext); font-size: 13px; margin-bottom: 22px;">Accedi per salvare tutti i tuoi dati in cloud</p>
@@ -1158,7 +619,6 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
                 </div>
             </div>
 
-            <!-- Form Dedicato per Aggiornamento Nuova Password (dopo il click sulla mail) -->
             <div id="update-password-form" class="hidden">
                 <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 6px; color: var(--success);">Nuova Password</h2>
                 <p style="color: var(--subtext); font-size: 13px; margin-bottom: 22px;">Inserisci e conferma la tua nuova password sicura.</p>
@@ -1173,7 +633,6 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
 
     <!-- CONTENITORE PRINCIPALE DELL'APP -->
     <div id="main-app-container" class="hidden">
-        <!-- TAB NAVIGATION -->
         <div class="nav-tabs" id="main-nav-tabs">
             <button class="tab-btn active" onclick="switchTab(0, this)">
                 <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v7"/><path d="M18 3v7"/><path d="M6 10c0 4 12 4 12 0"/><path d="M12 14v7"/><path d="M9 21h6"/></svg>
@@ -1200,9 +659,21 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
                     <div class="dashboard-kicker"><i></i> OGGI SI COSTRUISCE</div>
                     <h2>Pronto a spingere?</h2>
                     <p>Il prossimo allenamento è già pronto. Entra, completa le serie e fai salire i numeri.</p>
+                    
                     <div class="dashboard-routine">
-                        <div class="dashboard-routine-label">Sessione selezionata</div>
-                        <div class="dashboard-routine-name" id="dashboard-routine-name">Caricamento…</div>
+                        <div class="dashboard-routine-label">SESSIONE SELEZIONATA</div>
+                        <div class="routine-header-row">
+                            <div class="routine-title-display">📋 <span id="dashboard-routine-title">Calisthenics</span></div>
+                            <div class="select-btn-wrapper">
+                                <div class="custom-select-wrapper" id="custom-dashboard-select">
+                                    <div class="custom-select-trigger" onclick="toggleCustomDropdown('custom-dashboard-select')">
+                                        <span>Seleziona Scheda</span>
+                                        <span class="custom-select-arrow">▼</span>
+                                    </div>
+                                    <div class="custom-select-options"></div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="dashboard-routine-meta">
                             <span class="dashboard-pill" id="dashboard-block-count">— blocchi</span>
                             <span class="dashboard-pill" id="dashboard-exercise-count">— esercizi</span>
@@ -1210,20 +681,8 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
                         </div>
                     </div>
                 </div>
-                <div class="dashboard-stats">
-                    <div class="dashboard-stat"><div class="dashboard-stat-value" id="dash-sessions">0</div><div class="dashboard-stat-label">Sessioni</div></div>
-                    <div class="dashboard-stat"><div class="dashboard-stat-value" id="dash-sets">0</div><div class="dashboard-stat-label">Serie</div></div>
-                    <div class="dashboard-stat"><div class="dashboard-stat-value" id="dash-volume">0</div><div class="dashboard-stat-label">Volume kg</div></div>
-                    <div class="dashboard-stat"><div class="dashboard-stat-value" id="dash-streak">0</div><div class="dashboard-stat-label">Streak</div></div>
-                </div>
-                <div class="dashboard-progress">
-                    <div class="dashboard-progress-top"><span>PROGRESSO DELLA SESSIONE</span><strong id="dash-progress-text">0%</strong></div>
-                    <div class="progress-track"><div class="progress-fill" id="dash-progress-fill"></div></div>
-                </div>
+
                 <div class="dashboard-start">
-                    <div style="margin-bottom:9px;">
-                        <select id="active-routine-select" onchange="updateIronFlowDashboard()" style="font-size:14px; text-align:center; margin-bottom:0!important;"></select>
-                    </div>
                     <button class="btn btn-primary btn-large" onclick="startWorkoutSession()">AVVIA SESSIONE <span style="opacity:.7">→</span></button>
                 </div>
             </div>
@@ -1242,18 +701,12 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
                 <div class="card timer-box timer-sticky">
                     <div id="timer-status" class="timer-status">ESERCIZIO IN CORSO</div>
                     <div id="timer-display" class="timer-display">00:00</div>
-                    <div class="btn-group" id="timer-controls">
-                        <button class="btn" onclick="togglePause()">Pausa</button>
-                        <button class="btn btn-warning" onclick="promptSkipCurrentSet()">Salta set</button>
-                        <button class="btn btn-danger" onclick="cancelWorkout()">Annulla</button>
-                        <button class="btn btn-danger" onclick="terminateWorkout()">Termina</button>
-                    </div>
+                    <div class="btn-group" id="timer-controls"></div>
                 </div>
 
                 <div id="workout-list"></div>
             </div>
 
-            <!-- SCHERMATA RIEPILOGO FINE ALLENAMENTO -->
             <div id="workout-summary-view" class="hidden">
                 <div class="card" style="text-align: center; padding: 24px 16px; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(59,130,246,0.05)); border: 1px solid var(--success);">
                     <div style="font-size: 40px; margin-bottom: 8px;">🔥</div>
@@ -1294,25 +747,72 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
             </div>
         </div>
 
-        <!-- 2. TAB MODIFICA SCHEDA -->
+        <!-- 2. TAB SCHEDA -->
         <div id="tab-edit" class="tab-content">
-            <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                    <h3>Costruisci la tua scheda</h3>
-                    <button class="btn btn-sm btn-primary" onclick="createNewRoutinePrompt()">+ Nuova Scheda</button>
+            <!-- VISTA RIEPILOGO SCHEDA (VISIBILE DI DEFAULT ALL'INGRESSO) -->
+            <div id="summary-mode-view">
+                <!-- CARD INTESTAZIONE SCHEDA CON PULSANTE SELEZIONA SCHEDA -->
+                <div class="card" style="margin-bottom: 12px; background: #11131a; text-align:center;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+                        <button class="btn btn-sm btn-primary" onclick="createNewRoutinePrompt()">+ Nuova Scheda</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteCurrentRoutine()">Elimina Scheda</button>
+                    </div>
+                    
+                    <div style="display:flex; justify-content:center; align-items:center; gap:10px; margin-bottom: 6px;">
+                        <h3 style="font-size:20px; color:var(--text);" id="summary-routine-title">📋 Calisthenics</h3>
+                        <div class="select-btn-wrapper">
+                            <div class="custom-select-wrapper" id="custom-summary-select">
+                                <div class="custom-select-trigger" onclick="toggleCustomDropdown('custom-summary-select')">
+                                    <span>Seleziona Scheda</span>
+                                    <span class="custom-select-arrow">▼</span>
+                                </div>
+                                <div class="custom-select-options"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p style="font-size:12px; color:var(--subtext);">Visualizza e modifica la tua struttura di allenamento.</p>
                 </div>
-                <div style="display:flex; gap:8px; margin-bottom: 10px;">
-                    <select id="routine-selector" onchange="switchActiveRoutine(this.value)" style="flex:1; margin-bottom:0 !important;"></select>
-                    <button class="btn btn-sm btn-danger" onclick="deleteCurrentRoutine()">Elimina</button>
+
+                <!-- TASTO EDIT PRIMA DEI BLOCCHI (TRA IL TITOLO E IL BLOCCO 1) -->
+                <div style="margin-bottom: 14px;">
+                    <button class="btn btn-primary btn-large" onclick="enableEditMode()">✏️ Modifica Scheda</button>
                 </div>
-                <div style="display:flex; gap:8px; align-items:center;">
-                    <input type="text" id="rename-routine-input" placeholder="Nome Scheda" style="flex:1; margin-bottom:0 !important;">
-                    <button class="btn btn-sm btn-primary" onclick="renameCurrentRoutine()">Salva Nome</button>
-                </div>
+
+                <!-- LISTA DEI BLOCCHI / ESERCIZI DELLA SCHEDA -->
+                <div id="summary-routine-list"></div>
             </div>
 
-            <div id="edit-mode-view">
-                <!-- AGGIUNGI ESERCIZIO SINGOLO -->
+            <!-- VISTA EDITING/CREAZIONE SCHEDA -->
+            <div id="edit-mode-view" class="hidden">
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h3>Gestione Scheda</h3>
+                        <button class="btn btn-sm btn-primary" onclick="createNewRoutinePrompt()">+ Nuova Scheda</button>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <span class="field-label">SELEZIONA SCHEDA</span>
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <div class="custom-select-wrapper" id="custom-edit-select" style="flex:1;">
+                                <div class="custom-select-trigger" onclick="toggleCustomDropdown('custom-edit-select')">
+                                    <span>Seleziona Scheda</span>
+                                    <span class="custom-select-arrow">▼</span>
+                                </div>
+                                <div class="custom-select-options"></div>
+                            </div>
+                            <button class="btn btn-sm btn-danger" onclick="deleteCurrentRoutine()">Elimina</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom: 14px;">
+                    <span class="field-label">Rinomina Scheda Corrente</span>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <input type="text" id="rename-routine-input" placeholder="Nome Scheda" style="flex:1; margin-bottom:0 !important;">
+                        <button class="btn btn-sm btn-primary" onclick="renameCurrentRoutine()">Salva Nome</button>
+                    </div>
+                </div>
+
                 <div class="card">
                     <h3 style="font-size:16px; margin-bottom:12px;">➕ Aggiungi Esercizio Singolo</h3>
                     
@@ -1351,7 +851,6 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
                     <button class="btn btn-primary" style="width:100%" onclick="addSingleExercise()">+ Aggiungi alla Scheda</button>
                 </div>
 
-                <!-- AGGIUNGI SUPERSET -->
                 <div class="superset-builder-box">
                     <h3 style="font-size:16px; margin-bottom:12px; color:#c084fc;">⚡ Aggiungi Superset</h3>
                     
@@ -1377,19 +876,6 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
                     <button class="btn btn-success btn-large" onclick="saveAndShowSummary()">SALVA SCHEDA <span style="opacity:.65">✓</span></button>
                 </div>
             </div>
-
-            <div id="summary-mode-view" class="hidden">
-                <div class="card" style="margin-bottom: 12px; background: #11131a; text-align:center;">
-                    <h3 style="font-size:18px; color:var(--text);" id="summary-routine-title">Scheda Salvata</h3>
-                    <p style="font-size:12px; color:var(--subtext); margin-top:4px;">La tua scheda, pronta per essere eseguita.</p>
-                </div>
-
-                <div id="summary-routine-list"></div>
-
-                <div style="margin-top: 20px; margin-bottom: 25px;">
-                    <button class="btn btn-primary btn-large" onclick="enableEditMode()">✏️ Modifica Scheda</button>
-                </div>
-            </div>
         </div>
 
         <!-- 3. TAB ANALISI -->
@@ -1398,18 +884,26 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
                 <div style="display: flex; gap: 8px; margin-bottom: 12px;">
                     <div style="flex: 1;">
                         <label style="font-size:12px; color:var(--subtext); display:block; margin-bottom:4px;">ESERCIZIO</label>
-                        <select id="chart-ex-select" onchange="renderChart()" style="margin-bottom:0 !important;"></select>
+                        <div class="custom-select-wrapper" id="custom-chart-ex-select">
+                            <div class="custom-select-trigger" onclick="toggleCustomDropdown('custom-chart-ex-select')">
+                                <span>Seleziona Esercizio</span>
+                                <span class="custom-select-arrow">▼</span>
+                            </div>
+                            <div class="custom-select-options"></div>
+                        </div>
                     </div>
                     <div style="flex: 1;">
                         <label style="font-size:12px; color:var(--subtext); display:block; margin-bottom:4px;">METRICA</label>
-                        <select id="chart-type-select" onchange="renderChart()" style="margin-bottom:0 !important;">
-                            <option value="score">1. Volume, Intensità e Densità</option>
-                            <option value="maxrep">2. Miglioramento complessivo</option>
-                        </select>
+                        <div class="custom-select-wrapper" id="custom-chart-type-select">
+                            <div class="custom-select-trigger" onclick="toggleCustomDropdown('custom-chart-type-select')">
+                                <span>Volume & Intensità</span>
+                                <span class="custom-select-arrow">▼</span>
+                            </div>
+                            <div class="custom-select-options"></div>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Pulsanti Filtri Temporali -->
                 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 15px;" id="chart-time-filters">
                     <button class="btn btn-sm tab-btn" style="padding: 8px 2px; font-size: 11px;" onclick="setChartFilter('week', this)">7 Giorni</button>
                     <button class="btn btn-sm tab-btn" style="padding: 8px 2px; font-size: 11px;" onclick="setChartFilter('month', this)">1 Mese</button>
@@ -1421,13 +915,11 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
                     <canvas id="analyticsChart"></canvas>
                 </div>
                 
-                <!-- Box informativo dinamico per la percentuale del secondo grafico -->
                 <div id="maxrep-percentage-banner" class="hidden" style="margin-top: 14px; background: rgba(59, 130, 246, 0.1); border: 1px solid var(--accent); padding: 12px; border-radius: 10px; text-align: center;">
                     <div style="font-size: 12px; color: var(--subtext);">Miglioramento Complessivo (Baseline vs Media Recente):</div>
                     <div id="maxrep-percentage-text" style="font-size: 16px; font-weight: 800; color: var(--success); margin-top: 4px;">-</div>
                 </div>
 
-                <!-- Legenda personalizzata scritta per esteso -->
                 <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 14px; font-size: 11px; color: var(--subtext); background: #11131a; padding: 10px; border-radius: 10px; border: 1px solid var(--card-border);">
                     <div style="display: flex; align-items: center; gap: 6px;">
                         <span style="width: 10px; height: 10px; background: #3b82f6; border-radius: 50%; display: inline-block; flex-shrink: 0;"></span>
@@ -1462,10 +954,12 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
     let isPasswordRecoveryFlow = false;
     let myChartInstance = null;
     let currentChartFilter = 'all';
+    let selectedChartExercise = '';
+    let selectedChartType = 'score';
     const tabIds = ['tab-workout', 'tab-edit', 'tab-chart', 'tab-history'];
 
     const defaultRoutines = {
-        "Scheda A (Forza)": [
+        "Calisthenics": [
             {
                 isSuperset: false,
                 restAfterBlock: 120,
@@ -1487,7 +981,6 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
     let currentRoutineKey = Object.keys(routines)[0];
     let historyData = [];
     let savedStatusMap = {};
-    let isRoutineSaved = false;
 
     let activeBlockIdx = 0;
     let activeSetNum = 1;
@@ -1500,6 +993,7 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         seconds: 0,
         interval: null,
         startTime: null,
+        currentSetStartTime: null,
         completedSets: {},
         lockedSets: {},
         savedRestSeconds: null
@@ -1537,49 +1031,124 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         }
     }, {passive: true});
 
+    /* GESTIONE SELETTORI DROPDOWN CUSTOM */
+    function renderCustomDropdown(wrapperId, optionsList, currentVal, onSelectCallback, onDeleteCallback = null) {
+        const wrapper = document.getElementById(wrapperId);
+        if (!wrapper) return;
+        
+        const optionsContainer = wrapper.querySelector('.custom-select-options');
+        const triggerSpan = wrapper.querySelector('.custom-select-trigger span');
+        
+        // Trova l'oggetto o il valore selezionato per impostare la label del pulsante
+        const currentOpt = optionsList.find(opt => (typeof opt === 'object' ? opt.value : opt) === currentVal);
+        if (triggerSpan) {
+            if (currentOpt) {
+                triggerSpan.textContent = typeof currentOpt === 'object' ? currentOpt.label : currentOpt;
+            } else if (optionsList.length > 0) {
+                const firstOpt = optionsList[0];
+                triggerSpan.textContent = typeof firstOpt === 'object' ? firstOpt.label : firstOpt;
+            } else {
+                triggerSpan.textContent = 'Seleziona';
+            }
+        }
+        
+        optionsContainer.innerHTML = '';
+        
+        optionsList.forEach(opt => {
+            const val = typeof opt === 'object' ? opt.value : opt;
+            const label = typeof opt === 'object' ? opt.label : opt;
+            const isSelected = (val === currentVal);
+
+            const optionEl = document.createElement('div');
+            optionEl.className = `custom-option ${isSelected ? 'selected' : ''}`;
+            
+            // Se è prevista la funzione di eliminazione (es. menù esercizi analisi)
+            let deleteBtnHTML = '';
+            if (onDeleteCallback) {
+                deleteBtnHTML = `<span class="custom-option-delete" title="Elimina esercizio">✕</span>`;
+            }
+
+            optionEl.innerHTML = `
+                <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${label}</span>
+                <span class="opt-check">${isSelected ? '✓' : ''}</span>
+                ${deleteBtnHTML}
+            `;
+            
+            // Gestione del click sulla X per la cancellazione
+            if (onDeleteCallback) {
+                const delBtn = optionEl.querySelector('.custom-option-delete');
+                if (delBtn) {
+                    delBtn.onclick = async (e) => {
+                        e.stopPropagation(); // Evita di selezionare l'opzione mentre si clicca sulla X
+                        wrapper.classList.remove('open');
+                        
+                        const confirmDel = await customConfirm(
+                            `Sei sicuro di voler rimuovere l'esercizio "${label}" dall'elenco dell'analisi?`, 
+                            "Elimina Esercizio"
+                        );
+
+                        if (confirmDel) {
+                            onDeleteCallback(val);
+                        }
+                    };
+                }
+            }
+
+            // Selezione dell'opzione
+            optionEl.onclick = (e) => {
+                e.stopPropagation();
+                wrapper.classList.remove('open');
+                
+                optionsContainer.querySelectorAll('.custom-option').forEach(el => {
+                    el.classList.remove('selected');
+                    const checkSpan = el.querySelector('.opt-check');
+                    if (checkSpan) checkSpan.textContent = '';
+                });
+                
+                optionEl.classList.add('selected');
+                const myCheck = optionEl.querySelector('.opt-check');
+                if (myCheck) myCheck.textContent = '✓';
+                
+                if (triggerSpan) triggerSpan.textContent = label;
+                
+                onSelectCallback(val);
+            };
+
+            optionsContainer.appendChild(optionEl);
+        });
+    }
+
+    function toggleCustomDropdown(wrapperId) {
+        const target = document.getElementById(wrapperId);
+        if (!target) return;
+        const isOpen = target.classList.contains('open');
+        
+        document.querySelectorAll('.custom-select-wrapper').forEach(w => w.classList.remove('open'));
+        
+        if (!isOpen) {
+            target.classList.add('open');
+        }
+    }
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.custom-select-wrapper')) {
+            document.querySelectorAll('.custom-select-wrapper').forEach(w => w.classList.remove('open'));
+        }
+    });
 
     function updateIronFlowDashboard() {
-        const select = document.getElementById('active-routine-select');
-        const routineKey = (select && select.value) || currentRoutineKey;
+        const routineKey = currentRoutineKey;
+        const titleEl = document.getElementById('dashboard-routine-title');
+        if (titleEl) titleEl.textContent = routineKey;
+        
         const blocks = routines[routineKey] || [];
         const exercises = blocks.reduce((n, b) => n + (b.exercises ? b.exercises.length : 0), 0);
         const plannedSets = blocks.reduce((n, b) => n + (b.exercises || []).reduce((x, e) => x + (parseInt(e.sets) || 0), 0), 0);
 
         const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
-        setText('dashboard-routine-name', routineKey || 'Scheda');
         setText('dashboard-block-count', `${blocks.length} ${blocks.length === 1 ? 'blocco' : 'blocchi'}`);
         setText('dashboard-exercise-count', `${exercises} ${exercises === 1 ? 'esercizio' : 'esercizi'}`);
         setText('dashboard-set-count', `${plannedSets} serie`);
-
-        let totalSets = 0;
-        let totalVolume = 0;
-        (historyData || []).forEach(item => (item.logs || []).forEach(log => (log.setsData || []).forEach(set => {
-            totalSets++;
-            totalVolume += (Number(set.weight) || 0) * (Number(set.reps) || 0);
-        })));
-
-        setText('dash-sessions', (historyData || []).length);
-        setText('dash-sets', totalSets);
-        setText('dash-volume', totalVolume >= 1000 ? `${(totalVolume/1000).toFixed(1)}k` : Math.round(totalVolume));
-
-        let streak = 0;
-        const days = [...new Set((historyData || []).map(x => x.dateIso ? new Date(x.dateIso).toISOString().slice(0,10) : null).filter(Boolean))];
-        if (days.length) {
-            const daySet = new Set(days);
-            let cursor = new Date();
-            cursor.setHours(0,0,0,0);
-            while (daySet.has(cursor.toISOString().slice(0,10))) {
-                streak++;
-                cursor.setDate(cursor.getDate() - 1);
-            }
-        }
-        setText('dash-streak', streak);
-
-        const fill = document.getElementById('dash-progress-fill');
-        const pct = document.getElementById('dash-progress-text');
-        const progress = plannedSets ? Math.round(Object.values(workoutState.completedSets || {}).filter(x => x && x.done).length / plannedSets * 100) : 0;
-        if (fill) fill.style.width = `${Math.min(100, progress)}%`;
-        if (pct) pct.textContent = `${Math.min(100, progress)}%`;
     }
 
     function updateIronFlowWorkoutHud() {
@@ -1618,11 +1187,7 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         if (tabId === 'tab-workout') { initActiveRoutineSelect(); updateIronFlowDashboard(); }
         if (tabId === 'tab-edit') {
             initRoutineSelectors();
-            if (isRoutineSaved) saveAndShowSummary();
-            else {
-                renderEditRoutine();
-                initSupersetBuilderRows();
-            }
+            showSummaryView();
         }
         if (tabId === 'tab-chart') initChartSelect();
         if (tabId === 'tab-history') renderHistory();
@@ -1692,9 +1257,7 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         historyData = [];
         savedStatusMap = {};
         currentRoutineKey = Object.keys(routines)[0];
-        isRoutineSaved = false;
 
-        // 1. CARICAMENTO PRIMARIO ALLENAMENTO ATTIVO (se presente nel LocalStorage)
         const hasActiveSession = loadActiveWorkoutSession();
 
         if (hasActiveSession) {
@@ -1706,20 +1269,15 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
             if (workoutState.isRest) {
                 startRestTimer(workoutState.seconds);
             } else {
-                startWorkTimer();
+                startWorkTimer(true);
             }
         }
 
-        // 2. SINCRONIZZAZIONE DATI DA SUPABASE IN BACKGROUND
         fetchRemoteData().then(() => {
             if (!workoutState.active) {
                 initActiveRoutineSelect();
                 updateIronFlowDashboard();
-                if (isRoutineSaved) saveAndShowSummary();
-                else {
-                    renderEditRoutine();
-                    initSupersetBuilderRows();
-                }
+                showSummaryView();
             }
         });
     }
@@ -1752,23 +1310,23 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         const password = document.getElementById('auth-password').value;
 
         if (!email || !password) {
-            alert("Inserisci email e password.");
+            await customAlert("Inserisci email e password.");
             return;
         }
 
         if (isRegistering) {
             const { error } = await db.auth.signUp({ email, password });
             if (error) {
-                alert("Errore di registrazione: " + error.message);
+                await customAlert("Errore di registrazione: " + error.message);
             } else {
-                alert("Registrazione completata! Ora puoi accedere.");
+                await customAlert("Registrazione completata! Ora puoi accedere.");
                 isRegistering = false;
                 toggleAuthMode();
             }
         } else {
             const { data, error } = await db.auth.signInWithPassword({ email, password });
             if (error) {
-                alert("Credenziali non valide: " + error.message);
+                await customAlert("Credenziali non valide: " + error.message);
             } else if (data.session) {
                 currentUser = data.session.user;
                 showMainApp();
@@ -1779,20 +1337,21 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
     async function handleForgotPassword() {
         const email = document.getElementById('auth-email').value.trim();
         if (!email) {
-            alert("Inserisci prima la tua email nell'apposito campo sopra per recuperare la password.");
+            await customAlert("Inserisci prima la tua email nell'apposito campo sopra per recuperare la password.");
             return;
         }
 
-        const redirectUrl = 'https://scutellarolorenzo-blip.github.io/IronFlow/';
+        const redirectUrl = window.location.origin + window.location.pathname;
+        const confirmSend = await customConfirm(`Vuoi inviare un'email di recupero password all'indirizzo: ${email}?`, "Recupero Password");
 
-        if (confirm(`Vuoi inviare un'email di recupero password all'indirizzo: ${email}?`)) {
+        if (confirmSend) {
             const { error } = await db.auth.resetPasswordForEmail(email, {
                 redirectTo: redirectUrl
             });
             if (error) {
-                alert("Errore durante l'invio dell'email di recupero: " + error.message);
+                await customAlert("Errore durante l'invio dell'email di recupero: " + error.message);
             } else {
-                alert("Email di recupero inviata con successo! Controlla la tua casella di posta.");
+                await customAlert("Email di recupero inviata con successo! Controlla la tua casella di posta.");
             }
         }
     }
@@ -1802,25 +1361,25 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         const confirmPassword = document.getElementById('confirm-new-password').value;
 
         if (!newPassword || !confirmPassword) {
-            alert("Compila entrambi i campi.");
+            await customAlert("Compila entrambi i campi.");
             return;
         }
 
         if (newPassword !== confirmPassword) {
-            alert("Le password non coincidono.");
+            await customAlert("Le password non coincidono.");
             return;
         }
 
         if (newPassword.length < 6) {
-            alert("La password deve contenere almeno 6 caratteri.");
+            await customAlert("La password deve contenere almeno 6 caratteri.");
             return;
         }
 
         const { data, error } = await db.auth.updateUser({ password: newPassword });
         if (error) {
-            alert("Errore durante l'aggiornamento della password: " + error.message);
+            await customAlert("Errore durante l'aggiornamento della password: " + error.message);
         } else {
-            alert("Password aggiornata con successo! Ora puoi accedere con la nuova password.");
+            await customAlert("Password aggiornata con successo! Ora puoi accedere con la nuova password.");
             isPasswordRecoveryFlow = false;
             window.history.replaceState({}, document.title, window.location.pathname);
             await db.auth.signOut();
@@ -1829,7 +1388,8 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
     }
 
     async function handleLogout() {
-        if (!confirm("Vuoi uscire dal tuo account?")) return;
+        const confirmLogout = await customConfirm("Vuoi uscire dal tuo account?", "Disconnessione");
+        if (!confirmLogout) return;
         try {
             const { error } = await db.auth.signOut();
             if (error) console.warn("Logout Supabase non completato:", error.message);
@@ -1891,27 +1451,17 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
                 .single();
                 
             if (data && !error) {
-                if (data.routines) {
-                    routines = data.routines;
-                }
-                if (data.history) {
-                    historyData = data.history;
-                } else {
-                    historyData = [];
-                }
-                if (data.saved_status) {
-                    savedStatusMap = data.saved_status;
-                } else {
-                    savedStatusMap = {};
-                }
+                if (data.routines) routines = data.routines;
+                if (data.history) historyData = data.history;
+                else historyData = [];
+                if (data.saved_status) savedStatusMap = data.saved_status;
+                else savedStatusMap = {};
             }
 
-            // NON SOVRASCRIVERE O CAMBIARE CHIAVE SE C'È UN ALLENAMENTO ATTIVO
             if (!workoutState.active) {
                 if (!routines[currentRoutineKey]) {
                     currentRoutineKey = Object.keys(routines)[0];
                 }
-                isRoutineSaved = savedStatusMap[currentRoutineKey] || false;
             }
 
             localStorage.setItem('ironflow_routines', JSON.stringify(routines));
@@ -1944,44 +1494,42 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
     }
 
     function initActiveRoutineSelect() {
-        const select = document.getElementById('active-routine-select');
-        select.innerHTML = '';
-        Object.keys(routines).forEach(key => {
-            select.innerHTML += `<option value="${key}" ${key === currentRoutineKey ? 'selected' : ''}>${key}</option>`;
-        });
+        const keys = Object.keys(routines);
+        renderCustomDropdown('custom-dashboard-select', keys, currentRoutineKey, onRoutineSelected);
+        renderCustomDropdown('custom-summary-select', keys, currentRoutineKey, onRoutineSelected);
+    }
+
+    function onRoutineSelected(val) {
+        if (!val) return;
+        currentRoutineKey = val;
+        localStorage.setItem('ironflow_current_key', currentRoutineKey);
+        
+        initActiveRoutineSelect();
+        initRoutineSelectors();
+        updateIronFlowDashboard();
+        showSummaryView();
     }
 
     function initRoutineSelectors() {
-        const select = document.getElementById('routine-selector');
-        select.innerHTML = '';
-        Object.keys(routines).forEach(key => {
-            select.innerHTML += `<option value="${key}" ${key === currentRoutineKey ? 'selected' : ''}>${key}</option>`;
-        });
+        const keys = Object.keys(routines);
+        renderCustomDropdown('custom-edit-select', keys, currentRoutineKey, switchActiveRoutine);
         document.getElementById('rename-routine-input').value = currentRoutineKey;
     }
 
     function switchActiveRoutine(key) {
-        currentRoutineKey = key;
-        localStorage.setItem('ironflow_current_key', currentRoutineKey);
-        isRoutineSaved = savedStatusMap[currentRoutineKey] || false;
-        document.getElementById('rename-routine-input').value = currentRoutineKey;
-        
-        if (isRoutineSaved) saveAndShowSummary();
-        else {
-            renderEditRoutine();
-            initSupersetBuilderRows();
-        }
+        if (!key) return;
+        onRoutineSelected(key);
     }
 
-    function renameCurrentRoutine() {
+    async function renameCurrentRoutine() {
         const inputVal = document.getElementById('rename-routine-input').value.trim();
         if (!inputVal) {
-            alert("Il nome della scheda non può essere vuoto.");
+            await customAlert("Il nome della scheda non può essere vuoto.");
             return;
         }
         if (inputVal === currentRoutineKey) return;
         if (routines[inputVal]) {
-            alert("Esiste già una scheda con questo nome.");
+            await customAlert("Esiste già una scheda con questo nome.");
             return;
         }
 
@@ -1994,17 +1542,83 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         currentRoutineKey = inputVal;
         saveRoutinesStorage();
         initRoutineSelectors();
-        if (isRoutineSaved) saveAndShowSummary();
-        else renderEditRoutine();
-        alert("Scheda rinominata con successo!");
+        initActiveRoutineSelect();
+        showSummaryView();
+        await customAlert("Scheda rinominata con successo!");
     }
 
-    function createNewRoutinePrompt() {
-        const name = prompt("Inserisci il nome della nuova scheda:");
+    // Sistema Pop-up personalizzato IronFlow
+    function showCustomModal({ title = 'IronFlow', message = '', showInput = false, inputPlaceholder = '', confirmText = 'OK', cancelText = null }) {
+        return new Promise((resolve) => {
+            const modal = document.getElementById('custom-modal');
+            const titleEl = document.getElementById('custom-modal-title');
+            const msgEl = document.getElementById('custom-modal-message');
+            const inputContainer = document.getElementById('custom-modal-input-container');
+            const inputEl = document.getElementById('custom-modal-input');
+            const actionsEl = document.getElementById('custom-modal-actions');
+
+            titleEl.textContent = title;
+            msgEl.textContent = message;
+            actionsEl.innerHTML = '';
+
+            const confirmBtn = document.createElement('button');
+            confirmBtn.className = 'btn btn-sm btn-primary';
+            confirmBtn.textContent = confirmText;
+            confirmBtn.onclick = () => {
+                const val = showInput ? inputEl.value : true;
+                modal.classList.add('hidden');
+                resolve(val);
+            };
+
+            if (showInput) {
+                inputContainer.classList.remove('hidden');
+                inputEl.value = '';
+                inputEl.placeholder = inputPlaceholder;
+                inputEl.onkeyup = (e) => {
+                    if (e.key === 'Enter') {
+                        confirmBtn.click();
+                    }
+                };
+                setTimeout(() => inputEl.focus(), 50);
+            } else {
+                inputContainer.classList.add('hidden');
+            }
+
+            if (cancelText) {
+                const cancelBtn = document.createElement('button');
+                cancelBtn.className = 'btn btn-sm';
+                cancelBtn.textContent = cancelText;
+                cancelBtn.onclick = () => {
+                    modal.classList.add('hidden');
+                    resolve(null);
+                };
+                actionsEl.appendChild(cancelBtn);
+            }
+
+            actionsEl.appendChild(confirmBtn);
+            modal.classList.remove('hidden');
+        });
+    }
+
+    async function customAlert(message, title = 'IronFlow') {
+        await showCustomModal({ title, message, confirmText: 'Capito' });
+    }
+
+    async function customConfirm(message, title = 'Conferma') {
+        const res = await showCustomModal({ title, message, confirmText: 'Conferma', cancelText: 'Annulla' });
+        return !!res;
+    }
+
+    async function customPrompt(message, placeholder = '', title = 'Inserisci Dati') {
+        return await showCustomModal({ title, message, showInput: true, inputPlaceholder: placeholder, confirmText: 'Salva', cancelText: 'Annulla' });
+    }
+
+    async function createNewRoutinePrompt() {
+        const name = await customPrompt("Inserisci il nome della nuova scheda:", "Es. Scheda A", "Nuova Scheda");
         if (name && name.trim() !== "") {
             const trimmedName = name.trim();
             if (routines[trimmedName]) {
-                alert("Esiste già una scheda con questo nome.");
+                await customAlert("Esiste già una scheda con questo nome.");
                 return;
             }
             routines[trimmedName] = [
@@ -2015,37 +1629,30 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
                 }
             ];
             currentRoutineKey = trimmedName;
-            savedStatusMap[currentRoutineKey] = false;
-            isRoutineSaved = false;
             saveRoutinesStorage();
             initRoutineSelectors();
             initActiveRoutineSelect();
             updateIronFlowDashboard();
-            renderEditRoutine();
-            initSupersetBuilderRows();
+            showSummaryView();
         }
     }
 
-    function deleteCurrentRoutine() {
+    async function deleteCurrentRoutine() {
         const keys = Object.keys(routines);
         if (keys.length <= 1) {
-            alert("Non puoi eliminare l'unica scheda rimasta.");
+            await customAlert("Non puoi eliminare l'unica scheda rimasta.");
             return;
         }
-        if (confirm(`Sei sicuro di voler eliminare la scheda "${currentRoutineKey}"?`)) {
+        const confirmDelete = await customConfirm(`Sei sicuro di voler eliminare la scheda "${currentRoutineKey}"?`, "Elimina Scheda");
+        if (confirmDelete) {
             delete routines[currentRoutineKey];
             delete savedStatusMap[currentRoutineKey];
             currentRoutineKey = Object.keys(routines)[0];
-            isRoutineSaved = savedStatusMap[currentRoutineKey] || false;
             saveRoutinesStorage();
             initRoutineSelectors();
             initActiveRoutineSelect();
             updateIronFlowDashboard();
-            if (isRoutineSaved) saveAndShowSummary();
-            else {
-                renderEditRoutine();
-                initSupersetBuilderRows();
-            }
+            showSummaryView();
         }
     }
 
@@ -2065,7 +1672,7 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
 
     function addSupersetRow() {
         const container = document.getElementById('superset-dynamic-rows');
-        const rowId = 'sup-row-' + Date.now() + Math.random();
+        const rowId = 'sup-row-' + Date.now() + Math.random().toString(36).substring(2, 5);
         const div = document.createElement('div');
         div.className = 'form-group-4';
         div.id = rowId;
@@ -2094,7 +1701,7 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         container.appendChild(div);
     }
 
-    function saveNewSupersetBlock() {
+    async function saveNewSupersetBlock() {
         const rows = document.querySelectorAll('#superset-dynamic-rows > div');
         const exercises = [];
 
@@ -2109,7 +1716,7 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         });
 
         if (exercises.length < 2) {
-            alert("Un superset deve contenere almeno 2 esercizi.");
+            await customAlert("Un superset deve contenere almeno 2 esercizi.");
             return;
         }
 
@@ -2183,13 +1790,14 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
             seconds: workoutState.seconds,
             savedRestSeconds: workoutState.savedRestSeconds,
             startTime: workoutState.startTime ? workoutState.startTime.toISOString() : null,
+            currentSetStartTime: workoutState.currentSetStartTime ? workoutState.currentSetStartTime.toISOString() : null,
             completedSets: workoutState.completedSets,
             lockedSets: workoutState.lockedSets,
             activeBlockIdx: activeBlockIdx,
             activeSetNum: activeSetNum,
             activeSubExIdx: activeSubExIdx,
             routineKey: currentRoutineKey,
-            routineStructure: routines[currentRoutineKey] || [] // Backup completo della struttura della scheda
+            routineStructure: routines[currentRoutineKey] || []
         };
         localStorage.setItem('ironflow_active_session', JSON.stringify(sessionData));
     }
@@ -2200,10 +1808,7 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         try {
             const data = JSON.parse(saved);
             if (data && data.active) {
-                if (data.routineKey) {
-                    currentRoutineKey = data.routineKey;
-                }
-                // Se la scheda non è ancora in memoria o scaricata parzialmente, usiamo il backup al volo
+                if (data.routineKey) currentRoutineKey = data.routineKey;
                 if (data.routineStructure && data.routineStructure.length > 0) {
                     routines[currentRoutineKey] = data.routineStructure;
                 }
@@ -2213,10 +1818,15 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
                 workoutState.isPaused = data.isPaused;
                 workoutState.savedRestSeconds = data.savedRestSeconds !== undefined ? data.savedRestSeconds : null;
                 workoutState.startTime = data.startTime ? new Date(data.startTime) : new Date();
+                workoutState.currentSetStartTime = data.currentSetStartTime ? new Date(data.currentSetStartTime) : null;
                 
-                if (!workoutState.isRest && workoutState.startTime) {
-                    const elapsed = Math.floor((new Date() - workoutState.startTime) / 1000);
-                    workoutState.seconds = Math.max(0, elapsed);
+                if (!workoutState.isRest) {
+                    if (workoutState.currentSetStartTime && !workoutState.isPaused) {
+                        const elapsed = Math.floor((new Date() - workoutState.currentSetStartTime) / 1000);
+                        workoutState.seconds = Math.max(0, elapsed);
+                    } else {
+                        workoutState.seconds = data.seconds || 0;
+                    }
                 } else {
                     workoutState.seconds = data.seconds;
                 }
@@ -2235,8 +1845,6 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
     }
 
     function startWorkoutSession() {
-        const select = document.getElementById('active-routine-select');
-        currentRoutineKey = select.value;
         localStorage.setItem('ironflow_current_key', currentRoutineKey);
 
         document.getElementById('start-session-view').classList.add('hidden');
@@ -2428,15 +2036,17 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
     }
 
     function lockPreviousSet(bIdx, exIdx, setNum, isSuperset) {
-        if (!isSuperset) {
-            if (setNum > 1) {
-                const prevKey = `${bIdx}-${exIdx}-${setNum - 1}`;
-                workoutState.lockedSets[prevKey] = true;
-            }
-        } else {
-            if (setNum > 1) {
-                const prevKey = `${bIdx}-${exIdx}-${setNum - 1}`;
-                workoutState.lockedSets[prevKey] = true;
+        if (setNum > 1) {
+            const prevKey = `${bIdx}-${exIdx}-${setNum - 1}`;
+            workoutState.lockedSets[prevKey] = true;
+        } else if (bIdx > 0 && setNum === 1) {
+            const prevBlock = routines[currentRoutineKey][bIdx - 1];
+            if (prevBlock && prevBlock.exercises) {
+                prevBlock.exercises.forEach((ex, pExIdx) => {
+                    const lastSetNum = ex.sets;
+                    const prevKey = `${bIdx - 1}-${pExIdx}-${lastSetNum}`;
+                    workoutState.lockedSets[prevKey] = true;
+                });
             }
         }
     }
@@ -2488,7 +2098,7 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
 
         if (workoutState.isRest) {
             workoutState.savedRestSeconds = workoutState.seconds;
-            clearInterval(workoutState.interval);
+            if (workoutState.interval) clearInterval(workoutState.interval);
             workoutState.isRest = false;
         }
 
@@ -2519,7 +2129,7 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         lockPreviousSet(bIdx, exIdx, setNum, true);
 
         const block = routines[currentRoutineKey][bIdx];
-        const numExercises = block.exercises.length;
+        const activeExercisesInSet = block.exercises.filter(e => setNum <= e.sets);
 
         let restDuration = ex.restSet || 30;
         if (workoutState.savedRestSeconds !== null) {
@@ -2527,7 +2137,7 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
             workoutState.savedRestSeconds = null;
         }
 
-        if (activeSubExIdx < numExercises - 1) {
+        if (activeSubExIdx < activeExercisesInSet.length - 1) {
             activeSubExIdx++;
             renderWorkout();
             startRestTimer(restDuration);
@@ -2562,7 +2172,7 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
 
         if (workoutState.isRest) {
             workoutState.savedRestSeconds = workoutState.seconds;
-            clearInterval(workoutState.interval);
+            if (workoutState.interval) clearInterval(workoutState.interval);
             workoutState.isRest = false;
         }
 
@@ -2578,8 +2188,9 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         saveActiveWorkoutSession();
     }
 
-    function promptSkipCurrentSet() {
-        if (confirm("Vuoi saltare questo set corrente?")) {
+    async function promptSkipCurrentSet() {
+        const confirmSkip = await customConfirm("Vuoi saltare questo set corrente?", "Salta Set");
+        if (confirmSkip) {
             const block = routines[currentRoutineKey][activeBlockIdx];
             let restDuration = 90;
             let targetSet = activeSetNum;
@@ -2645,35 +2256,37 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
     }
 
     function finishRest() {
-        clearInterval(workoutState.interval);
+        if (workoutState.interval) clearInterval(workoutState.interval);
         workoutState.savedRestSeconds = null;
         
-        const block = routines[currentRoutineKey][activeBlockIdx];
-        if (!block || !block.isSuperset) {
-            const targetSet = activeSetNum > 1 ? activeSetNum - 1 : 1;
-            block?.exercises.forEach((ex, exIdx) => {
-                const key = `${activeBlockIdx}-${exIdx}-${targetSet}`;
-                if (workoutState.completedSets[key]?.done) {
-                    workoutState.lockedSets[key] = true;
-                }
-            });
-        } else {
-            block.exercises.forEach((ex, exIdx) => {
-                const key = `${activeBlockIdx}-${exIdx}-${activeSetNum - 1}`;
+        let targetBlockIdx = activeBlockIdx;
+        let targetSetNum = activeSetNum > 1 ? activeSetNum - 1 : 1;
+
+        if (activeSetNum === 1 && activeBlockIdx > 0 && activeSubExIdx === 0) {
+            targetBlockIdx = activeBlockIdx - 1;
+            const prevBlock = routines[currentRoutineKey][targetBlockIdx];
+            if (prevBlock && prevBlock.exercises) {
+                targetSetNum = Math.max(...prevBlock.exercises.map(e => e.sets));
+            }
+        }
+
+        const blockToLock = routines[currentRoutineKey][targetBlockIdx];
+        if (blockToLock && blockToLock.exercises) {
+            blockToLock.exercises.forEach((ex, exIdx) => {
+                const key = `${targetBlockIdx}-${exIdx}-${targetSetNum}`;
                 if (workoutState.completedSets[key]?.done) {
                     workoutState.lockedSets[key] = true;
                 }
             });
         }
 
-        // Il timer dell'esercizio riparte sempre da 0 per la nuova serie
         startWorkTimer();
         renderWorkout();
         saveActiveWorkoutSession();
     }
 
     function startRestTimer(duration) {
-        clearInterval(workoutState.interval);
+        if (workoutState.interval) clearInterval(workoutState.interval);
         workoutState.isRest = true;
         workoutState.seconds = duration;
         updateTimerDisplay();
@@ -2700,20 +2313,25 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         }, 1000);
     }
 
-    function startWorkTimer() {
-        clearInterval(workoutState.interval);
+    function startWorkTimer(isResume = false) {
+        if (workoutState.interval) clearInterval(workoutState.interval);
         workoutState.isRest = false;
         
-        // Reset azzerato ad ogni inizio di serie/esercizio
-        workoutState.startTime = new Date();
-        workoutState.seconds = 0;
+        if (!isResume) {
+            workoutState.seconds = 0;
+            workoutState.currentSetStartTime = new Date();
+        } else if (!workoutState.currentSetStartTime) {
+            const now = new Date();
+            workoutState.currentSetStartTime = new Date(now.getTime() - (workoutState.seconds * 1000));
+        }
         
         updateTimerDisplay();
         saveActiveWorkoutSession();
 
         workoutState.interval = setInterval(() => {
             if (!workoutState.isPaused) {
-                workoutState.seconds++;
+                const now = new Date();
+                workoutState.seconds = Math.max(0, Math.floor((now - workoutState.currentSetStartTime) / 1000));
                 updateTimerDisplay();
                 saveActiveWorkoutSession();
             }
@@ -2725,29 +2343,34 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         const displayDiv = document.getElementById('timer-display');
         const controlsDiv = document.getElementById('timer-controls');
 
-        statusDiv.innerText = workoutState.isRest ? "☕ RECUPERO IN CORSO" : "ESERCIZIO IN CORSO";
+        if (statusDiv) statusDiv.innerText = workoutState.isRest ? "☕ RECUPERO IN CORSO" : "ESERCIZIO IN CORSO";
 
         const m = Math.floor(Math.abs(workoutState.seconds) / 60).toString().padStart(2, '0');
         const s = (Math.abs(workoutState.seconds) % 60).toString().padStart(2, '0');
-        displayDiv.innerText = `${m}:${s}`;
+        if (displayDiv) displayDiv.innerText = `${m}:${s}`;
 
-        controlsDiv.innerHTML = `
-            <button class="btn" onclick="togglePause()">${workoutState.isPaused ? 'Riprendi' : 'Pausa'}</button>
-            <button class="btn ${workoutState.isRest ? 'btn-primary' : 'btn-warning'}" onclick="${workoutState.isRest ? 'finishRest()' : 'promptSkipCurrentSet()'}">${workoutState.isRest ? 'Salta' : 'Salta set'}</button>
-            <button class="btn btn-danger" onclick="cancelWorkout()">Annulla</button>
-            <button class="btn btn-danger" onclick="terminateWorkout()">Termina</button>
-        `;
+        if (controlsDiv) {
+            controlsDiv.innerHTML = `
+                <button class="btn" onclick="togglePause()">${workoutState.isPaused ? 'Riprendi' : 'Pausa'}</button>
+                <button class="btn ${workoutState.isRest ? 'btn-primary' : 'btn-warning'}" onclick="${workoutState.isRest ? 'finishRest()' : 'promptSkipCurrentSet()'}">${workoutState.isRest ? 'Salta' : 'Salta set'}</button>
+                <button class="btn btn-danger" onclick="cancelWorkout()">Annulla</button>
+                <button class="btn btn-danger" onclick="terminateWorkout()">Termina</button>
+            `;
+        }
     }
 
     function togglePause() {
         workoutState.isPaused = !workoutState.isPaused;
+        if (!workoutState.isPaused && !workoutState.isRest) {
+            workoutState.currentSetStartTime = new Date(new Date().getTime() - (workoutState.seconds * 1000));
+        }
         updateTimerDisplay();
         saveActiveWorkoutSession();
     }
 
     function cancelWorkout() {
-        clearInterval(workoutState.interval);
-        workoutState = { active: false, isRest: false, isPaused: false, seconds: 0, interval: null, startTime: null, completedSets: {}, lockedSets: {}, savedRestSeconds: null };
+        if (workoutState.interval) clearInterval(workoutState.interval);
+        workoutState = { active: false, isRest: false, isPaused: false, seconds: 0, interval: null, startTime: null, currentSetStartTime: null, completedSets: {}, lockedSets: {}, savedRestSeconds: null };
         activeBlockIdx = 0;
         activeSetNum = 1;
         activeSubExIdx = 0;
@@ -2761,7 +2384,7 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
     }
 
     function terminateWorkout() {
-        clearInterval(workoutState.interval);
+        if (workoutState.interval) clearInterval(workoutState.interval);
         
         currentDurationMinutesTemp = 1;
         const now = new Date();
@@ -2893,14 +2516,14 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         document.getElementById('start-session-view').classList.remove('hidden');
         document.getElementById('main-nav-tabs').style.display = 'grid';
 
-        workoutState = { active: false, isRest: false, isPaused: false, seconds: 0, interval: null, startTime: null, completedSets: {}, lockedSets: {}, savedRestSeconds: null };
+        workoutState = { active: false, isRest: false, isPaused: false, seconds: 0, interval: null, startTime: null, currentSetStartTime: null, completedSets: {}, lockedSets: {}, savedRestSeconds: null };
         activeBlockIdx = 0;
         activeSetNum = 1;
         activeSubExIdx = 0;
         initActiveRoutineSelect();
     }
 
-    function renderEditRoutine() {
+   function renderEditRoutine() {
         if (!routines[currentRoutineKey]) currentRoutineKey = Object.keys(routines)[0];
         const blocks = routines[currentRoutineKey];
         const container = document.getElementById('edit-routine-list');
@@ -2942,6 +2565,8 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
             });
 
             const supersetBadge = block.isSuperset ? `<span style="background:var(--superset-border); color:white; font-size:9px; padding:2px 6px; border-radius:4px; margin-left:6px;">Superset</span>` : `<span style="color:var(--subtext); font-size:11px; margin-left:6px;">Singolo</span>`;
+            
+            const isLastBlock = (bIdx === blocks.length - 1);
 
             container.innerHTML += `
                 <div class="edit-block-item ${block.isSuperset ? 'superset-item' : ''}">
@@ -2949,14 +2574,16 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
                         <span style="font-size:12px; font-weight:700; color:var(--text);">Blocco ${bIdx + 1} ${supersetBadge}</span>
                         <div style="display:flex; gap:4px; align-items:center;">
                             <button class="btn btn-sm" onclick="moveBlockUp(${bIdx})" ${bIdx === 0 ? 'disabled style="opacity:0.3"' : ''}>▲</button>
-                            <button class="btn btn-sm" onclick="moveBlockDown(${bIdx})" ${bIdx === blocks.length - 1 ? 'disabled style="opacity:0.3"' : ''}>▼</button>
+                            <button class="btn btn-sm" onclick="moveBlockDown(${bIdx})" ${isLastBlock ? 'disabled style="opacity:0.3"' : ''}>▼</button>
                             <button class="btn btn-danger btn-sm" onclick="removeBlock(${bIdx})">Elimina Blocco</button>
                         </div>
                     </div>
                     ${exercisesHTML}
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; border-top:1px solid var(--card-border); padding-top:8px;">
-                        <span class="field-label" style="margin-bottom:0;">Recupero Fine Blocco (sec):</span>
-                        <input type="number" value="${block.restAfterBlock || 120}" onchange="updateBlockRest(${bIdx}, this.value)" style="width:70px; text-align:center; margin-bottom:0 !important;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; border-top:1px solid var(--card-border); padding-top:8px; opacity: ${isLastBlock ? '0.4' : '1'};">
+                        <span class="field-label" style="margin-bottom:0;">
+                            Recupero Fine Blocco (sec) ${isLastBlock ? '<i style="color:var(--subtext); font-weight:normal;">(Non necessario per l\'ultimo blocco)</i>' : ''}:
+                        </span>
+                        <input type="number" value="${block.restAfterBlock || 120}" ${isLastBlock ? 'disabled' : ''} onchange="updateBlockRest(${bIdx}, this.value)" style="width:70px; text-align:center; margin-bottom:0 !important; ${isLastBlock ? 'cursor:not-allowed;' : ''}">
                     </div>
                 </div>
             `;
@@ -2991,13 +2618,16 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
     }
 
     function saveAndShowSummary() {
-        isRoutineSaved = true;
-        savedStatusMap[currentRoutineKey] = true;
         saveRoutinesStorage();
+        showSummaryView();
+    }
 
+    function showSummaryView() {
         document.getElementById('edit-mode-view').classList.add('hidden');
         document.getElementById('summary-mode-view').classList.remove('hidden');
+
         document.getElementById('summary-routine-title').innerText = `📋 ${currentRoutineKey}`;
+        initActiveRoutineSelect();
 
         const container = document.getElementById('summary-routine-list');
         container.innerHTML = '';
@@ -3007,11 +2637,15 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
             blocks.forEach((block, bIdx) => {
                 let listText = block.exercises.map(e => `• ${e.name} (${e.sets} × ${e.reps} rep @ ${e.weight || 0}kg)`).join('<br>');
                 const tag = block.isSuperset ? `<span style="color:var(--superset-border); font-weight:bold; font-size:11px;">[Superset]</span> ` : '';
+                
+                const isLastBlock = (bIdx === blocks.length - 1);
+                const restInfoHTML = isLastBlock ? '' : `<div style="font-size:11px; color:var(--subtext); margin-top:8px;">Recupero fine blocco: ${block.restAfterBlock || 120}s</div>`;
+
                 container.innerHTML += `
                     <div class="card" style="margin-bottom:10px; background:#11131a;">
                         <h4 style="font-size:15px; margin-bottom:6px; color:var(--text);">${tag}Blocco ${bIdx + 1}</h4>
                         <div style="font-size:13px; color:var(--subtext); line-height:1.4;">${listText}</div>
-                        <div style="font-size:11px; color:var(--subtext); margin-top:8px;">Recupero fine blocco: ${block.restAfterBlock || 120}s</div>
+                        ${restInfoHTML}
                     </div>
                 `;
             });
@@ -3019,10 +2653,6 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
     }
 
     function enableEditMode() {
-        isRoutineSaved = false;
-        savedStatusMap[currentRoutineKey] = false;
-        saveRoutinesStorage();
-
         document.getElementById('summary-mode-view').classList.add('hidden');
         document.getElementById('edit-mode-view').classList.remove('hidden');
         renderEditRoutine();
@@ -3088,8 +2718,9 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         });
     }
 
-    function deleteHistoryItem(index) {
-        if (confirm("Vuoi eliminare questo allenamento dallo storico?")) {
+    async function deleteHistoryItem(index) {
+        const confirmDelete = await customConfirm("Vuoi eliminare questo allenamento dallo storico?", "Elimina Allenamento");
+        if (confirmDelete) {
             historyData.splice(index, 1);
             localStorage.setItem('ironflow_history', JSON.stringify(historyData));
             syncDataToSupabase();
@@ -3099,18 +2730,76 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         }
     }
 
-    function initChartSelect() {
-        const select = document.getElementById('chart-ex-select');
+   function initChartSelect() {
         const exNames = new Set();
         historyData.forEach(h => h.logs.forEach(l => exNames.add(l.name)));
         Object.values(routines).forEach(blocks => blocks.forEach(b => b.exercises.forEach(e => exNames.add(e.name))));
 
-        select.innerHTML = '';
-        exNames.forEach(name => {
-            select.innerHTML += `<option value="${name}">${name}</option>`;
+        const exList = Array.from(exNames);
+        if ((!selectedChartExercise || !exNames.has(selectedChartExercise)) && exList.length > 0) {
+            selectedChartExercise = exList[0];
+        }
+
+        const metricOptions = [
+            { value: 'score', label: '1. Volume, Intensità e Densità' },
+            { value: 'maxrep', label: '2. Miglioramento complessivo' }
+        ];
+
+        if (!selectedChartType) {
+            selectedChartType = 'score';
+        }
+
+        // Inizializza il dropdown passandogli anche la funzione di cancellazione
+        renderCustomDropdown(
+            'custom-chart-ex-select', 
+            exList, 
+            selectedChartExercise, 
+            (val) => {
+                selectedChartExercise = val;
+                renderChart();
+            },
+            deleteExerciseFromAnalytics // Passa la callback per la cancellazione
+        );
+
+        renderCustomDropdown('custom-chart-type-select', metricOptions, selectedChartType, (val) => {
+            selectedChartType = val;
+            renderChart();
         });
 
         renderChart();
+    }
+
+    // Nuova funzione per eliminare l'esercizio dallo storico / schede
+    function deleteExerciseFromAnalytics(exNameToDelete) {
+        // 1. Rimuove l'esercizio dalle sessioni salvate nello storico
+        historyData.forEach(session => {
+            if (session.logs) {
+                session.logs = session.logs.filter(l => l.name !== exNameToDelete);
+            }
+        });
+
+        // 2. Rimuove l'esercizio anche dalle schede salvate
+        Object.keys(routines).forEach(routineKey => {
+            routines[routineKey].forEach(block => {
+                if (block.exercises) {
+                    block.exercises = block.exercises.filter(e => e.name !== exNameToDelete);
+                }
+            });
+            // Pulisce eventuali blocchi rimasti vuoti
+            routines[routineKey] = routines[routineKey].filter(b => b.exercises && b.exercises.length > 0);
+        });
+
+        // Reset se l'esercizio eliminato era quello attualmente visualizzato
+        if (selectedChartExercise === exNameToDelete) {
+            selectedChartExercise = '';
+        }
+
+        // Salva le modifiche e aggiorna l'interfaccia
+        saveRoutinesStorage();
+        localStorage.setItem('ironflow_history', JSON.stringify(historyData));
+        syncDataToSupabase();
+        
+        initChartSelect();
     }
 
     function setChartFilter(filterType, btnElement) {
@@ -3121,18 +2810,21 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         renderChart();
     }
 
-    // --- RENDER GRAFICO CON LOGICA BILANCIATA E ANTI-ERRORE ---
     function renderChart() {
         const canvas = document.getElementById('analyticsChart');
         const detailsContainer = document.getElementById('analytics-details-list');
-        const selectedEx = document.getElementById('chart-ex-select').value;
-        const chartType = document.getElementById('chart-type-select').value;
+        const selectedEx = selectedChartExercise;
+        const chartType = selectedChartType;
         const banner = document.getElementById('maxrep-percentage-banner');
         const bannerText = document.getElementById('maxrep-percentage-text');
         
         if (!selectedEx) {
             detailsContainer.innerHTML = '';
             banner.classList.add('hidden');
+            if (myChartInstance) {
+                myChartInstance.destroy();
+                myChartInstance = null;
+            }
             return;
         }
 
@@ -3207,7 +2899,11 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
                 filteredSessions = allProcessedSessions.filter(s => s.dateIso >= limitDate);
             }
 
-            if (myChartInstance) myChartInstance.destroy();
+            if (myChartInstance) {
+                myChartInstance.destroy();
+                myChartInstance = null;
+            }
+
             if (filteredSessions.length === 0) {
                 detailsContainer.innerHTML = '<p style="color:var(--subtext); text-align:center; padding:15px; font-size:13px;">Nessun dato storico registrato.</p>';
                 return;
@@ -3267,7 +2963,6 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
             detailsContainer.innerHTML = detailsHtml;
 
         } else {
-            // Grafico 2: Miglioramento complessivo
             let maxRepSessions = [];
 
             chronologicalHistory.forEach(h => {
@@ -3321,7 +3016,11 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
                 banner.classList.add('hidden');
             }
 
-            if (myChartInstance) myChartInstance.destroy();
+            if (myChartInstance) {
+                myChartInstance.destroy();
+                myChartInstance = null;
+            }
+
             if (maxRepSessions.length === 0) {
                 detailsContainer.innerHTML = '<p style="color:var(--subtext); text-align:center; padding:15px; font-size:13px;">Nessun dato storico registrato.</p>';
                 return;
@@ -3380,7 +3079,7 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js')
                 .then(reg => console.log('Service Worker registrato con successo:', reg.scope))
-                .catch(err => console.log('Registrazione Service Worker fallita:', err));
+                .catch(err => console.warn('Service Worker non disponibile o disabilitato in questo contesto: ', err.message));
         });
     }
 
@@ -3388,6 +3087,18 @@ button, input, select, textarea, a { position:relative; z-index:2; pointer-event
         initAuth();
     };
 </script>
+
+<!-- CONTENITORE POP-UP / MODALE CUSTOM -->
+<div id="custom-modal" class="custom-modal-overlay hidden">
+    <div class="custom-modal-box">
+        <div id="custom-modal-title" class="custom-modal-title">IronFlow</div>
+        <div id="custom-modal-message" class="custom-modal-message"></div>
+        <div id="custom-modal-input-container" class="hidden">
+            <input type="text" id="custom-modal-input" class="custom-modal-input" placeholder="">
+        </div>
+        <div class="custom-modal-actions" id="custom-modal-actions"></div>
+    </div>
+</div>
 
 </body>
 </html>
