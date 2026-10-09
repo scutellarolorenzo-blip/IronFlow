@@ -233,8 +233,20 @@ body::after {
     background: linear-gradient(180deg,#fff,#9eabd0); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     text-shadow: 0 0 35px rgba(109,140,255,.16);
 }
-.btn-group { display: flex; gap: 7px!important; justify-content: center; flex-wrap: wrap; }
-#timer-controls .btn { flex: 1; min-height: 42px; }
+
+.btn-group { 
+    display: flex; 
+    gap: 6px !important; 
+    justify-content: center; 
+    flex-wrap: wrap; /* Assicura che vadano a capo se lo spazio non basta */
+}
+
+#timer-controls .btn { 
+    flex: 1 1 42%; /* Permette ai 4 pulsanti di disporsi comodamente su 2 righe da 2 su schermi stretti */
+    min-height: 40px; 
+    font-size: 12px;
+    padding: 8px 10px;
+}
 
 button.btn {
     position: relative; overflow: hidden; background: rgba(255,255,255,.065); color: var(--text); border: 1px solid rgba(255,255,255,.07);
@@ -315,6 +327,12 @@ input:focus, select:focus {
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
     transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    white-space: nowrap;
+}
+
+.custom-select-trigger span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
 }
 
@@ -530,16 +548,19 @@ input:focus, select:focus {
     align-items: center;
     margin-top: 6px;
     margin-bottom: 8px;
-    gap: 12px;
+    gap: 8px;
+    flex-wrap: wrap; /* AGGIUNTO: Evita che il selettore e il titolo si sovrappongano o sforino */
 }
+
 .routine-title-display {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 900;
     color: #ffffff;
     letter-spacing: -0.5px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    word-break: break-word; /* AGGIUNTO */
 }
 
 .select-btn-wrapper {
@@ -881,8 +902,8 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
         <!-- 3. TAB ANALISI -->
         <div id="tab-chart" class="tab-content">
             <div class="card">
-                <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-                    <div style="flex: 1;">
+               <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                    <div style="flex: 1; min-width: 0;">
                         <label style="font-size:12px; color:var(--subtext); display:block; margin-bottom:4px;">ESERCIZIO</label>
                         <div class="custom-select-wrapper" id="custom-chart-ex-select">
                             <div class="custom-select-trigger" onclick="toggleCustomDropdown('custom-chart-ex-select')">
@@ -892,7 +913,7 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
                             <div class="custom-select-options"></div>
                         </div>
                     </div>
-                    <div style="flex: 1;">
+                    <div style="flex: 1; min-width: 0;">
                         <label style="font-size:12px; color:var(--subtext); display:block; margin-bottom:4px;">METRICA</label>
                         <div class="custom-select-wrapper" id="custom-chart-type-select">
                             <div class="custom-select-trigger" onclick="toggleCustomDropdown('custom-chart-type-select')">
