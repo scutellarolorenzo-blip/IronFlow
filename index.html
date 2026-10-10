@@ -299,13 +299,12 @@ input:focus, select:focus {
 }
 
 /* Modifiche per nomi estesi a capo */
-.sub-exercise-row input[type="text"],
-.routine-title-display,
-.block-title,
-.custom-option span {
+.sub-exercise-row input[type="text"] {
     white-space: normal !important;
     word-break: break-word !important;
     overflow-wrap: break-word !important;
+    height: auto !important;
+    min-height: 36px;
 }
 
 .custom-select-wrapper {
@@ -348,16 +347,17 @@ input:focus, select:focus {
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
     transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    white-space: nowrap;
+    white-space: normal !important; /* Modificato da nowrap a normal */
+    height: auto !important;
+    min-height: 40px;
     max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .custom-select-trigger span:first-child {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: normal !important; /* Permette al testo del menu di andare a capo */
+    word-break: break-word !important;
 }
 
 .custom-select-trigger:hover {
@@ -423,6 +423,14 @@ input:focus, select:focus {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    white-space: normal !important; /* Forza l'andata a capo */
+    word-break: break-word !important;
+}
+
+.custom-option span:first-child {
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
 }
 
 .custom-option:hover {
