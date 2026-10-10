@@ -241,7 +241,6 @@ body::after {
     justify-content: space-between;
     align-items: center;
     gap: 6px;
-    flex-wrap: wrap;
 }
 
 .timer-sticky {
@@ -2019,19 +2018,21 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
 
                             subRowsHTML += `
                                 <div class="sub-exercise-row" style="${isCurrentSubInteractive ? 'border: 1px solid var(--superset-border); background:#1d1829;' : ''}">
-                                    <div style="font-size:12px; font-weight:600; min-width: 0; flex: 1;">
-                                        <input type="text" value="${currentName}" ${isLocked ? 'disabled' : ''} onchange="updateWorkoutSetData(${bIdx}, ${exIdx}, ${s}, 'name', this.value)" title="Nome Esercizio" style="margin-bottom:0 !important; font-size:12px !important; padding:6px 8px !important; white-space:normal !important; word-break:break-word !important;">
+                                    <div class="sub-exercise-row-top">
+                                        <input type="text" value="${currentName}" ${isLocked ? 'disabled' : ''} onchange="updateWorkoutSetData(${bIdx}, ${exIdx}, ${s}, 'name', this.value)" title="Nome Esercizio" style="margin-bottom:0 !important; font-size:12px !important; padding:6px 8px !important; white-space:normal !important; word-break:break-word !important; flex:1;">
                                     </div>
-                                    <div style="display:flex; align-items:center; gap:4px; flex-shrink: 0;">
-                                        <div class="set-input-group">
-                                            <input type="number" value="${currentWeight}" ${isLocked ? 'disabled' : ''} onchange="updateWorkoutSetData(${bIdx}, ${exIdx}, ${s}, 'weight', this.value)" title="Peso (kg)">
-                                            <span style="color:var(--subtext); font-size:10px;">kg</span>
+                                    <div class="sub-exercise-row-bottom">
+                                        <div style="display:flex; align-items:center; gap:4px;">
+                                            <div class="set-input-group">
+                                                <input type="number" value="${currentWeight}" ${isLocked ? 'disabled' : ''} onchange="updateWorkoutSetData(${bIdx}, ${exIdx}, ${s}, 'weight', this.value)" title="Peso (kg)" style="width:60px !important;">
+                                                <span style="color:var(--subtext); font-size:10px;">kg</span>
+                                            </div>
+                                            <div class="set-input-group">
+                                                <input type="number" value="${currentReps}" ${isLocked ? 'disabled' : ''} onchange="updateWorkoutSetData(${bIdx}, ${exIdx}, ${s}, 'reps', this.value)" title="Ripetizioni" style="width:50px !important;">
+                                                <span style="color:var(--subtext); font-size:10px;">rep</span>
+                                            </div>
                                         </div>
-                                        <div class="set-input-group">
-                                            <input type="number" value="${currentReps}" ${isLocked ? 'disabled' : ''} onchange="updateWorkoutSetData(${bIdx}, ${exIdx}, ${s}, 'reps', this.value)" title="Ripetizioni">
-                                            <span style="color:var(--subtext); font-size:10px;">rep</span>
-                                        </div>
-                                        ${actionHTML}
+                                        <div>${actionHTML}</div>
                                     </div>
                                 </div>
                             `;
