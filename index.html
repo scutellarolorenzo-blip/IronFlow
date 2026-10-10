@@ -660,7 +660,9 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
                 <!-- Campo Password con toggle visibilità -->
                 <div style="position: relative; width: 100%; margin-bottom: 8px;">
                     <input type="password" id="auth-password" placeholder="La tua password" style="margin-bottom: 0 !important; padding-right: 40px !important;">
-                    <button type="button" onclick="togglePasswordVisibility('auth-password', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--subtext); cursor: pointer; font-size: 16px; padding: 4px; z-index: 5;">👁️</button>
+                   <button type="button" onclick="togglePasswordVisibility('AUTH_FIELD_ID', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--subtext); cursor: pointer; display: flex; align-items: center; padding: 4px; z-index: 5;">
+                        <svg class="pass-icon" style="width:18px; height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
                 </div>
                 
                 <button id="auth-submit-btn" class="btn btn-primary btn-large" style="margin-top: 6px;" onclick="handleAuthSubmit()">Accedi</button>
@@ -696,7 +698,8 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
     <div id="main-app-container" class="hidden">
         <div class="nav-tabs" id="main-nav-tabs">
             <button class="tab-btn active" onclick="switchTab(0, this)">
-                <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v7"/><path d="M18 3v7"/><path d="M6 10c0 4 12 4 12 0"/><path d="M12 14v7"/><path d="M9 21h6"/></svg>
+                <!-- Icona Allenamento rinnovata: Bilanciere / Pesi stilizzati coerenti -->
+                <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 10v4"/><path d="M17.5 10v4"/><path d="M2 12h20"/><path d="M2 9h3v6H2z"/><path d="M19 9h3v6h-3z"/></svg>
                 <span class="tab-label">Allenamento</span>
             </button>
             <button class="tab-btn" onclick="switchTab(1, this)">
@@ -724,7 +727,10 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
                     <div class="dashboard-routine">
                         <div class="dashboard-routine-label">SESSIONE SELEZIONATA</div>
                         <div class="routine-header-row">
-                            <div class="routine-title-display">📋 <span id="dashboard-routine-title">Calisthenics</span></div>
+                            <div class="routine-title-display">
+                                <svg style="width:18px; height:18px; color:var(--if-blue); flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                                <span id="dashboard-routine-title">Calisthenics</span>
+                            </div>
                             <div class="select-btn-wrapper">
                                 <div class="custom-select-wrapper" id="custom-dashboard-select">
                                     <div class="custom-select-trigger" onclick="toggleCustomDropdown('custom-dashboard-select')">
@@ -744,7 +750,10 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
                 </div>
 
                 <div class="dashboard-start">
-                    <button class="btn btn-primary btn-large" onclick="startWorkoutSession()">AVVIA SESSIONE <span style="opacity:.7">→</span></button>
+                    <button class="btn btn-primary btn-large" onclick="startWorkoutSession()">
+                        AVVIA SESSIONE 
+                        <svg style="width:15px; height:15px; margin-left:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </button>
                 </div>
             </div>
 
@@ -774,7 +783,9 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
 
             <div id="workout-summary-view" class="hidden">
                 <div class="card" style="text-align: center; padding: 24px 16px; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(59,130,246,0.05)); border: 1px solid var(--success);">
-                    <div style="font-size: 40px; margin-bottom: 8px;">🔥</div>
+                    <div style="margin-bottom: 8px; display:inline-flex; padding:12px; border-radius:50%; background:rgba(33,212,154,0.1); border:1px solid rgba(33,212,154,0.2);">
+                        <svg style="width:32px; height:32px; color:var(--success);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
                     <h2 style="font-size: 22px; font-weight: 800; color: var(--success); margin-bottom: 6px;">Allenamento Completato con Successo!</h2>
                     <p style="color: var(--subtext); font-size: 13px;">Ottimo lavoro! Ecco il resoconto della sessione odierna.</p>
                 </div>
@@ -795,20 +806,32 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
                     <div id="summary-view-mode">
                         <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--text);">📋 Dettaglio Serie, Peso e Ripetizioni</h3>
                         <div id="summary-exercises-list" style="font-size: 13px; color: var(--subtext); line-height: 1.5; margin-bottom: 15px;"></div>
-                        <button class="btn btn-warning btn-sm" onclick="enableSummaryEditMode()" style="width: 100%;">✏️ Modifica Riepilogo</button>
+                        <button class="btn btn-warning btn-sm" onclick="enableSummaryEditMode()" style="width: 100%;">
+                            <svg style="width:14px; height:14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            Modifica Riepilogo
+                        </button>
                     </div>
 
-                    <div id="summary-edit-mode" class="hidden">
-                        <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--accent);">✏️ Modifica Dati Allenamento</h3>
+                   <div id="summary-edit-mode" class="hidden">
+                        <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--accent); display: flex; align-items: center; gap: 6px;">
+                            <svg style="width:16px; height:16px; color:var(--accent);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            Modifica Dati Allenamento
+                        </h3>
                         <div id="summary-edit-exercises-list" style="margin-bottom: 15px;"></div>
                         <div style="display: flex; gap: 8px;">
-                            <button class="btn btn-success btn-sm" onclick="saveSummaryEdits()" style="flex: 1;">💾 Salva Modifiche</button>
+                            <button class="btn btn-success btn-sm" onclick="saveSummaryEdits()" style="flex: 1;">
+                                <svg style="width:14px; height:14px; margin-right:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                                Salva Modifiche
+                            </button>
                             <button class="btn btn-danger btn-sm" onclick="cancelSummaryEdits()" style="flex: 1;">Annulla</button>
                         </div>
                     </div>
                 </div>
 
-                <button class="btn btn-primary btn-large" onclick="closeSummaryAndReturnHome()" style="margin-top: 4px; margin-bottom: 25px;">🏠 Torna alla Home</button>
+                <button class="btn btn-primary btn-large" onclick="closeSummaryAndReturnHome()" style="margin-top: 4px; margin-bottom: 25px;">
+                    <svg style="width:16px; height:16px; margin-right:6px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    Torna alla Home
+                </button>
             </div>
         </div>
 
@@ -822,7 +845,10 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
                     </div>
                     
                     <div style="display:flex; justify-content:center; align-items:center; gap:10px; margin-bottom: 6px;">
-                        <h3 style="font-size:20px; color:var(--text);" id="summary-routine-title">📋 Calisthenics</h3>
+                        <h3 style="font-size:20px; color:var(--text); display:flex; align-items:center; gap:8px;" id="summary-routine-title">
+                            <svg style="width:18px; height:18px; color:var(--if-blue);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                            Calisthenics
+                        </h3>
                         <div class="select-btn-wrapper">
                             <div class="custom-select-wrapper" id="custom-summary-select">
                                 <div class="custom-select-trigger" onclick="toggleCustomDropdown('custom-summary-select')">
@@ -838,7 +864,10 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
                 </div>
 
                 <div style="margin-bottom: 14px;">
-                    <button class="btn btn-primary btn-large" onclick="enableEditMode()">✏️ Modifica Scheda</button>
+                    <button class="btn btn-primary btn-large" onclick="enableEditMode()">
+                        <svg style="width:16px; height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        Modifica Scheda
+                    </button>
                 </div>
 
                 <div id="summary-routine-list"></div>
@@ -927,13 +956,19 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
                             <input type="number" id="super-rest-block" value="180" style="margin-bottom:0 !important;">
                         </div>
                     </div>
-                    <button class="btn btn-success" style="width:100%; background:var(--superset-border);" onclick="saveNewSupersetBlock()">SALVA SUPERSET NELLA SCHEDA <span style="opacity:.65">→</span></button>
+                   <button class="btn btn-success" style="width:100%; background:var(--superset-border);" onclick="saveNewSupersetBlock()">
+                        SALVA SUPERSET NELLA SCHEDA 
+                        <svg style="width:14px; height:14px; margin-left:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </button>
                 </div>
 
                 <div id="edit-routine-list"></div>
 
                 <div style="margin-top: 15px; margin-bottom: 25px;">
-                    <button class="btn btn-success btn-large" onclick="saveAndShowSummary()">SALVA SCHEDA <span style="opacity:.65">✓</span></button>
+                    <button class="btn btn-success btn-large" onclick="saveAndShowSummary()">
+                        SALVA SCHEDA 
+                        <svg style="width:16px; height:16px; margin-left:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </button>
                 </div>
             </div>
         </div>
@@ -1581,10 +1616,10 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
         if (!inputField) return;
         if (inputField.type === 'password') {
             inputField.type = 'text';
-            btnEl.textContent = '🔒';
+            btnEl.innerHTML = `<svg style="width:18px; height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
         } else {
             inputField.type = 'password';
-            btnEl.textContent = '👁️';
+            btnEl.innerHTML = `<svg style="width:18px; height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
         }
     }
 
@@ -2454,7 +2489,7 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
         const displayDiv = document.getElementById('timer-display');
         const controlsDiv = document.getElementById('timer-controls');
 
-        if (statusDiv) statusDiv.innerText = workoutState.isRest ? "☕ RECUPERO IN CORSO" : "ESERCIZIO IN CORSO";
+        if (statusDiv) statusDiv.innerText = workoutState.isRest ? "RECUPERO IN CORSO" : "ESERCIZIO IN CORSO";
 
         const m = Math.floor(Math.abs(workoutState.seconds) / 60).toString().padStart(2, '0');
         const s = (Math.abs(workoutState.seconds) % 60).toString().padStart(2, '0');
