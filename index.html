@@ -9,7 +9,10 @@
     <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Chart.js CDN per Grafici Moderni e Interattivi -->
+    <!-- Chart.js CDN per Grafici Moderni e Interattivi -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- html2canvas per catturare gli screenshot -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <style>
 :root {
     --bg: #07080c;
@@ -784,6 +787,7 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
                     </div>
                 </div>
 
+                <button class="btn btn-primary btn-sm" onclick="takeAppScreenshot()" style="width: 100%; margin-top: 4px; margin-bottom: 8px;">📸 Condividi / Salva Screenshot</button>
                 <button class="btn btn-primary btn-large" onclick="closeSummaryAndReturnHome()" style="margin-top: 4px; margin-bottom: 25px;">🏠 Torna alla Home</button>
             </div>
         </div>
@@ -3155,6 +3159,48 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
                 .then(reg => console.log('Service Worker registrato con successo:', reg.scope))
                 .catch(err => console.warn('Service Worker non disponibile o disabilitato in questo contesto: ', err.message));
         });
+    }
+
+    async function takeAppScreenshot() {
+        try {
+            const targetElement = document.getElementById('swipe-container');
+            const canvas = await html2canvas(targetElement, {
+                backgroundColor: '#07080c',
+                scale: 2,
+                useCORS: true
+            });
+
+            canvas.toBlob(async (blob) => {
+                if (!blob) {
+                    await customAlert("Impossibile generare lo screenshot.");
+                    return;
+                }
+
+                const file = new File([blob], "ironflow-allenamento.png", { type: "png" });
+
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({
+                            title: 'IronFlow Workout',
+                            text: 'Ecco i miei progressi su IronFlow!',
+                            files: [file]
+                        });
+                        return;
+                    } catch (err) {
+                        if (err.name !== 'AbortError') console.log("Condivisione annullata o non riuscita", err);
+                    }
+                }
+
+                const link = document.createElement('a');
+                link.download = `IronFlow_${new Date().toISOString().slice(0,10)}.png`;
+                link.href = URL.createObjectURL(blob);
+                link.click();
+                URL.revokeObjectURL(link.href);
+            }, 'image/png');
+        } catch (e) {
+            console.error("Errore durante la cattura dello screenshot:", e);
+            await customAlert("Errore durante la creazione dello screenshot.");
+        }
     }
 
     window.onload = () => {
