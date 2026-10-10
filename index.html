@@ -656,7 +656,12 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
                 <p id="auth-subtitle" style="color: var(--subtext); font-size: 13px; margin-bottom: 22px;">Accedi per salvare tutti i tuoi dati in cloud</p>
 
                 <input type="email" id="auth-email" placeholder="La tua email">
-                <input type="password" id="auth-password" placeholder="La tua password">
+                
+                <!-- Campo Password con toggle visibilità -->
+                <div style="position: relative; width: 100%; margin-bottom: 8px;">
+                    <input type="password" id="auth-password" placeholder="La tua password" style="margin-bottom: 0 !important; padding-right: 40px !important;">
+                    <button type="button" onclick="togglePasswordVisibility('auth-password', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--subtext); cursor: pointer; font-size: 16px; padding: 4px; z-index: 5;">👁️</button>
+                </div>
                 
                 <button id="auth-submit-btn" class="btn btn-primary btn-large" style="margin-top: 6px;" onclick="handleAuthSubmit()">Accedi</button>
                 
@@ -670,8 +675,17 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
                 <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 6px; color: var(--success);">Nuova Password</h2>
                 <p style="color: var(--subtext); font-size: 13px; margin-bottom: 22px;">Inserisci e conferma la tua nuova password sicura.</p>
 
-                <input type="password" id="new-password" placeholder="Nuova password">
-                <input type="password" id="confirm-new-password" placeholder="Conferma nuova password">
+                <!-- Nuova Password con toggle -->
+                <div style="position: relative; width: 100%; margin-bottom: 8px;">
+                    <input type="password" id="new-password" placeholder="Nuova password" style="margin-bottom: 0 !important; padding-right: 40px !important;">
+                    <button type="button" onclick="togglePasswordVisibility('new-password', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--subtext); cursor: pointer; font-size: 16px; padding: 4px; z-index: 5;">👁️</button>
+                </div>
+
+                <!-- Conferma Nuova Password con toggle -->
+                <div style="position: relative; width: 100%; margin-bottom: 8px;">
+                    <input type="password" id="confirm-new-password" placeholder="Conferma nuova password" style="margin-bottom: 0 !important; padding-right: 40px !important;">
+                    <button type="button" onclick="togglePasswordVisibility('confirm-new-password', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--subtext); cursor: pointer; font-size: 16px; padding: 4px; z-index: 5;">👁️</button>
+                </div>
                 
                 <button class="btn btn-success btn-large" style="margin-top: 6px;" onclick="handleUpdateNewPassword()">Aggiorna Password</button>
             </div>
@@ -1415,8 +1429,10 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
     }
 
     async function handleAuthSubmit() {
-        const email = document.getElementById('auth-email').value.trim();
-        const password = document.getElementById('auth-password').value;
+        const emailInput = document.getElementById('auth-email');
+        const passwordInput = document.getElementById('auth-password');
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
 
         if (!email || !password) {
             await customAlert("Inserisci email e password.");
@@ -1429,6 +1445,12 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
                 await customAlert("Errore di registrazione: " + error.message);
             } else {
                 await customAlert("Registrazione completata! Ora puoi accedere.");
+                
+                // Pulisce i campi email e password
+                emailInput.value = '';
+                passwordInput.value = '';
+
+                // Riporta l'app in modalità di accesso (Login)
                 isRegistering = false;
                 toggleAuthMode();
             }
@@ -1552,6 +1574,24 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
         } catch (e) {
             console.log("Audio non supportato", e);
         }
+    }
+
+    function togglePasswordVisibility(fieldId, btnEl) {
+        const inputField = document.getElementById(fieldId);
+        if (!inputField) return;
+        if (inputField.type === 'password') {
+            inputField.type = 'text';
+            btnEl.textContent = '🔒';
+        } else {
+            inputField.type = 'password';
+            btnEl.textContent = '👁️';
+        }
+    }
+
+    function initActiveRoutineSelect() {
+        const keys = Object.keys(routines);
+        renderCustomDropdown('custom-dashboard-select', keys, currentRoutineKey, onRoutineSelected);
+        renderCustomDropdown('custom-summary-select', keys, currentRoutineKey, onRoutineSelected);
     }
 
     function initActiveRoutineSelect() {
