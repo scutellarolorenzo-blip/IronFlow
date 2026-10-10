@@ -2417,7 +2417,7 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
             controlsDiv.innerHTML = `
                 <button class="btn" onclick="togglePause()">${workoutState.isPaused ? 'Riprendi' : 'Pausa'}</button>
                 <button class="btn ${workoutState.isRest ? 'btn-primary' : 'btn-warning'}" onclick="${workoutState.isRest ? 'finishRest()' : 'promptSkipCurrentSet()'}">${workoutState.isRest ? 'Salta' : 'Salta set'}</button>
-                <button class="btn btn-danger" onclick="confirmAndCancelWorkout()">Annulla Allenamento</button>
+                <button class="btn btn-danger" onclick="confirmAndCancelWorkout()">Annulla1 Allenamento</button>
                 <button class="btn btn-success" onclick="confirmAndTerminateWorkout()">Allenamento Terminato</button>
             `;
         }
