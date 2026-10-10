@@ -1072,24 +1072,16 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
     function renderCustomDropdown(wrapperId, optionsList, currentVal, onSelectCallback, onDeleteCallback = null) {
         const wrapper = document.getElementById(wrapperId);
         if (!wrapper) return;
-        
+
         const optionsContainer = wrapper.querySelector('.custom-select-options');
         const triggerSpan = wrapper.querySelector('.custom-select-trigger span');
-        
-        const currentOpt = optionsList.find(opt => (typeof opt === 'object' ? opt.value : opt) === currentVal);
+
         if (triggerSpan) {
-            if (currentOpt) {
-                triggerSpan.textContent = typeof currentOpt === 'object' ? currentOpt.label : currentOpt;
-            } else if (optionsList.length > 0) {
-                const firstOpt = optionsList[0];
-                triggerSpan.textContent = typeof firstOpt === 'object' ? firstOpt.label : firstOpt;
-            } else {
-                triggerSpan.textContent = 'Seleziona';
-            }
+            triggerSpan.textContent = 'Seleziona Scheda';
         }
-        
+
         optionsContainer.innerHTML = '';
-        
+
         optionsList.forEach(opt => {
             const val = typeof opt === 'object' ? opt.value : opt;
             const label = typeof opt === 'object' ? opt.label : opt;
@@ -1097,7 +1089,7 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
 
             const optionEl = document.createElement('div');
             optionEl.className = `custom-option ${isSelected ? 'selected' : ''}`;
-            
+
             let deleteBtnHTML = '';
             if (onDeleteCallback) {
                 deleteBtnHTML = `<span class="custom-option-delete" title="Elimina esercizio">✕</span>`;
@@ -1108,16 +1100,16 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
                 <span class="opt-check">${isSelected ? '✓' : ''}</span>
                 ${deleteBtnHTML}
             `;
-            
+
             if (onDeleteCallback) {
                 const delBtn = optionEl.querySelector('.custom-option-delete');
                 if (delBtn) {
                     delBtn.onclick = async (e) => {
                         e.stopPropagation();
                         wrapper.classList.remove('open');
-                        
+
                         const confirmDel = await customConfirm(
-                            `Sei sicuro di voler rimuovere l'esercizio "${label}" dall'elenco dell'analisi?`, 
+                            `Sei sicuro di voler rimuovere l'esercizio "${label}" dall'elenco dell'analisi?`,
                             "Elimina Esercizio"
                         );
 
@@ -1131,19 +1123,19 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
             optionEl.onclick = (e) => {
                 e.stopPropagation();
                 wrapper.classList.remove('open');
-                
+
                 optionsContainer.querySelectorAll('.custom-option').forEach(el => {
                     el.classList.remove('selected');
                     const checkSpan = el.querySelector('.opt-check');
                     if (checkSpan) checkSpan.textContent = '';
                 });
-                
+
                 optionEl.classList.add('selected');
                 const myCheck = optionEl.querySelector('.opt-check');
                 if (myCheck) myCheck.textContent = '✓';
+
                 
-                if (triggerSpan) triggerSpan.textContent = label;
-                
+
                 onSelectCallback(val);
             };
 
@@ -1202,6 +1194,7 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
     function switchTab(index) {
         if (workoutState.active && index !== 0) return; // Impedisce il cambio tab se l'allenamento è attivo
         currentTabIndex = index;
+        localStorage.setItem('ironflow_current_tab', index);
         const buttons = document.querySelectorAll('.tab-btn');
         buttons.forEach((b, idx) => {
             if (idx === index) b.classList.add('active');
@@ -1287,16 +1280,31 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
         document.getElementById('main-app-container').classList.remove('hidden');
         document.getElementById('logout-btn').classList.remove('hidden');
         
-        routines = JSON.parse(JSON.stringify(defaultRoutines));
-        historyData = [];
-        savedStatusMap = {};
-        currentRoutineKey = Object.keys(routines)[0];
+        // 1. Recupera prima le routine salvate localmente per evitare il reset alla prima scheda
+        const savedRoutines = localStorage.getItem('ironflow_routines');
+        if (savedRoutines) {
+            try { routines = JSON.parse(savedRoutines); } catch(e){}
+        } else {
+            routines = JSON.parse(JSON.stringify(defaultRoutines));
+        }
 
+        const savedKey = localStorage.getItem('ironflow_current_key');
+        if (savedKey && routines[savedKey]) {
+            currentRoutineKey = savedKey;
+        } else {
+            currentRoutineKey = Object.keys(routines)[0];
+        }
+
+        historyData = JSON.parse(localStorage.getItem('ironflow_history') || '[]');
+        savedStatusMap = JSON.parse(localStorage.getItem('ironflow_saved_status') || '{}');
+
+        // 2. Controlla se c'è un allenamento attivo
         const hasActiveSession = loadActiveWorkoutSession();
 
         if (hasActiveSession) {
             document.getElementById('start-session-view').classList.add('hidden');
             document.getElementById('active-workout-view').classList.remove('hidden');
+            document.getElementById('workout-summary-view').classList.add('hidden');
             renderWorkout();
             updateTimerDisplay();
 
@@ -1305,67 +1313,28 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
             } else {
                 startWorkTimer(true);
             }
+        } else {
+            // Ripristina l'ultimo tab in cui si trovava l'utente
+            const savedTab = localStorage.getItem('ironflow_current_tab');
+            const targetTab = savedTab !== null ? parseInt(savedTab) : 0;
+            
+            initActiveRoutineSelect();
+            updateIronFlowDashboard();
+            showSummaryView();
+            
+            switchTab(targetTab);
         }
 
+        // 3. Sincronizza i dati dal cloud in background senza toccare la UI corrente
         fetchRemoteData().then(() => {
             if (!workoutState.active) {
-                initActiveRoutineSelect();
-                updateIronFlowDashboard();
-                showSummaryView();
+                if (routines[currentRoutineKey]) {
+                    initActiveRoutineSelect();
+                    updateIronFlowDashboard();
+                    showSummaryView();
+                }
             }
         });
-    }
-
-    function toggleAuthMode() {
-        isRegistering = !isRegistering;
-        const title = document.getElementById('auth-title');
-        const subtitle = document.getElementById('auth-subtitle');
-        const submitBtn = document.getElementById('auth-submit-btn');
-        const switchText = document.getElementById('auth-switch-text');
-        const forgotText = document.getElementById('auth-forgot-text');
-
-        if (isRegistering) {
-            title.innerText = "Crea un Account";
-            subtitle.innerText = "Salva i tuoi progressi nel cloud per sempre";
-            submitBtn.innerText = "Registrati";
-            switchText.innerText = "Hai già un account? Accedi";
-            forgotText.classList.add('hidden');
-        } else {
-            title.innerText = "Bentornato su IronFlow";
-            subtitle.innerText = "Accedi per mantenere i tuoi dati al sicuro";
-            submitBtn.innerText = "Accedi";
-            switchText.innerText = "Non hai un account? Registrati";
-            forgotText.classList.remove('hidden');
-        }
-    }
-
-    async function handleAuthSubmit() {
-        const email = document.getElementById('auth-email').value.trim();
-        const password = document.getElementById('auth-password').value;
-
-        if (!email || !password) {
-            await customAlert("Inserisci email e password.");
-            return;
-        }
-
-        if (isRegistering) {
-            const { error } = await db.auth.signUp({ email, password });
-            if (error) {
-                await customAlert("Errore di registrazione: " + error.message);
-            } else {
-                await customAlert("Registrazione completata! Ora puoi accedere.");
-                isRegistering = false;
-                toggleAuthMode();
-            }
-        } else {
-            const { data, error } = await db.auth.signInWithPassword({ email, password });
-            if (error) {
-                await customAlert("Credenziali non valide: " + error.message);
-            } else if (data.session) {
-                currentUser = data.session.user;
-                showMainApp();
-            }
-        }
     }
 
     async function handleForgotPassword() {
