@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ironflow-cache-v2.2.3'; // Incrementa questa versione ad ogni modifica importante
+const CACHE_NAME = 'ironflow-cache-v2.2.4'; // Incrementa questa versione ad ogni modifica importante
 const ASSETS_TO_CACHE = [
   './',
   './index_5.html',
