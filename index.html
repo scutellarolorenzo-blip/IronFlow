@@ -247,8 +247,12 @@ body::after {
 }
 
 .timer-sticky {
-    position: sticky; top: 72px; z-index: 100;
-    box-shadow: 0 18px 45px rgba(0,0,0,.52); backdrop-filter: blur(24px);
+    position: sticky; 
+    top: 65px; /* Si posiziona appena sotto la barra dei tab in alto */
+    z-index: 40;
+    box-shadow: 0 18px 45px rgba(0,0,0,.52); 
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
 }
 .timer-box {
     text-align: center; padding: 15px 0 12px;
@@ -732,22 +736,26 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
             </div>
 
             <div id="active-workout-view" class="hidden">
-                <div class="workout-hud">
-                    <div>
-                        <div class="workout-hud-kicker">LIVE WORKOUT</div>
-                        <div class="workout-hud-name" id="workout-hud-name">Allenamento</div>
-                        <div class="workout-hud-meta" id="workout-hud-meta">Preparazione sessione…</div>
+                <!-- Contenitore bloccato in alto durante lo scroll -->
+                <div style="position: sticky; top: 0px; z-index: 45; background: var(--bg); padding-top: 5px; padding-bottom: 5px;">
+                    <div class="workout-hud">
+                        <div>
+                            <div class="workout-hud-kicker">LIVE WORKOUT</div>
+                            <div class="workout-hud-name" id="workout-hud-name">Allenamento</div>
+                            <div class="workout-hud-meta" id="workout-hud-meta">Preparazione sessione…</div>
+                        </div>
+                        <div class="workout-progress-ring" id="workout-progress-ring">
+                            <span class="workout-progress-value" id="workout-progress-value">0%</span>
+                        </div>
                     </div>
-                    <div class="workout-progress-ring" id="workout-progress-ring">
-                        <span class="workout-progress-value" id="workout-progress-value">0%</span>
+                    <div class="card timer-box" style="margin-bottom: 8px;">
+                        <div id="timer-status" class="timer-status">ESERCIZIO IN CORSO</div>
+                        <div id="timer-display" class="timer-display">00:00</div>
+                        <div class="btn-group" id="timer-controls"></div>
                     </div>
-                </div>
-                <div class="card timer-box timer-sticky">
-                    <div id="timer-status" class="timer-status">ESERCIZIO IN CORSO</div>
-                    <div id="timer-display" class="timer-display">00:00</div>
-                    <div class="btn-group" id="timer-controls"></div>
                 </div>
 
+                <!-- Lista degli esercizi che scorre sotto -->
                 <div id="workout-list"></div>
             </div>
 
