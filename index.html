@@ -298,6 +298,16 @@ input:focus, select:focus {
     box-shadow: 0 0 0 3px rgba(109,140,255,.18), 0 0 20px rgba(109,140,255,.15) !important; 
 }
 
+/* Modifiche per nomi estesi a capo */
+.sub-exercise-row input[type="text"],
+.routine-title-display,
+.block-title,
+.custom-option span {
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
 .custom-select-wrapper {
     position: relative;
     user-select: none;
@@ -1012,11 +1022,13 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
     const swipeContainer = document.getElementById('swipe-container');
 
     swipeContainer.addEventListener('touchstart', e => {
+        if (workoutState.active) return; // Disabilita swipe se l'allenamento è attivo
         touchStartX = e.changedTouches[0].screenX;
         touchStartY = e.changedTouches[0].screenY;
     }, {passive: true});
 
     swipeContainer.addEventListener('touchend', e => {
+        if (workoutState.active) return; // Disabilita swipe se l'allenamento è attivo
         const touchEndX = e.changedTouches[0].screenX;
         const touchEndY = e.changedTouches[0].screenY;
         const diffX = touchEndX - touchStartX;
@@ -1166,6 +1178,7 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
     }
 
     function switchTab(index) {
+        if (workoutState.active && index !== 0) return; // Impedisce il cambio tab se l'allenamento è attivo
         currentTabIndex = index;
         const buttons = document.querySelectorAll('.tab-btn');
         buttons.forEach((b, idx) => {
@@ -1911,7 +1924,7 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
                         setsRows += `
                             <div class="sub-exercise-row" style="${isInteractive ? 'border: 1px solid var(--accent);' : ''}">
                                 <div style="font-size:12px; font-weight:600; min-width: 0; flex: 1;">
-                                    <input type="text" value="${currentName}" ${isLocked ? 'disabled' : ''} onchange="updateWorkoutSetData(${bIdx}, ${exIdx}, ${s}, 'name', this.value)" title="Nome Esercizio" style="margin-bottom:0 !important; font-size:12px !important; padding:6px 8px !important;">
+                                    <input type="text" value="${currentName}" ${isLocked ? 'disabled' : ''} onchange="updateWorkoutSetData(${bIdx}, ${exIdx}, ${s}, 'name', this.value)" title="Nome Esercizio" style="margin-bottom:0 !important; font-size:12px !important; padding:6px 8px !important; white-space:normal !important; word-break:break-word !important;">
                                     <span style="color:var(--subtext); font-size:10px; margin-left:2px; display:block; margin-top:2px;">(Set ${s}/${ex.sets})</span>
                                 </div>
                                 <div style="display:flex; align-items:center; gap:4px; flex-shrink: 0;">
@@ -1982,7 +1995,7 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
                             subRowsHTML += `
                                 <div class="sub-exercise-row" style="${isCurrentSubInteractive ? 'border: 1px solid var(--superset-border); background:#1d1829;' : ''}">
                                     <div style="font-size:12px; font-weight:600; min-width: 0; flex: 1;">
-                                        <input type="text" value="${currentName}" ${isLocked ? 'disabled' : ''} onchange="updateWorkoutSetData(${bIdx}, ${exIdx}, ${s}, 'name', this.value)" title="Nome Esercizio" style="margin-bottom:0 !important; font-size:12px !important; padding:6px 8px !important;">
+                                        <input type="text" value="${currentName}" ${isLocked ? 'disabled' : ''} onchange="updateWorkoutSetData(${bIdx}, ${exIdx}, ${s}, 'name', this.value)" title="Nome Esercizio" style="margin-bottom:0 !important; font-size:12px !important; padding:6px 8px !important; white-space:normal !important; word-break:break-word !important;">
                                     </div>
                                     <div style="display:flex; align-items:center; gap:4px; flex-shrink: 0;">
                                         <div class="set-input-group">
@@ -2596,7 +2609,7 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
             container.innerHTML += `
                 <div class="edit-block-item ${block.isSuperset ? 'superset-item' : ''}">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <span style="font-size:12px; font-weight:700; color:var(--text);">Blocco ${bIdx + 1} ${supersetBadge}</span>
+                        <span style="font-size:12px; font-weight:700; color:var(--text); white-space:normal; word-break:break-word;">Blocco ${bIdx + 1} ${supersetBadge}</span>
                         <div style="display:flex; gap:4px; align-items:center;">
                             <button class="btn btn-sm" onclick="moveBlockUp(${bIdx})" ${bIdx === 0 ? 'disabled style="opacity:0.3"' : ''}>▲</button>
                             <button class="btn btn-sm" onclick="moveBlockDown(${bIdx})" ${isLastBlock ? 'disabled style="opacity:0.3"' : ''}>▼</button>
@@ -2668,8 +2681,8 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
 
                 container.innerHTML += `
                     <div class="card" style="margin-bottom:10px; background:#11131a;">
-                        <h4 style="font-size:15px; margin-bottom:6px; color:var(--text);">${tag}Blocco ${bIdx + 1}</h4>
-                        <div style="font-size:13px; color:var(--subtext); line-height:1.4;">${listText}</div>
+                        <h4 style="font-size:15px; margin-bottom:6px; color:var(--text); white-space:normal; word-break:break-word;">${tag}Blocco ${bIdx + 1}</h4>
+                        <div style="font-size:13px; color:var(--subtext); line-height:1.4; word-break:break-word;">${listText}</div>
                         ${restInfoHTML}
                     </div>
                 `;
