@@ -995,20 +995,11 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
     const tabIds = ['tab-workout', 'tab-edit', 'tab-chart', 'tab-history'];
 
     const defaultRoutines = {
-        "Calisthenics": [
+        "Scheda Di Prova": [
             {
                 isSuperset: false,
                 restAfterBlock: 120,
                 exercises: [{ name: "Panca Piana", sets: 4, reps: 8, weight: 50, restSet: 90 }]
-            },
-            {
-                isSuperset: true,
-                restAfterBlock: 180,
-                exercises: [
-                    { name: "Trazioni", sets: 4, reps: 8, weight: 0, restSet: 30 },
-                    { name: "Spinte Manubri", sets: 4, reps: 10, weight: 20, restSet: 30 },
-                    { name: "Rematore", sets: 4, reps: 8, weight: 40, restSet: 90 }
-                ]
             }
         ]
     };
@@ -1453,12 +1444,17 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
                 .eq('id', currentUser.id)
                 .single();
                 
-            if (data && !error) {
-                if (data.routines) routines = data.routines;
-                if (data.history) historyData = data.history;
-                else historyData = [];
-                if (data.saved_status) savedStatusMap = data.saved_status;
-                else savedStatusMap = {};
+            if (data && !error && data.routines && Object.keys(data.routines).length > 0) {
+                routines = data.routines;
+                historyData = data.history || [];
+                savedStatusMap = data.saved_status || {};
+            } else {
+                // Se è un nuovo account senza dati nel cloud, inizializza pulito con "Scheda Di Prova"
+                routines = JSON.parse(JSON.stringify(defaultRoutines));
+                historyData = [];
+                savedStatusMap = {};
+                currentRoutineKey = "Scheda Di Prova";
+                saveRoutinesStorage();
             }
 
             if (!workoutState.active) {
@@ -1473,7 +1469,7 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
             localStorage.setItem('ironflow_current_key', currentRoutineKey);
 
         } catch (e) {
-            console.log("Nessun dato remoto trovato o errore di recupero, uso la versione locale.");
+            console.log("Nessun dato remoto trovato, uso la versione locale pulita.");
         }
     }
 
