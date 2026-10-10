@@ -1381,6 +1381,58 @@ button, input, textarea, a { position: relative; z-index: 2; pointer-events: aut
         }
     }
 
+    function toggleAuthMode() {
+        isRegistering = !isRegistering;
+        const title = document.getElementById('auth-title');
+        const subtitle = document.getElementById('auth-subtitle');
+        const submitBtn = document.getElementById('auth-submit-btn');
+        const switchText = document.getElementById('auth-switch-text');
+        const forgotText = document.getElementById('auth-forgot-text');
+
+        if (isRegistering) {
+            title.innerText = "Crea un Account";
+            subtitle.innerText = "Salva i tuoi progressi nel cloud per sempre";
+            submitBtn.innerText = "Registrati";
+            switchText.innerText = "Hai già un account? Accedi";
+            if (forgotText) forgotText.classList.add('hidden');
+        } else {
+            title.innerText = "Bentornato su IronFlow";
+            subtitle.innerText = "Accedi per mantenere i tuoi dati al sicuro";
+            submitBtn.innerText = "Accedi";
+            switchText.innerText = "Non hai un account? Registrati";
+            if (forgotText) forgotText.classList.remove('hidden');
+        }
+    }
+
+    async function handleAuthSubmit() {
+        const email = document.getElementById('auth-email').value.trim();
+        const password = document.getElementById('auth-password').value;
+
+        if (!email || !password) {
+            await customAlert("Inserisci email e password.");
+            return;
+        }
+
+        if (isRegistering) {
+            const { error } = await db.auth.signUp({ email, password });
+            if (error) {
+                await customAlert("Errore di registrazione: " + error.message);
+            } else {
+                await customAlert("Registrazione completata! Ora puoi accedere.");
+                isRegistering = false;
+                toggleAuthMode();
+            }
+        } else {
+            const { data, error } = await db.auth.signInWithPassword({ email, password });
+            if (error) {
+                await customAlert("Credenziali non valide: " + error.message);
+            } else if (data.session) {
+                currentUser = data.session.user;
+                showMainApp();
+            }
+        }
+    }
+
     async function handleLogout() {
         const confirmLogout = await customConfirm("Vuoi uscire dal tuo account?", "Disconnessione");
         if (!confirmLogout) return;
